@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroPredict - Hệ Thống Dự Báo Công Suất Điện Gió</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              400: '#2dd4bf',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              900: '#134e4a',
+            },
+            accent: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome / Lucide Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(229, 231, 235, 0.8);
+    }
+    .dark .glass-card {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(55, 65, 81, 0.5);
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+    .dark ::-webkit-scrollbar-thumb { background: #475569; }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- TOP HEADER / NAVIGATION -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="bg-gradient-to-tr from-brand-600 to-accent-500 p-2.5 rounded-xl text-white shadow-lg shadow-brand-500/20 flex items-center justify-center">
+          <i class="fa-solid font-bold fa-fan fa-spin" style="--fa-animation-duration: 8s;"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-brand-600 via-accent-500 to-teal-400 bg-clip-text text-transparent">AeroPredict AI</h1>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Hệ Thống Dự Báo & Vận Hành Nhà Máy Điện Gió</p>
+        </div>
+      </div>
+
+      <!-- Header Quick Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Location Quick Select -->
+        <div class="hidden sm:flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+          <i class="fa-solid fa-location-dot text-brand-500 text-sm"></i>
+          <select id="locationSelect" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+            <option value="tra-vinh" class="dark:bg-slate-900">Điện gió Trà Vinh (Ngoài khơi)</option>
+            <option value="ninht-thuan" class="dark:bg-slate-900">Điện gió Ninh Thuận (Trên bờ)</option>
+            <option value="binh-thuan" class="dark:bg-slate-900">Điện gió Bình Thuận</option>
+            <option value="bac-lieu" class="dark:bg-slate-900">Điện gió Bạc Liêu (Ven biển)</option>
+            <option value="custom" class="dark:bg-slate-900">Tùy chỉnh tọa độ...</option>
+          </select>
+        </div>
+
+        <!-- Refresh Forecast Button -->
+        <button id="btnFetchForecast" class="flex items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium transition shadow-sm active:scale-95">
+          <i class="fa-solid fa-arrows-rotate text-xs"></i>
+          <span class="hidden md:inline">Cập Nhật Dự Báo</span>
+        </button>
+
+        <!-- Dark/Light Theme Toggle -->
+        <button id="themeToggle" class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+          <i class="fa-solid fa-sun hidden dark:block text-lg text-amber-400"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto w-full px-4 lg:px-8 py-6 flex-grow space-y-6">
+
+    <!-- TOP CONTROL BAR / CONFIGURATION METRICS -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      
+      <!-- Plant Specs Card -->
+      <div class="glass-card p-4 rounded-xl space-y-3">
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-industry text-brand-500"></i> Thông Số Nhà Máy
+          </span>
+          <span class="text-xs bg-brand-500/10 text-brand-600 dark:text-brand-400 font-semibold px-2 py-0.5 rounded">Đang chạy</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div>
+            <label class="text-slate-500 dark:text-slate-400 block mb-1">Công suất NM (MW)</label>
+            <input type="number" id="plantCapacity" value="48" min="1" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded p-1.5 font-semibold focus:ring-1 focus:ring-brand-500 outline-none">
+          </div>
+          <div>
+            <label class="text-slate-500 dark:text-slate-400 block mb-1">Số lượng Tuabin</label>
+            <input type="number" id="turbineCount" value="12" min="1" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded p-1.5 font-semibold focus:ring-1 focus:ring-brand-500 outline-none">
+          </div>
+          <div>
+            <label class="text-slate-500 dark:text-slate-400 block mb-1">Độ cao Hub (m)</label>
+            <input type="number" id="hubHeight" value="110" min="10" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded p-1.5 font-semibold focus:ring-1 focus:ring-brand-500 outline-none">
+          </div>
+          <div>
+            <label class="text-slate-500 dark:text-slate-400 block mb-1">Mật độ không khí (kg/m³)</label>
+            <input type="number" id="airDensity" value="1.225" step="0.001" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded p-1.5 font-semibold focus:ring-1 focus:ring-brand-500 outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- Forecast Period & API Controls -->
+      <div class="glass-card p-4 rounded-xl space-y-3">
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-cloud-sun-rain text-accent-500"></i> Mô Hình Dự Báo
+          </span>
+          <span id="forecastSourceBadge" class="text-xs bg-accent-500/10 text-accent-600 dark:text-accent-400 font-semibold px-2 py-0.5 rounded">Open-Meteo API</span>
+        </div>
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="text-slate-500 dark:text-slate-400 block mb-1">Thời gian dự báo</label>
+            <select id="forecastDays" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded p-1.5 font-medium focus:ring-1 focus:ring-brand-500 outline-none">
+              <option value="1">24 Giờ Tới</option>
+              <option value="3" selected>3 Ngày Tới (72 Giờ)</option>
+              <option value="7">7 Ngày Tới</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-slate-500 dark:text-slate-400 block mb-1">Vĩ độ (Lat)</label>
+              <input type="number" id="latInput" value="9.673" step="0.001" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded p-1.5 font-mono text-xs">
+            </div>
+            <div>
+              <label class="text-slate-500 dark:text-slate-400 block mb-1">Kinh độ (Lon)</label>
+              <input type="number" id="lonInput" value="106.582" step="0.001" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded p-1.5 font-mono text-xs">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historical / Custom Data Calibration -->
+      <div class="glass-card p-4 rounded-xl space-y-3 lg:col-span-2">
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-file-csv text-emerald-500"></i> Đường Cong Công Suất & Dữ Liệu SCADA
+          </span>
+          <div class="flex gap-2">
+            <button id="btnSampleData" class="text-xs text-brand-600 dark:text-brand-400 hover:underline font-medium">Tải SCADA Mẫu</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="space-y-2">
+            <label class="text-slate-500 dark:text-slate-400 block">Tải lên CSV SCADA Lịch Sử (Vận Tốc Gió vs Công Suất)</label>
+            <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500/10 file:text-brand-600 dark:file:text-brand-400 hover:file:bg-brand-500/20 cursor-pointer">
+            <p class="text-[11px] text-slate-400">Định dạng CSV: <code class="bg-slate-200 dark:bg-slate-800 px-1 rounded">wind_speed, power_output</code></p>
+          </div>
+          <div class="space-y-2 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-800 pt-2 md:pt-0 md:pl-4">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500 dark:text-slate-400 font-medium">Đặc tuyến Tuabin:</span>
+              <span id="scadaStatus" class="text-slate-400 text-[11px] font-mono">Đường cong chuẩn 4MW</span>
+            </div>
+            <div class="grid grid-cols-3 gap-1.5 text-center">
+              <div class="bg-slate-100 dark:bg-slate-800/60 p-1.5 rounded">
+                <div class="text-[10px] text-slate-400">Khởi động (Cut-in)</div>
+                <div class="font-bold text-slate-700 dark:text-slate-200">3.0 m/s</div>
+              </div>
+              <div class="bg-slate-100 dark:bg-slate-800/60 p-1.5 rounded">
+                <div class="text-[10px] text-slate-400">Định mức (Rated)</div>
+                <div class="font-bold text-slate-700 dark:text-slate-200">12.0 m/s</div>
+              </div>
+              <div class="bg-slate-100 dark:bg-slate-800/60 p-1.5 rounded">
+                <div class="text-[10px] text-slate-400">Ngắt (Cut-out)</div>
+                <div class="font-bold text-slate-700 dark:text-slate-200">25.0 m/s</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- KPI SUMMARY CARDS -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- KPI 1 -->
+      <div class="glass-card p-4 rounded-xl border-l-4 border-l-brand-500 relative overflow-hidden">
+        <div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Tổng Sản Lượng Dự Báo</div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span id="kpiTotalEnergy" class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">--</span>
+          <span class="text-xs font-semibold text-slate-500">MWh</span>
+        </div>
+        <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          <i class="fa-solid fa-bolt text-amber-500"></i> Trong <span id="kpiHoursLabel">72</span> giờ tới
+        </div>
+      </div>
+
+      <!-- KPI 2 -->
+      <div class="glass-card p-4 rounded-xl border-l-4 border-l-accent-500 relative overflow-hidden">
+        <div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Công Suất Đỉnh Dự Báo</div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span id="kpiPeakPower" class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">--</span>
+          <span class="text-xs font-semibold text-slate-500">MW</span>
+        </div>
+        <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          <i class="fa-solid fa-chart-line text-accent-500"></i> Đạt <span id="kpiPeakRatio">--</span>% công suất NM
+        </div>
+      </div>
+
+      <!-- KPI 3 -->
+      <div class="glass-card p-4 rounded-xl border-l-4 border-l-emerald-500 relative overflow-hidden">
+        <div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Hệ Số Công Suất (CF)</div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span id="kpiCapacityFactor" class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">--</span>
+          <span class="text-xs font-semibold text-slate-500">%</span>
+        </div>
+        <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          <i class="fa-solid fa-gauge-high text-emerald-500"></i> Hiệu suất khai thác dự kiến
+        </div>
+      </div>
+
+      <!-- KPI 4 -->
+      <div class="glass-card p-4 rounded-xl border-l-4 border-l-cyan-500 relative overflow-hidden">
+        <div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Tốc Độ Gió Trung Bình</div>
+        <div class="flex items-baseline gap-2 mt-2">
+          <span id="kpiAvgWind" class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">--</span>
+          <span class="text-xs font-semibold text-slate-500">m/s</span>
+        </div>
+        <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          <i class="fa-solid fa-wind text-cyan-500"></i> Chuẩn hóa tại độ cao Hub
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN FORECASTING CHARTS SECTION -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Primary Forecast Time-Series Chart (2 Columns wide on LG) -->
+      <div class="glass-card p-5 rounded-2xl lg:col-span-2 flex flex-col justify-between space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 class="font-bold text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-chart-area text-brand-500"></i> Biểu Đồ Chuỗi Thời Gian: Tốc Độ Gió & Công Suất Phát
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Mối tương quan giữa tốc độ gió dự báo và sản lượng phát điện theo từng giờ</p>
+          </div>
+          <!-- Chart View Options -->
+          <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-lg text-xs font-medium self-start sm:self-auto">
+            <button id="viewDualBtn" class="px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white">Kết Hợp</button>
+            <button id="viewPowerBtn" class="px-2.5 py-1 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Công Suất</button>
+            <button id="viewWindBtn" class="px-2.5 py-1 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Tốc Độ Gió</button>
+          </div>
+        </div>
+
+        <!-- Chart Container -->
+        <div class="relative w-full h-[320px] md:h-[380px]">
+          <canvas id="forecastChart"></canvas>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 border-t border-slate-200 dark:border-slate-800 pt-3 gap-2">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-brand-500 inline-block"></span> Công Suất Phát (MW)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-400 inline-block"></span> Tốc Độ Gió (m/s)</span>
+          </div>
+          <div class="font-mono text-[11px]" id="lastUpdatedTime">Cập nhật: Mới xong</div>
+        </div>
+      </div>
+
+      <!-- Power Curve Analysis Chart & Wind Rose -->
+      <div class="space-y-6 flex flex-col justify-between">
+        
+        <!-- Power Curve Mapping Chart -->
+        <div class="glass-card p-5 rounded-2xl space-y-3 flex-grow">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-bezier-curve text-accent-500"></i> Đường Cong Công Suất Tuabin
+            </h3>
+            <span class="text-[10px] bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300 font-mono">Lý thuyết vs SCADA</span>
+          </div>
+          <div class="relative w-full h-[180px]">
+            <canvas id="powerCurveChart"></canvas>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-tight">
+            Mô hình phi tuyến tính chuyển đổi vận tốc gió sang công suất đầu ra của tuabin.
+          </p>
+        </div>
+
+        <!-- Wind Rose / Direction Distribution -->
+        <div class="glass-card p-5 rounded-2xl space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-compass text-teal-500"></i> Biểu Đồ Hướng Gió (Wind Rose)
+            </h3>
+            <span class="text-[10px] text-slate-400">Phân bố hướng gió dự báo</span>
+          </div>
+          <div class="relative w-full h-[170px] flex justify-center items-center">
+            <canvas id="windRoseChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- WINDY / INTERACTIVE MAP EMBED & SCENARIO TOOL -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Live Windy.com Map Integration -->
+      <div class="glass-card p-5 rounded-2xl lg:col-span-2 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 class="font-bold text-md text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-earth-asia text-sky-500"></i> Bản Đồ Trường Gió Trực Tiếp (Tích hợp Windy)
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Mô phỏng trường gió trực quan khu vực nhà máy điện gió</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnToggleWindyOverlay" class="text-xs bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 px-3 py-1 rounded-lg transition font-medium">
+              Tải lại Bản đồ
+            </button>
+          </div>
+        </div>
+
+        <!-- Windy Iframe Embed container -->
+        <div class="w-full h-[340px] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 relative bg-slate-900">
+          <iframe id="windyFrame" 
+                  class="w-full h-full border-0" 
+                  src="https://embed.windy.com/embed2.html?lat=9.673&lon=106.582&detailLat=9.673&detailLon=106.582&width=650&height=350&zoom=8&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=m%2Fs&metricTemp=%C2%B0C&radarRange=-1" 
+                  loading="lazy">
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Quick Wind Simulation & Sensitivity Controls -->
+      <div class="glass-card p-5 rounded-2xl space-y-4 flex flex-col justify-between">
+        <div>
+          <h3 class="font-bold text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2 mb-1">
+            <i class="fa-solid fa-sliders text-amber-500"></i> Hiệu Chỉnh & Mô Phỏng Kịch Bản
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Mô phỏng độ lệch tốc độ gió, tổn thất che khuất (Wake loss)</p>
+          
+          <div class="space-y-4 text-xs">
+            <div>
+              <div class="flex justify-between font-medium mb-1">
+                <span class="text-slate-600 dark:text-slate-300">Độ lệch Tốc độ Gió</span>
+                <span id="windOffsetVal" class="text-brand-500 font-mono">0.0 m/s</span>
+              </div>
+              <input type="range" id="windOffsetSlider" min="-5" max="5" step="0.5" value="0" class="w-full accent-brand-500 cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
+                <span>-5 m/s</span>
+                <span>0</span>
+                <span>+5 m/s</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between font-medium mb-1">
+                <span class="text-slate-600 dark:text-slate-300">Tổn thất Khí hậu & Wake Loss</span>
+                <span id="wakeLossVal" class="text-brand-500 font-mono">8.0 %</span>
+              </div>
+              <input type="range" id="wakeLossSlider" min="0" max="25" step="0.5" value="8" class="w-full accent-brand-500 cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
+                <span>0% (Lý tưởng)</span>
+                <span>25% (Tổn thất cao)</span>
+              </div>
+            </div>
+
+            <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-1">
+              <span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                <i class="fa-solid fa-triangle-exclamation"></i> Cảnh Báo Tiết Giảm (Curtailment)
+              </span>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                Khi tốc độ gió > 18 m/s, khả năng điều độ lưới điện quá tải có thể yêu cầu sa thải/tiết giảm công suất.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <button id="btnResetSimulation" class="w-full py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-semibold transition">
+          Đặt Lại Tham Số Mô Phỏng
+        </button>
+      </div>
+
+    </div>
+
+    <!-- DETAILED HOURLY DATA TABLE -->
+    <div class="glass-card p-5 rounded-2xl space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="font-bold text-md text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-table-list text-brand-500"></i> Bảng Chi Tiết Dự Báo Phát Điện Từng Giờ
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Số liệu chuỗi thời gian phục vụ lập lịch điều độ phát điện</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="text" id="tableSearch" placeholder="Lọc thời gian..." class="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500">
+          <button id="btnExportCSV" class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold transition shadow-sm">
+            <i class="fa-solid fa-download"></i> Xuất Báo Cáo CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable Table -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+        <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+          <thead class="bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 uppercase text-[10px] tracking-wider border-b border-slate-200 dark:border-slate-700">
+            <tr>
+              <th class="py-3 px-4">Thời Gian (UTC+7)</th>
+              <th class="py-3 px-4">Tốc Độ Gió (m/s)</th>
+              <th class="py-3 px-4">Hướng Gió (°)</th>
+              <th class="py-3 px-4">Nhiệt Độ (°C)</th>
+              <th class="py-3 px-4">Mật Độ KK (kg/m³)</th>
+              <th class="py-3 px-4">Công Suất Dự Báo (MW)</th>
+              <th class="py-3 px-4">Hệ Số Công Suất</th>
+              <th class="py-3 px-4">Trạng Thái</th>
+            </tr>
+          </thead>
+          <tbody id="forecastTableBody" class="divide-y divide-slate-200 dark:divide-slate-800 font-mono">
+            <!-- Dynamic Rows rendered via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-4 px-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div>AeroPredict - Phần Mềm Dự Báo & Vận Hành Nhà Máy Điện Gió &copy; 2026.</div>
+      <div class="flex gap-4 text-slate-400">
+        <span>Tích hợp Open-Meteo & Windy API</span>
+        <span>|</span>
+        <span class="hover:text-slate-200 cursor-pointer">Tài Liệu Kỹ Thuật</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- APPLICATION LOGIC & CHARTING JAVASCRIPT -->
+  <script>
+    // --- STATE MANAGEMENT & DEFAULTS ---
+    const DEFAULT_POWER_CURVE = [
+      { speed: 0, power: 0 },
+      { speed: 2.5, power: 0 },
+      { speed: 3.0, power: 50 },
+      { speed: 4.0, power: 210 },
+      { speed: 5.0, power: 520 },
+      { speed: 6.0, power: 980 },
+      { speed: 7.0, power: 1580 },
+      { speed: 8.0, power: 2280 },
+      { speed: 9.0, power: 3020 },
+      { speed: 10.0, power: 3600 },
+      { speed: 11.0, power: 3900 },
+      { speed: 12.0, power: 4000 },
+      { speed: 20.0, power: 4000 },
+      { speed: 25.0, power: 4000 },
+      { speed: 25.1, power: 0 }
+    ]; // Tuabin chuẩn 4 MW
+
+    const LOCATION_PRESETS = {
+      'tra-vinh': { lat: 9.673, lon: 106.582, name: 'Điện gió Trà Vinh', cap: 48, turbines: 12 },
+      'ninht-thuan': { lat: 11.565, lon: 108.988, name: 'Điện gió Ninh Thuận', cap: 105, turbines: 25 },
+      'binh-thuan': { lat: 11.121, lon: 108.823, name: 'Điện gió Bình Thuận', cap: 100, turbines: 25 },
+      'bac-lieu': { lat: 9.243, lon: 105.789, name: 'Điện gió Bạc Liêu', cap: 99, turbines: 30 },
+    };
+
+    let appState = {
+      lat: 9.673,
+      lon: 106.582,
+      plantCapacityMW: 48,
+      turbineCount: 12,
+      hubHeight: 110,
+      airDensity: 1.225,
+      forecastDays: 3,
+      windOffset: 0.0,
+      wakeLossPct: 8.0,
+      activePowerCurve: [...DEFAULT_POWER_CURVE],
+      scadaDataPoints: [], // Historical/Uploaded Points
+      rawForecastData: null,
+      processedForecast: []
+    };
+
+    // Chart instances
+    let forecastChartInstance = null;
+    let powerCurveChartInstance = null;
+    let windRoseChartInstance = null;
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initEventListeners();
+      initCharts();
+      fetchForecastData();
+    });
+
+    // --- THEME CONTROL ---
+    function initTheme() {
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        updateChartsTheme();
+      });
+    }
+
+    // --- EVENT LISTENERS ---
+    function initEventListeners() {
+      // Location Select
+      document.getElementById('locationSelect').addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (LOCATION_PRESETS[val]) {
+          const loc = LOCATION_PRESETS[val];
+          document.getElementById('latInput').value = loc.lat;
+          document.getElementById('lonInput').value = loc.lon;
+          document.getElementById('plantCapacity').value = loc.cap;
+          document.getElementById('turbineCount').value = loc.turbines;
+          updateWindyIframe(loc.lat, loc.lon);
+          syncInputState();
+          fetchForecastData();
+        }
+      });
+
+      // Inputs Change
+      ['plantCapacity', 'turbineCount', 'hubHeight', 'airDensity', 'forecastDays', 'latInput', 'lonInput'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => {
+          syncInputState();
+          fetchForecastData();
+        });
+      });
+
+      // Simulation Sliders
+      const offsetSlider = document.getElementById('windOffsetSlider');
+      const wakeSlider = document.getElementById('wakeLossSlider');
+
+      offsetSlider.addEventListener('input', (e) => {
+        appState.windOffset = parseFloat(e.target.value);
+        document.getElementById('windOffsetVal').innerText = (appState.windOffset >= 0 ? '+' : '') + appState.windOffset.toFixed(1) + ' m/s';
+        recalculateForecast();
+      });
+
+      wakeSlider.addEventListener('input', (e) => {
+        appState.wakeLossPct = parseFloat(e.target.value);
+        document.getElementById('wakeLossVal').innerText = appState.wakeLossPct.toFixed(1) + ' %';
+        recalculateForecast();
+      });
+
+      document.getElementById('btnResetSimulation').addEventListener('click', () => {
+        offsetSlider.value = 0;
+        wakeSlider.value = 8;
+        appState.windOffset = 0;
+        appState.wakeLossPct = 8;
+        document.getElementById('windOffsetVal').innerText = '0.0 m/s';
+        document.getElementById('wakeLossVal').innerText = '8.0 %';
+        recalculateForecast();
+      });
+
+      // Refresh Button
+      document.getElementById('btnFetchForecast').addEventListener('click', () => {
+        fetchForecastData();
+      });
+
+      // CSV Upload
+      document.getElementById('csvFileInput').addEventListener('change', handleCSVUpload);
+
+      // Load Sample SCADA
+      document.getElementById('btnSampleData').addEventListener('click', generateSampleSCADA);
+
+      // Export CSV
+      document.getElementById('btnExportCSV').addEventListener('click', exportForecastCSV);
+
+      // Table Search Filter
+      document.getElementById('tableSearch').addEventListener('input', (e) => {
+        filterTable(e.target.value);
+      });
+
+      // Reload Windy Frame
+      document.getElementById('btnToggleWindyOverlay').addEventListener('click', () => {
+        updateWindyIframe(appState.lat, appState.lon);
+      });
+
+      // Chart Toggle View Buttons
+      document.getElementById('viewDualBtn').addEventListener('click', (e) => setActiveChartView(e, 'dual'));
+      document.getElementById('viewPowerBtn').addEventListener('click', (e) => setActiveChartView(e, 'power'));
+      document.getElementById('viewWindBtn').addEventListener('click', (e) => setActiveChartView(e, 'wind'));
+    }
+
+    function syncInputState() {
+      appState.lat = parseFloat(document.getElementById('latInput').value) || 9.673;
+      appState.lon = parseFloat(document.getElementById('lonInput').value) || 106.582;
+      appState.plantCapacityMW = parseFloat(document.getElementById('plantCapacity').value) || 48;
+      appState.turbineCount = parseInt(document.getElementById('turbineCount').value) || 12;
+      appState.hubHeight = parseFloat(document.getElementById('hubHeight').value) || 110;
+      appState.airDensity = parseFloat(document.getElementById('airDensity').value) || 1.225;
+      appState.forecastDays = parseInt(document.getElementById('forecastDays').value) || 3;
+    }
+
+    function updateWindyIframe(lat, lon) {
+      const iframe = document.getElementById('windyFrame');
+      iframe.src = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&detailLat=${lat}&detailLon=${lon}&width=650&height=350&zoom=8&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=m%2Fs&metricTemp=%C2%B0C&radarRange=-1`;
+    }
+
+    // --- POWER CURVE INTERPOLATION ENGINE ---
+    function calculateTurbinePower(windSpeed, density = 1.225) {
+      // Air density correction: P_adj = P_std * (density / 1.225)
+      const densityCorrection = density / 1.225;
+      
+      if (windSpeed < 3.0 || windSpeed >= 25.0) return 0;
+      
+      const curve = appState.activePowerCurve;
+      // Linear interpolation between power curve points
+      for (let i = 0; i < curve.length - 1; i++) {
+        if (windSpeed >= curve[i].speed && windSpeed <= curve[i+1].speed) {
+          const t = (windSpeed - curve[i].speed) / (curve[i+1].speed - curve[i].speed);
+          const rawKw = curve[i].power + t * (curve[i+1].power - curve[i].power);
+          return Math.min((rawKw / 1000) * densityCorrection, 4.0); // MW per turbine capped at rated
+        }
+      }
+      return 0;
+    }
+
+    function calculatePlantPower(windSpeed, density) {
+      const perTurbineMW = calculateTurbinePower(windSpeed, density);
+      const grossMW = perTurbineMW * appState.turbineCount;
+      // Apply wake loss factor
+      const netMW = grossMW * (1 - (appState.wakeLossPct / 100));
+      return Math.min(netMW, appState.plantCapacityMW);
+    }
+
+    // --- API FETCHING (OPEN-METEO WEATHER API) ---
+    async function fetchForecastData() {
+      const btn = document.getElementById('btnFetchForecast');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-xs"></i> Đang tải...`;
+      btn.disabled = true;
+
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${appState.lat}&longitude=${appState.lon}&hourly=wind_speed_10m,wind_speed_100m,wind_direction_100m,temperature_2m,surface_pressure&forecast_days=${appState.forecastDays}&timezone=auto`;
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Lỗi kết nối máy chủ dữ liệu gió');
+        
+        const data = await response.json();
+        appState.rawForecastData = data;
+        
+        recalculateForecast();
+        document.getElementById('lastUpdatedTime').innerText = `Cập nhật lúc: ${new Date().toLocaleTimeString('vi-VN')}`;
+      } catch (err) {
+        console.warn('Lỗi API, tự động dùng mô hình gió giả lập:', err);
+        generateFallbackForecast();
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    function generateFallbackForecast() {
+      const hours = appState.forecastDays * 24;
+      const times = [];
+      const speeds = [];
+      const directions = [];
+      const temps = [];
+
+      const now = new Date();
+      for (let i = 0; i < hours; i++) {
+        const t = new Date(now.getTime() + i * 3600 * 1000);
+        times.push(t.toISOString());
+        const hourOfDay = t.getHours();
+        const baseSpeed = 7.5 + 3.0 * Math.sin((hourOfDay - 6) * Math.PI / 12) + (Math.random() * 1.5 - 0.75);
+        speeds.push(Math.max(1, baseSpeed));
+        directions.push((120 + Math.sin(i / 10) * 40 + Math.random() * 10) % 360);
+        temps.push(26 + Math.sin((hourOfDay - 8) * Math.PI / 12) * 4);
+      }
+
+      appState.rawForecastData = {
+        hourly: {
+          time: times,
+          wind_speed_100m: speeds,
+          wind_direction_100m: directions,
+          temperature_2m: temps
+        }
+      };
+      recalculateForecast();
+    }
+
+    // --- RECALCULATE & UPDATE UI ---
+    function recalculateForecast() {
+      if (!appState.rawForecastData || !appState.rawForecastData.hourly) return;
+
+      const hourly = appState.rawForecastData.hourly;
+      const processed = [];
+
+      let totalEnergyMWh = 0;
+      let peakPowerMW = 0;
+      let sumWindSpeed = 0;
+
+      for (let i = 0; i < hourly.time.length; i++) {
+        const rawSpeed = (hourly.wind_speed_100m ? hourly.wind_speed_100m[i] : hourly.wind_speed_10m[i] * 1.25) || 0;
+        const adjustedSpeed = Math.max(0, rawSpeed + appState.windOffset);
+        
+        const tempC = hourly.temperature_2m ? hourly.temperature_2m[i] : 27;
+        const dir = hourly.wind_direction_100m ? hourly.wind_direction_100m[i] : 135;
+
+        const tempK = tempC + 273.15;
+        const calculatedDensity = 1.225 * (288.15 / tempK);
+
+        const powerMW = calculatePlantPower(adjustedSpeed, calculatedDensity);
+        const capacityFactorPct = (powerMW / appState.plantCapacityMW) * 100;
+
+        totalEnergyMWh += powerMW;
+        if (powerMW > peakPowerMW) peakPowerMW = powerMW;
+        sumWindSpeed += adjustedSpeed;
+
+        processed.push({
+          time: hourly.time[i],
+          windSpeed: adjustedSpeed,
+          direction: dir,
+          temp: tempC,
+          density: calculatedDensity,
+          powerMW: powerMW,
+          capacityFactor: capacityFactorPct
+        });
+      }
+
+      appState.processedForecast = processed;
+
+      const avgWind = sumWindSpeed / processed.length;
+      const plantCapacityFactor = (totalEnergyMWh / (appState.plantCapacityMW * processed.length)) * 100;
+
+      document.getElementById('kpiTotalEnergy').innerText = totalEnergyMWh.toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+      document.getElementById('kpiPeakPower').innerText = peakPowerMW.toFixed(1);
+      document.getElementById('kpiCapacityFactor').innerText = plantCapacityFactor.toFixed(1);
+      document.getElementById('kpiAvgWind').innerText = avgWind.toFixed(1);
+
+      document.getElementById('kpiHoursLabel').innerText = processed.length;
+      document.getElementById('kpiPeakRatio').innerText = ((peakPowerMW / appState.plantCapacityMW) * 100).toFixed(0);
+
+      updateForecastChart();
+      updatePowerCurveChart();
+      updateWindRoseChart();
+      renderTable();
+    }
+
+    // --- RENDER TABLE ---
+    function renderTable() {
+      const tbody = document.getElementById('forecastTableBody');
+      tbody.innerHTML = '';
+
+      appState.processedForecast.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition';
+
+        const dateObj = new Date(row.time);
+        const formattedTime = dateObj.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+        let statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">Tối ưu</span>`;
+        if (row.windSpeed < 3.0) {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-500/10 text-slate-500">Dưới Khởi Động</span>`;
+        } else if (row.windSpeed >= 20.0) {
+          statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400">Gió Mạnh</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-4 font-sans font-medium text-slate-800 dark:text-slate-200">${formattedTime}</td>
+          <td class="py-2.5 px-4 text-sky-600 dark:text-sky-400 font-semibold">${row.windSpeed.toFixed(1)} m/s</td>
+          <td class="py-2.5 px-4">${row.direction.toFixed(0)}°</td>
+          <td class="py-2.5 px-4">${row.temp.toFixed(1)} °C</td>
+          <td class="py-2.5 px-4">${row.density.toFixed(3)}</td>
+          <td class="py-2.5 px-4 font-bold text-brand-600 dark:text-brand-400">${row.powerMW.toFixed(2)} MW</td>
+          <td class="py-2.5 px-4">${row.capacityFactor.toFixed(1)}%</td>
+          <td class="py-2.5 px-4 font-sans">${statusBadge}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterTable(searchTerm) {
+      const term = searchTerm.toLowerCase();
+      const rows = document.querySelectorAll('#forecastTableBody tr');
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(term) ? '' : 'none';
+      });
+    }
+
+    // --- CHART.JS VISUALIZATIONS ---
+    function initCharts() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+
+      // 1. Forecast Chart
+      const ctxForecast = document.getElementById('forecastChart').getContext('2d');
+      forecastChartInstance = new Chart(ctxForecast, {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              titleFont: { family: 'Inter', size: 12 },
+              bodyFont: { family: 'Inter', size: 12 },
+              padding: 10,
+              cornerRadius: 8
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { size: 10 }, maxRotation: 0 }
+            },
+            yPower: {
+              type: 'linear',
+              position: 'left',
+              title: { display: true, text: 'Công Suất (MW)', color: '#14b8a6', font: { size: 11, weight: '600' } },
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { size: 10 } },
+              min: 0
+            },
+            yWind: {
+              type: 'linear',
+              position: 'right',
+              title: { display: true, text: 'Tốc Độ Gió (m/s)', color: '#38bdf8', font: { size: 11, weight: '600' } },
+              grid: { drawOnChartArea: false },
+              ticks: { color: textColor, font: { size: 10 } },
+              min: 0
+            }
+          }
+        }
+      });
+
+      // 2. Power Curve Chart
+      const ctxCurve = document.getElementById('powerCurveChart').getContext('2d');
+      powerCurveChartInstance = new Chart(ctxCurve, {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              type: 'linear',
+              title: { display: true, text: 'Tốc độ gió (m/s)', color: textColor, font: { size: 10 } },
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { size: 9 } }
+            },
+            y: {
+              title: { display: true, text: 'Công suất Tuabin (kW)', color: textColor, font: { size: 10 } },
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { size: 9 } },
+              min: 0
+            }
+          }
+        }
+      });
+
+      // 3. Wind Rose Polar Chart
+      const ctxRose = document.getElementById('windRoseChart').getContext('2d');
+      windRoseChartInstance = new Chart(ctxRose, {
+        type: 'polarArea',
+        data: {
+          labels: ['Bắc', 'Đông Bắc', 'Đông', 'Đông Nam', 'Nam', 'Tây Nam', 'Tây', 'Tây Bắc'],
+          datasets: [{
+            data: [0,0,0,0,0,0,0,0],
+            backgroundColor: [
+              'rgba(20, 184, 166, 0.6)', 'rgba(56, 189, 248, 0.6)',
+              'rgba(14, 165, 233, 0.6)', 'rgba(99, 102, 241, 0.6)',
+              'rgba(168, 85, 247, 0.6)', 'rgba(236, 72, 153, 0.6)',
+              'rgba(245, 158, 11, 0.6)', 'rgba(16, 185, 129, 0.6)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            r: {
+              grid: { color: gridColor },
+              ticks: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    function updateForecastChart() {
+      if (!forecastChartInstance || !appState.processedForecast.length) return;
+
+      const labels = appState.processedForecast.map(d => {
+        const date = new Date(d.time);
+        return `${date.getHours()}:00`;
+      });
+
+      const powerData = appState.processedForecast.map(d => d.powerMW);
+      const windData = appState.processedForecast.map(d => d.windSpeed);
+
+      forecastChartInstance.data.labels = labels;
+      forecastChartInstance.data.datasets = [
+        {
+          label: 'Công Suất Phát (MW)',
+          data: powerData,
+          borderColor: '#14b8a6',
+          backgroundColor: 'rgba(20, 184, 166, 0.15)',
+          fill: true,
+          tension: 0.3,
+          yAxisID: 'yPower',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 5
+        },
+        {
+          label: 'Tốc Độ Gió (m/s)',
+          data: windData,
+          borderColor: '#38bdf8',
+          borderDash: [4, 4],
+          fill: false,
+          tension: 0.3,
+          yAxisID: 'yWind',
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 5
+        }
+      ];
+
+      forecastChartInstance.options.scales.yPower.max = Math.ceil(appState.plantCapacityMW * 1.1);
+      forecastChartInstance.update();
+    }
+
+    function updatePowerCurveChart() {
+      if (!powerCurveChartInstance) return;
+
+      const curvePoints = appState.activePowerCurve.map(p => ({ x: p.speed, y: p.power }));
+      
+      const datasets = [{
+        label: 'Đường cong Nhà sản xuất',
+        data: curvePoints,
+        borderColor: '#0ea5e9',
+        borderWidth: 2,
+        fill: false,
+        tension: 0.2,
+        pointRadius: 2
+      }];
+
+      if (appState.scadaDataPoints.length > 0) {
+        datasets.push({
+          label: 'Thực tế SCADA',
+          data: appState.scadaDataPoints,
+          type: 'scatter',
+          backgroundColor: 'rgba(245, 158, 11, 0.6)',
+          pointRadius: 3
+        });
+      }
+
+      powerCurveChartInstance.data.datasets = datasets;
+      powerCurveChartInstance.update();
+    }
+
+    function updateWindRoseChart() {
+      if (!windRoseChartInstance || !appState.processedForecast.length) return;
+
+      const bins = [0, 0, 0, 0, 0, 0, 0, 0];
+      appState.processedForecast.forEach(d => {
+        const deg = (d.direction + 22.5) % 360;
+        const index = Math.floor(deg / 45);
+        bins[index]++;
+      });
+
+      windRoseChartInstance.data.datasets[0].data = bins;
+      windRoseChartInstance.update();
+    }
+
+    function updateChartsTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+
+      [forecastChartInstance, powerCurveChartInstance, windRoseChartInstance].forEach(chart => {
+        if (!chart) return;
+        if (chart.options.scales) {
+          Object.keys(chart.options.scales).forEach(key => {
+            const scale = chart.options.scales[key];
+            if (scale.grid) scale.grid.color = gridColor;
+            if (scale.ticks) scale.ticks.color = textColor;
+            if (scale.title) scale.title.color = textColor;
+          });
+        }
+        chart.update();
+      });
+    }
+
+    function setActiveChartView(e, viewMode) {
+      document.querySelectorAll('#viewDualBtn, #viewPowerBtn, #viewWindBtn').forEach(b => {
+        b.className = 'px-2.5 py-1 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+      });
+      e.target.className = 'px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white font-semibold';
+
+      if (viewMode === 'power') {
+        forecastChartInstance.setDatasetVisibility(0, true);
+        forecastChartInstance.setDatasetVisibility(1, false);
+      } else if (viewMode === 'wind') {
+        forecastChartInstance.setDatasetVisibility(0, false);
+        forecastChartInstance.setDatasetVisibility(1, true);
+      } else {
+        forecastChartInstance.setDatasetVisibility(0, true);
+        forecastChartInstance.setDatasetVisibility(1, true);
+      }
+      forecastChartInstance.update();
+    }
+
+    // --- SCADA / CSV DATA HANDLING ---
+    function handleCSVUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const text = evt.target.result;
+        parseCSVData(text);
+      };
+      reader.readAsText(file);
+    }
+
+    function parseCSVData(csvText) {
+      const lines = csvText.split('\n');
+      const points = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        const parts = line.split(',');
+        if (parts.length >= 2) {
+          const speed = parseFloat(parts[0]);
+          const power = parseFloat(parts[1]);
+          if (!isNaN(speed) && !isNaN(power)) {
+            points.push({ x: speed, y: power });
+          }
+        }
+      }
+
+      if (points.length > 0) {
+        appState.scadaDataPoints = points;
+        document.getElementById('scadaStatus').innerText = `Đã nạp ${points.length} điểm SCADA`;
+        updatePowerCurveChart();
+        recalculateForecast();
+      }
+    }
+
+    function generateSampleSCADA() {
+      const points = [];
+      for (let v = 2; v <= 22; v += 0.3) {
+        const theoreticalKW = calculateTurbinePower(v, 1.225) * 1000;
+        const noise = (Math.random() - 0.5) * (theoreticalKW * 0.15);
+        const scadaKW = Math.max(0, theoreticalKW + noise);
+        points.push({ x: parseFloat(v.toFixed(1)), y: parseFloat(scadaKW.toFixed(1)) });
+      }
+
+      appState.scadaDataPoints = points;
+      document.getElementById('scadaStatus').innerText = `Đã nạp ${points.length} điểm mẫu`;
+      updatePowerCurveChart();
+    }
+
+    // --- EXPORT FUNCTION ---
+    function exportForecastCSV() {
+      if (!appState.processedForecast.length) return;
+
+      let csvContent = 'data:text/csv;charset=utf-8,';
+      csvContent += 'Thoi_Gian,Toc_Do_Gio_ms,Huong_Gio_deg,Nhiet_Do_C,Mat_Do_KK_kgm3,Cong_Suat_Du_Bao_MW,He_So_Cong_Suat_pct\n';
+
+      appState.processedForecast.forEach(row => {
+        csvContent += `${row.time},${row.windSpeed.toFixed(2)},${row.direction.toFixed(1)},${row.temp.toFixed(1)},${row.density.toFixed(3)},${row.powerMW.toFixed(3)},${row.capacityFactor.toFixed(2)}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `du_bao_dien_gio_${appState.lat}_${appState.lon}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>

@@ -14,7 +14,7 @@
                     colors: {
                         brand: {
                             50: '#f0fdfa',
-                            100: '#ccfb1',
+                            100: '#ccfb11',
                             400: '#2dd4bf',
                             500: '#14b8a6',
                             600: '#0d9488',
@@ -42,7 +42,7 @@
     <!-- MAIN APP CONTAINER -->
     <div id="app-container" class="flex-1 flex flex-col">
         <!-- HEADER -->
-        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-md">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-slate-950 font-bold text-xl shadow-lg shadow-brand-500/20">
                     <i class="fa-solid fa-wind"></i>
@@ -74,30 +74,30 @@
             <!-- TAB 1: GIÁM SÁT TUABIN -->
             <section id="tab-dashboard" class="space-y-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-sm">
                         <div class="text-slate-400 text-xs font-medium uppercase">Tổng công suất khả dụng</div>
                         <div class="text-2xl font-bold text-white mt-1">32.4 / 36.0 <span class="text-sm font-normal text-slate-400">MW</span></div>
                         <div class="text-xs text-brand-400 mt-2 flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Hiệu suất hệ thống 90.0%</div>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-sm">
                         <div class="text-slate-400 text-xs font-medium uppercase">Tốc độ gió trung bình</div>
                         <div class="text-2xl font-bold text-white mt-1">8.4 <span class="text-sm font-normal text-slate-400">m/s</span></div>
                         <div class="text-xs text-brand-400 mt-2 flex items-center"><i class="fa-solid fa-wind mr-1"></i> Gió ven biển Trà Vinh</div>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-sm">
                         <div class="text-slate-400 text-xs font-medium uppercase">Trụ hoạt động tối ưu</div>
                         <div class="text-2xl font-bold text-emerald-400 mt-1">10 / 12 <span class="text-sm font-normal text-slate-400">Trụ</span></div>
                         <div class="text-xs text-slate-400 mt-2">Đồng bộ theo tệp SCADA</div>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl shadow-sm">
                         <div class="text-slate-400 text-xs font-medium uppercase">Cảnh báo cần kiểm tra</div>
                         <div class="text-2xl font-bold text-amber-400 mt-1">WT-04, WT-09</div>
                         <div class="text-xs text-amber-400 mt-2 flex items-center"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Suy giảm công suất</div>
                     </div>
                 </div>
 
-                <!-- Lưới Tuabin (Tự động theo file hoặc mặc định) -->
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                <!-- Lưới Tuabin -->
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-base font-bold text-white">Trạng thái Thời gian thực các Trụ Tuabin (Theo tệp SCADA)</h2>
                         <span class="text-xs bg-brand-500/10 text-brand-400 px-3 py-1 rounded-full border border-brand-500/20">Chu kỳ 10 phút</span>
@@ -110,7 +110,7 @@
 
             <!-- TAB 2: ĐÁNH GIÁ & NẠP SCADA 3 THÁNG -->
             <section id="tab-history" class="hidden space-y-6">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-sm">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                         <div>
                             <h2 class="text-lg font-bold text-white">Nạp và Phân tích Dữ liệu SCADA Lịch sử (3 Tháng)</h2>
@@ -174,7 +174,7 @@
             </section>
 
             <!-- TAB 3: TRỢ LÝ AI -->
-            <section id="tab-assistant" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+            <section id="tab-assistant" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 shadow-sm">
                 <h2 class="text-base font-bold text-white">Trợ lý AI Vận Hành NMDGV12 Trà Vinh</h2>
                 <p class="text-xs text-slate-400">Hệ thống đã sẵn sàng kết nối dữ liệu SCADA 3 tháng của 12 tuabin.</p>
                 <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300">
@@ -187,7 +187,6 @@
 
     <!-- SCRIPT LOGIC -->
     <script>
-        // Danh sách mặc định các trụ từ tệp của người dùng
         let detectedTurbines = ['WT23', 'WT21', 'WT19', 'WT17', 'WT15', 'WT13', 'WT01', 'WT03', 'WT05', 'WT07', 'WT09', 'WT11'];
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -196,15 +195,17 @@
 
         function switchTab(tabName) {
             ['dashboard', 'history', 'assistant'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
+                const sec = document.getElementById(`tab-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
+                if(sec) sec.classList.add('hidden');
                 if(btn) {
                     btn.classList.remove('text-brand-400', 'bg-slate-900', 'shadow');
                     btn.classList.add('text-slate-400');
                 }
             });
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            const activeSec = document.getElementById(`tab-${tabName}`);
             const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if(activeSec) activeSec.classList.remove('hidden');
             if(activeBtn) {
                 activeBtn.classList.remove('text-slate-400');
                 activeBtn.classList.add('text-brand-400', 'bg-slate-900', 'shadow');
@@ -221,7 +222,7 @@
                 const badgeColor = isWarning ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-emerald-500/20 text-emerald-400';
                 
                 grid.innerHTML += `
-                    <div class="border ${statusColor} p-4 rounded-xl flex flex-col justify-between">
+                    <div class="border ${statusColor} p-4 rounded-xl flex flex-col justify-between shadow-sm">
                         <div class="flex items-center justify-between mb-2">
                             <span class="font-bold text-sm text-white">${tName}</span>
                             <span class="text-[10px] px-2 py-0.5 rounded-full ${badgeColor}">${isWarning ? 'Cảnh báo' : 'Tối ưu'}</span>
@@ -251,7 +252,6 @@
                         return;
                     }
 
-                    // Tự động quét các cột công suất active power để tìm đúng tên các trụ trong tệp
                     const sampleRow = rows[0];
                     const powerCols = Object.keys(sampleRow).filter(k => k.includes('Grid-side Active Power(kW)'));
                     const windCols = Object.keys(sampleRow).filter(k => k.includes('Average Wind Speed'));
@@ -261,7 +261,6 @@
                         detectedTurbines = extractedTurbines;
                     }
 
-                    // Hiển thị khu vực kết quả
                     document.getElementById('history-placeholder').classList.add('hidden');
                     document.getElementById('history-results-area').classList.remove('hidden');
 
@@ -297,7 +296,6 @@
                     const avgP_MW = (totalP / (totalCount || 1) / 1000).toFixed(2);
                     document.getElementById('stat-avg-power').textContent = `${avgP_MW} MW`;
 
-                    // Render bảng xếp hạng
                     const tbody = document.getElementById('turbine-ranking-tbody');
                     tbody.innerHTML = '';
 
@@ -320,9 +318,7 @@
                         `;
                     });
 
-                    // Cập nhật lại lưới trang chủ
                     renderTurbineGrid(detectedTurbines);
-
                     alert(`Đã nạp thành công ${rows.length.toLocaleString()} bản ghi SCADA cho các trụ: ${detectedTurbines.join(', ')}!`);
                 } catch(err) {
                     alert('Lỗi đọc tệp SCADA: ' + err.message);

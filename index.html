@@ -3,34 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeroPredict - NMDGV12 Trà Vinh</title>
-    <!-- SheetJS cho việc đọc file Excel/CSV -->
+    <title>AeroPredict - Hệ Thống AI & Vận Hành NMDGV12 Trà Vinh</title>
+    <!-- Thư viện SheetJS để đọc file SCADA CSV/Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #030712; color: #f3f4f6; min-height: 100vh; display: flex; flex-direction: column; }
-        header { background-color: #111827; border-bottom: 1px solid #1f2937; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+        header { background-color: #111827; border-bottom: 1px solid #1f2937; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
         .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #0d9488, #2dd4bf); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #030712; font-size: 20px; }
-        nav { display: flex; gap: 8px; background: #030712; padding: 4px; border-radius: 8px; border: 1px solid #1f2937; }
-        nav button { background: transparent; border: none; color: #9ca3af; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; }
-        nav button.active { background: #111827; color: #2dd4bf; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-        main { padding: 24px; max-width: 1200px; width: 100%; margin: 0 auto; flex: 1; display: flex; flex-direction: column; gap: 24px; }
-        .card { background-color: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #0d9488, #2dd4bf); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #030712; font-size: 20px; box-shadow: 0 4px 12px rgba(20,184,166,0.3); }
+        nav { display: flex; gap: 6px; background: #030712; padding: 4px; border-radius: 10px; border: 1px solid #1f2937; }
+        nav button { background: transparent; border: none; color: #9ca3af; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; }
+        nav button.active { background: #111827; color: #2dd4bf; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+        main { padding: 24px; max-width: 1300px; width: 100%; margin: 0 auto; flex: 1; display: flex; flex-direction: column; gap: 24px; }
+        .card { background-color: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 22px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
         .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-        .grid-turbines { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-        .turbine-box { background: #030712; border: 1px solid #1f2937; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
-        .turbine-box.warning { border-color: rgba(245, 158, 11, 0.5); background: rgba(245, 158, 11, 0.05); }
-        .btn { background: #0d9488; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .grid-turbines { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+        .turbine-box { background: #030712; border: 1px solid #1f2937; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; transition: transform 0.2s; }
+        .turbine-box:hover { border-color: #0d9488; }
+        .turbine-box.warning { border-color: rgba(245, 158, 11, 0.6); background: rgba(245, 158, 11, 0.04); }
+        .btn { background: #0d9488; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
         .btn:hover { background: #14b8a6; }
         table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; text-align: left; }
-        th, td { padding: 12px; border-bottom: 1px solid #1f2937; }
-        th { background: #030712; color: #9ca3af; }
+        th, td { padding: 12px 16px; border-bottom: 1px solid #1f2937; }
+        th { background: #030712; color: #9ca3af; font-weight: 600; }
         .hidden { display: none !important; }
         .text-teal { color: #2dd4bf; }
         .text-amber { color: #f59e0b; }
         .text-emerald { color: #10b981; }
-        .stat-val { font-size: 24px; font-weight: bold; margin-top: 6px; }
+        .stat-val { font-size: 26px; font-weight: bold; margin-top: 6px; }
+        .badge { font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: bold; display: inline-block; }
     </style>
 </head>
 <body>
@@ -39,112 +41,119 @@
         <div class="logo-area">
             <div class="logo-icon">⚡</div>
             <div>
-                <h1 style="font-size: 16px; font-weight: bold;">AeroPredict AI <span style="font-size: 11px; background: rgba(20,184,166,0.2); color: #2dd4bf; padding: 2px 8px; border-radius: 10px; font-weight: normal;">NMDGV12 Trà Vinh (36 MW)</span></h1>
-                <p style="font-size: 11px; color: #9ca3af;">Hệ thống Quản lý Vận hành & Giám sát AI</p>
+                <h1 style="font-size: 15px; font-weight: bold; letter-spacing: 0.5px;">AeroPredict AI <span style="font-size: 11px; background: rgba(20,184,166,0.15); color: #2dd4bf; padding: 2px 8px; border-radius: 10px; font-weight: normal; margin-left: 6px;">NMDGV12 Trà Vinh (36 MW)</span></h1>
+                <p style="font-size: 11px; color: #9ca3af;">Hệ thống Quản lý Vận hành & Giám sát AI Thông Minh</p>
             </div>
         </div>
         <nav>
-            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="active">Giám sát Tuabin</button>
-            <button onclick="switchTab('history')" id="btn-history">Đánh giá & Nạp SCADA</button>
+            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="active">📊 Dashboard Giám sát</button>
+            <button onclick="switchTab('history')" id="btn-history">📁 Nạp & Phân tích SCADA</button>
         </nav>
     </header>
 
     <main>
-        <!-- TAB 1: DASHBOARD -->
+        <!-- TAB 1: DASHBOARD GIÁM SÁT -->
         <section id="tab-dashboard" style="display: flex; flex-direction: column; gap: 24px;">
             <div class="grid-4">
                 <div class="card">
-                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Tổng công suất khả dụng</div>
-                    <div class="stat-val">32.4 / 36.0 <span style="font-size: 14px; font-weight: normal; color: #9ca3af;">MW</span></div>
+                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase; font-weight: 600;">Tổng công suất khả dụng</div>
+                    <div class="stat-val text-teal">32.4 / 36.0 <span style="font-size: 14px; font-weight: normal; color: #9ca3af;">MW</span></div>
                     <div style="font-size: 12px; color: #2dd4bf; margin-top: 8px;">▲ Hiệu suất hệ thống 90.0%</div>
                 </div>
                 <div class="card">
-                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Tốc độ gió trung bình</div>
+                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase; font-weight: 600;">Tốc độ gió trung bình</div>
                     <div class="stat-val">8.4 <span style="font-size: 14px; font-weight: normal; color: #9ca3af;">m/s</span></div>
-                    <div style="font-size: 12px; color: #2dd4bf; margin-top: 8px;">≈ Gió ven biển Trà Vinh</div>
+                    <div style="font-size: 12px; color: #2dd4bf; margin-top: 8px;">≈ Gió ven biển Trà Vinh ổn định</div>
                 </div>
                 <div class="card">
-                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Trụ tối ưu</div>
+                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase; font-weight: 600;">Trụ tối ưu</div>
                     <div class="stat-val text-emerald">10 / 12 <span style="font-size: 14px; font-weight: normal; color: #9ca3af;">Trụ</span></div>
                     <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">Đồng bộ dữ liệu SCADA</div>
                 </div>
                 <div class="card">
-                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Cần kiểm tra</div>
+                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase; font-weight: 600;">Trụ cần kiểm tra</div>
                     <div class="stat-val text-amber">WT09, WT-04</div>
-                    <div style="font-size: 12px; color: #f59e0b; margin-top: 8px;">⚠ Cảnh báo suy giảm công suất</div>
+                    <div style="font-size: 12px; color: #f59e0b; margin-top: 8px;">⚠ Cảnh báo suy giảm ~12%</div>
                 </div>
             </div>
 
+            <!-- Lưới hiển thị 12 tuabin -->
             <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h2 style="font-size: 15px; font-weight: bold;">Trạng thái Thời gian thực các Trụ Tuabin (WT23, WT21, WT19,...)</h2>
-                    <span style="font-size: 11px; background: rgba(20,184,166,0.1); color: #2dd4bf; padding: 4px 10px; border-radius: 20px;">Chu kỳ 10 phút</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                    <div>
+                        <h2 style="font-size: 16px; font-weight: bold;">Trạng thái Thời gian thực 12 Trụ Tuabin</h2>
+                        <p style="font-size: 12px; color: #9ca3af; margin-top: 2px;">Danh sách các trụ chuẩn theo tệp SCADA (WT23, WT21, WT19,...)</p>
+                    </div>
+                    <span class="badge" style="background: rgba(20,184,166,0.15); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.3);">Chu kỳ mẫu 10 phút</span>
                 </div>
                 <div class="grid-turbines" id="turbine-grid">
-                    <!-- Render qua JS -->
+                    <!-- Render động qua JavaScript -->
                 </div>
             </div>
         </section>
 
-        <!-- TAB 2: HISTORY & SCADA UPLOAD -->
+        <!-- TAB 2: NẠP & PHÂN TÍCH SCADA 3 THÁNG -->
         <section id="tab-history" class="hidden" style="flex-direction: column; gap: 24px;">
             <div class="card">
-                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px;">
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px;">
                     <div>
                         <h2 style="font-size: 16px; font-weight: bold;">Nạp và Phân tích Dữ liệu SCADA Lịch sử (3 Tháng)</h2>
-                        <p style="font-size: 12px; color: #9ca3af; margin-top: 4px;">Tải lên tệp CSV/Excel của bạn (VD: <code class="text-teal">Trend analysis_10-min data(0)_1.csv</code>) để hệ thống tự động đọc danh sách các trụ.</p>
+                        <p style="font-size: 12px; color: #9ca3af; margin-top: 4px;">Tải lên tệp CSV SCADA của bạn (VD: <code class="text-teal">Trend analysis_10-min data(0)_1.csv</code>) để hệ thống tự động quét và tính toán.</p>
                     </div>
                     <label class="btn" style="cursor: pointer;">
-                        📁 Tải lên tệp SCADA
+                        📁 Tải lên tệp SCADA CSV/Excel
                         <input type="file" id="scada-file-input" accept=".csv, .xlsx, .xls" onchange="handleScadaFileUpload(event)" class="hidden">
                     </label>
                 </div>
 
+                <!-- Khu vực hiển thị kết quả sau khi nạp file -->
                 <div id="history-results-area" class="hidden" style="display: flex; flex-direction: column; gap: 20px;">
                     <div class="grid-4">
-                        <div style="background: #030712; padding: 16px; border-radius: 10px; border: 1px solid #1f2937;">
-                            <div style="font-size: 11px; color: #9ca3af;">Tổng số bản ghi 10 phút</div>
+                        <div style="background: #030712; padding: 18px; border-radius: 12px; border: 1px solid #1f2937;">
+                            <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Tổng số bản ghi 10 phút</div>
                             <div id="stat-total-records" class="stat-val text-teal">0</div>
                         </div>
-                        <div style="background: #030712; padding: 16px; border-radius: 10px; border: 1px solid #1f2937;">
-                            <div style="font-size: 11px; color: #9ca3af;">Công suất phát trung bình</div>
+                        <div style="background: #030712; padding: 18px; border-radius: 12px; border: 1px solid #1f2937;">
+                            <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Công suất phát trung bình</div>
                             <div id="stat-avg-power" class="stat-val text-amber">0.00 MW</div>
                         </div>
-                        <div style="background: #030712; padding: 16px; border-radius: 10px; border: 1px solid #1f2937;" style="grid-column: span 2;">
-                            <div style="font-size: 11px; color: #9ca3af;">Các trụ nhận diện trong tệp</div>
-                            <div id="stat-turbines-list" style="font-size: 13px; font-weight: bold; color: #10b981; margin-top: 8px;">Đang cập nhật...</div>
+                        <div style="background: #030712; padding: 18px; border-radius: 12px; border: 1px solid #1f2937; grid-column: span 2;">
+                            <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Các trụ nhận diện trong tệp</div>
+                            <div id="stat-turbines-list" style="font-size: 13px; font-weight: bold; color: #10b981; margin-top: 8px; word-break: break-all;">Đang cập nhật...</div>
                         </div>
                     </div>
 
-                    <div style="background: #030712; padding: 16px; border-radius: 10px; border: 1px solid #1f2937; overflow-x: auto;">
-                        <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px;">Bảng xếp hạng Hiệu suất các Trụ Tuabin</h3>
+                    <div style="background: #030712; padding: 18px; border-radius: 12px; border: 1px solid #1f2937; overflow-x: auto;">
+                        <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px;">Bảng xếp hạng Hiệu suất Chi tiết các Trụ Tuabin</h3>
                         <table>
                             <thead>
                                 <tr>
                                     <th>Mã Tuabin</th>
-                                    <th>Gió TB (m/s)</th>
-                                    <th>Công suất phát TB (kW)</th>
+                                    <th>Gió Trung bình (m/s)</th>
+                                    <th>Công suất Phát TB (kW)</th>
                                     <th>Hiệu suất ước tính (%)</th>
                                     <th>Trạng thái đánh giá</th>
                                 </tr>
                             </thead>
                             <tbody id="turbine-ranking-tbody">
-                                <!-- Render -->
+                                <!-- Render động -->
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <div id="history-placeholder" style="padding: 40px; text-align: center; color: #6b7280;">
-                    <div style="font-size: 32px; margin-bottom: 8px;">📊</div>
+                <!-- Trạng thái chờ khi chưa nạp file -->
+                <div id="history-placeholder" style="padding: 50px; text-align: center; color: #6b7280;">
+                    <div style="font-size: 36px; margin-bottom: 10px;">📊</div>
                     <div style="font-size: 14px; font-weight: 500; color: #d1d5db;">Chưa có tệp SCADA nào được tải lên</div>
-                    <div style="font-size: 12px; margin-top: 4px;">Bấm nút "Tải lên tệp SCADA" ở trên để bắt đầu phân tích dữ liệu 3 tháng.</div>
+                    <div style="font-size: 12px; margin-top: 4px;">Bấm nút "Tải lên tệp SCADA CSV/Excel" ở trên để nạp dữ liệu 3 tháng và xem bảng phân tích.</div>
                 </div>
             </div>
         </section>
     </main>
 
     <script>
+        // Mảng mặc định 12 trụ tuabin theo tệp của người dùng
         let detectedTurbines = ['WT23', 'WT21', 'WT19', 'WT17', 'WT15', 'WT13', 'WT01', 'WT03', 'WT05', 'WT07', 'WT09', 'WT11'];
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -153,14 +162,21 @@
 
         function switchTab(tabName) {
             ['dashboard', 'history'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`tab-${t}`).style.display = 'none';
-                document.getElementById(`btn-${t}`).classList.remove('active');
+                const sec = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`btn-${t}`);
+                if(sec) {
+                    sec.classList.add('hidden');
+                    sec.style.display = 'none';
+                }
+                if(btn) btn.classList.remove('active');
             });
             const activeSec = document.getElementById(`tab-${tabName}`);
-            activeSec.classList.remove('hidden');
-            activeSec.style.display = 'flex';
-            document.getElementById(`btn-${tabName}`).classList.add('active');
+            const activeBtn = document.getElementById(`btn-${tabName}`);
+            if(activeSec) {
+                activeSec.classList.remove('hidden');
+                activeSec.style.display = 'flex';
+            }
+            if(activeBtn) activeBtn.classList.add('active');
         }
 
         function renderTurbineGrid(turbines) {
@@ -172,12 +188,12 @@
                 grid.innerHTML += `
                     <div class="turbine-box ${isWarning ? 'warning' : ''}">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-weight: bold; font-size: 14px;">${tName}</span>
-                            <span style="font-size: 10px; padding: 2px 8px; border-radius: 10px; background: ${isWarning ? '#f59e0b' : 'rgba(16,185,129,0.2)'}; color: ${isWarning ? '#030712' : '#10b981'}; font-weight: bold;">${isWarning ? 'Cảnh báo' : 'Tối ưu'}</span>
+                            <span style="font-weight: bold; font-size: 14px; color: #ffffff;">${tName}</span>
+                            <span class="badge" style="background: ${isWarning ? '#f59e0b' : 'rgba(16,185,129,0.15)'}; color: ${isWarning ? '#030712' : '#10b981'};">${isWarning ? 'Cảnh báo' : 'Tối ưu'}</span>
                         </div>
-                        <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">
+                        <div style="font-size: 12px; color: #9ca3af; margin-top: 4px; line-height: 1.5;">
                             Công suất: <span style="color: #f3f4f6; font-weight: 500;">${isWarning ? '2.1 MW' : '2.8 MW'}</span><br>
-                            Gió: <span style="color: #f3f4f6; font-weight: 500;">8.3 m/s</span>
+                            Gió TB: <span style="color: #f3f4f6; font-weight: 500;">8.3 m/s</span>
                         </div>
                     </div>
                 `;
@@ -262,13 +278,13 @@
                                 <td>${avgWind} m/s</td>
                                 <td>${Number(avgPowerKW).toLocaleString()} kW</td>
                                 <td style="color: ${isWarn ? '#f59e0b' : '#f3f4f6'}; font-weight: ${isWarn ? 'bold' : 'normal'};">${pi}%</td>
-                                <td><span style="padding: 3px 8px; border-radius: 4px; font-size: 11px; background: ${isWarn ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${isWarn ? '#f59e0b' : '#10b981'}; font-weight: bold;">${isWarn ? 'Cần kiểm tra' : 'Tối ưu'}</span></td>
+                                <td><span class="badge" style="background: ${isWarn ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${isWarn ? '#f59e0b' : '#10b981'};">${isWarn ? 'Cần kiểm tra' : 'Tối ưu'}</span></td>
                             </tr>
                         `;
                     });
 
                     renderTurbineGrid(detectedTurbines);
-                    alert(`Đã nạp thành công ${rows.length.toLocaleString()} bản ghi SCADA cho các trụ: ${detectedTurbines.join(', ')}!`);
+                    alert(`Đã nạp và phân tích thành công ${rows.length.toLocaleString()} bản ghi SCADA cho các trụ: ${detectedTurbines.join(', ')}!`);
                 } catch(err) {
                     alert('Lỗi đọc tệp SCADA: ' + err.message);
                 }

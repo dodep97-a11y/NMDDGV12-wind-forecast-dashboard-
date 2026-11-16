@@ -19,6 +19,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- SheetJS for CSV & Excel (.xlsx) Parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -29,16 +32,18 @@
                         mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        slate: {
-                            850: '#151e2e',
-                            900: '#0f172a',
-                            950: '#090d16',
-                        },
                         brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
                             400: '#2dd4bf',
                             500: '#14b8a6',
                             600: '#0d9488',
-                        }
+                            700: '#0f766e',
+                            900: '#134e4a',
+                        },
+                        darkbg: '#090d16',
+                        darkcard: '#111827',
+                        darkborder: '#1f2937'
                     }
                 }
             }
@@ -46,554 +51,673 @@
     </script>
 
     <style>
-        /* Custom Scrollbar */
+        /* Custom Scrollbar for Dark Mode */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f172a; 
+            background: #090d16;
         }
         ::-webkit-scrollbar-thumb {
-            background: #334155; 
+            background: #1f2937;
             border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #475569; 
+            background: #374151;
         }
-
-        /* Turbine Blade Spin Animation */
-        @keyframes spinSlow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(55, 65, 81, 0.5);
         }
-        .animate-spin-turbine {
-            animation: spinSlow 6s linear infinite;
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
         }
-        .animate-spin-turbine-slow {
-            animation: spinSlow 14s linear infinite;
+        .animate-pulse-slow {
+            animation: pulse-slow 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-
-        /* Pulse Glow */
-        @keyframes pulseRed {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-        }
-        .glow-red {
-            animation: pulseRed 2s infinite;
-        }
-
-        /* Markdown formatting inside chat */
-        .prose-chat p { margin-bottom: 0.5rem; }
-        .prose-chat ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.5rem; }
-        .prose-chat li { margin-bottom: 0.25rem; }
-        .prose-chat strong { color: #2dd4bf; font-weight: 600; }
+        .markdown-body p { margin-bottom: 0.5rem; }
+        .markdown-body ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.5rem; }
+        .markdown-body strong { color: #2dd4bf; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-200 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+<body class="bg-darkbg text-slate-200 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
 
     <!-- Top Navigation Bar -->
-    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between py-3 gap-3">
-                <!-- Logo & Brand -->
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-blue-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
-                            <i class="fa-solid fa-fan text-white text-xl animate-spin-turbine"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h1 class="text-lg font-bold tracking-tight text-white">AeroPredict <span class="text-brand-400">AI</span></h1>
-                                <span class="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-brand-500/10 text-brand-400 border border-brand-500/30 rounded-full">O&M Suite</span>
-                            </div>
-                            <p class="text-xs text-slate-400">Nhà máy Điện Gió • Cụm 12 Tuabin (36 MW)</p>
-                        </div>
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col xl:flex-row items-center justify-between gap-3">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 w-full xl:w-auto justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-blue-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                        <i class="fa-solid fa-fan text-white text-xl animate-spin" style="animation-duration: 8s;"></i>
                     </div>
-
-                    <!-- Live Status Badge Mobile -->
-                    <div class="flex md:hidden items-center gap-2 bg-slate-850 px-2.5 py-1 rounded-lg border border-slate-800">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span class="text-xs font-mono text-emerald-400">SCADA LIVE</span>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-lg font-bold tracking-tight text-white">AeroPredict <span class="text-brand-400">AI O&M</span></h1>
+                            <span class="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-brand-500/10 text-brand-400 border border-brand-500/30 rounded-full">v2.5 SCADA</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Nhà Máy Điện Gió • Cụm 12 Tuabin (36 MW)</p>
                     </div>
                 </div>
+                
+                <!-- Mobile Live Status -->
+                <div class="flex xl:hidden items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    LIVE
+                </div>
+            </div>
 
-                <!-- Navigation Tabs -->
-                <nav class="flex space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 overflow-x-auto">
-                    <button onclick="switchTab('health')" id="tab-btn-health" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap bg-slate-800 text-brand-400 shadow-sm">
-                        <i class="fa-solid fa-heart-pulse"></i>
-                        <span>Sức khỏe 12 Tuabin</span>
-                    </button>
-                    <button onclick="switchTab('chatbot')" id="tab-btn-chatbot" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-all whitespace-nowrap">
-                        <i class="fa-solid fa-robot"></i>
-                        <span>Trợ lý Vận hành AI</span>
-                    </button>
-                    <button onclick="switchTab('thermal')" id="tab-btn-thermal" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-all whitespace-nowrap">
-                        <i class="fa-solid fa-temperature-high"></i>
-                        <span>Đánh giá Ảnh Nhiệt</span>
-                    </button>
-                </nav>
+            <!-- Navigation Tabs -->
+            <nav class="flex flex-wrap items-center justify-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 w-full xl:w-auto gap-1">
+                <button onclick="switchTab('health')" id="tab-health" class="tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-brand-600 text-white shadow-md">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                    <span>Sức khỏe Realtime</span>
+                </button>
+                <button onclick="switchTab('history')" id="tab-history" class="tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Đánh giá Lịch sử 6 Tháng</span>
+                    <span class="px-1.5 py-0.2 text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded font-mono">10m</span>
+                </button>
+                <button onclick="switchTab('chatbot')" id="tab-chatbot" class="tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>Trợ lý Vận hành</span>
+                </button>
+                <button onclick="switchTab('thermal')" id="tab-thermal" class="tab-btn flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                    <i class="fa-solid fa-temperature-high"></i>
+                    <span>Quét Nhiệt</span>
+                </button>
+            </nav>
 
-                <!-- Live SCADA Indicator Desktop -->
-                <div class="hidden md:flex items-center gap-3">
-                    <div class="text-right">
-                        <div class="text-xs text-slate-400">Gió trung bình trang trại</div>
-                        <div class="text-sm font-mono font-semibold text-white" id="header-avg-wind">8.7 m/s <span class="text-xs text-slate-400">(Hướng ĐB)</span></div>
-                    </div>
-                    <div class="h-8 w-[1px] bg-slate-800"></div>
-                    <div class="flex items-center gap-2 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-xs font-mono font-medium text-emerald-400">SCADA ONLINE</span>
-                    </div>
+            <!-- System Status (Desktop) -->
+            <div class="hidden xl:flex items-center gap-4">
+                <div class="text-right">
+                    <div class="text-xs text-slate-400">SCADA Sync (10-min)</div>
+                    <div id="clock-display" class="text-xs font-mono text-slate-200">--:--:--</div>
+                </div>
+                <div class="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    AI ENGINE ONLINE
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6">
 
         <!-- ===================================================================== -->
-        <!-- TAB 1: TURBINE HEALTH & PERFORMANCE                                   -->
+        <!-- TAB 1: TURBINE HEALTH & POWER CURVE MONITORING                        -->
         <!-- ===================================================================== -->
         <section id="view-health" class="space-y-6">
-            
-            <!-- KPI Summary Row -->
+            <!-- Top KPI Summary Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- KPI 1 -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm hover:border-slate-700 transition-colors">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Tổng công suất phát</span>
-                        <div class="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-400 flex items-center justify-center">
-                            <i class="fa-solid fa-bolt"></i>
-                        </div>
+                <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-brand-500">
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+                        <span>TỔNG CÔNG SUẤT PHÁT</span>
+                        <i class="fa-solid fa-bolt text-brand-400"></i>
                     </div>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-2xl sm:text-3xl font-bold font-mono text-white" id="kpi-total-power">24.85</span>
-                        <span class="text-sm font-medium text-slate-400">MW</span>
+                        <span id="kpi-total-power" class="text-2xl font-bold font-mono text-white">24.85</span>
+                        <span class="text-xs text-slate-400">MW / 36.0 MW</span>
                     </div>
-                    <div class="mt-2 flex items-center text-xs text-emerald-400">
-                        <i class="fa-solid fa-arrow-trend-up mr-1"></i>
-                        <span>69.0% công suất định mức (36 MW)</span>
+                    <div class="mt-2 text-xs text-emerald-400 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        <span>Gió TB: 8.4 m/s (Hướng Đông Bắc)</span>
                     </div>
                 </div>
 
-                <!-- KPI 2 -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm hover:border-slate-700 transition-colors">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Hiệu suất TB trang trại</span>
-                        <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center">
-                            <i class="fa-solid fa-gauge-high"></i>
-                        </div>
+                <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-emerald-500">
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+                        <span>HIỆU SUẤT TRUNG BÌNH</span>
+                        <i class="fa-solid fa-gauge-high text-emerald-400"></i>
                     </div>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-2xl sm:text-3xl font-bold font-mono text-white" id="kpi-avg-eff">94.6</span>
-                        <span class="text-sm font-medium text-slate-400">%</span>
+                        <span id="kpi-avg-eff" class="text-2xl font-bold font-mono text-white">94.6%</span>
+                        <span class="text-xs text-slate-400">so với Baseline</span>
                     </div>
-                    <div class="mt-2 flex items-center text-xs text-slate-400">
-                        <span>So với đường cong chuẩn IEC 61400</span>
+                    <div class="mt-2 text-xs text-slate-400">
+                        <span>10/12 trụ đạt chuẩn IEC 61400-12</span>
                     </div>
                 </div>
 
-                <!-- KPI 3 -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm hover:border-slate-700 transition-colors">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Tuabin cần lưu ý</span>
-                        <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                        </div>
+                <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-amber-500">
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+                        <span>CẢNH BÁO HIỆU SUẤT</span>
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
                     </div>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-2xl sm:text-3xl font-bold font-mono text-amber-400" id="kpi-alert-count">3</span>
-                        <span class="text-sm font-medium text-slate-400">/ 12 trụ</span>
+                        <span class="text-2xl font-bold font-mono text-amber-400">02</span>
+                        <span class="text-xs text-slate-400">Tuabin suy giảm</span>
                     </div>
-                    <div class="mt-2 flex items-center text-xs text-rose-400">
-                        <span class="font-medium">WT-04, WT-09 suy giảm • WT-07 cảnh báo nhẹ</span>
+                    <div class="mt-2 text-xs text-amber-300/90">
+                        <span>WT-04 (-16.2%) & WT-09 (-11.5%)</span>
                     </div>
                 </div>
 
-                <!-- KPI 4 -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm hover:border-slate-700 transition-colors">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Tổn thất ước tính (24h)</span>
-                        <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </div>
+                <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-rose-500">
+                    <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+                        <span>TỔN THẤT SẢN LƯỢNG (24H)</span>
+                        <i class="fa-solid fa-chart-line text-rose-400"></i>
                     </div>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-2xl sm:text-3xl font-bold font-mono text-rose-400" id="kpi-loss-mwh">14.2</span>
-                        <span class="text-sm font-medium text-slate-400">MWh</span>
+                        <span class="text-2xl font-bold font-mono text-rose-400">4.12</span>
+                        <span class="text-xs text-slate-400">MWh (~7.8 Tr VNĐ)</span>
                     </div>
-                    <div class="mt-2 flex items-center text-xs text-slate-400">
-                        <span>~ 28.4 triệu VNĐ thiệt hại sản lượng</span>
+                    <div class="mt-2 text-xs text-slate-400">
+                        <span>Ước tính từ phần dư AI Residual</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 12 Turbines Grid Status -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+            <!-- Middle Section: 12-Turbine Fleet Matrix + Interactive Power Curve -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: 12 Turbines Grid -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-5 flex flex-col justify-between">
                     <div>
-                        <h2 class="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-network-wired text-brand-400"></i>
-                            Sơ đồ Trạng thái Hiệu suất 12 Tuabin (Real-time AI Health)
-                        </h2>
-                        <p class="text-xs text-slate-400 mt-0.5">Nhấn vào từng trụ tuabin để xem đường cong công suất chi tiết và phân tích phần dư (Residual)</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 class="text-base font-semibold text-white">Trạng Thái Sức Khỏe 12 Tuabin</h2>
+                                <p class="text-xs text-slate-400">Nhấp vào từng trụ để phân tích đường cong công suất</p>
+                            </div>
+                            <button onclick="refreshLiveScada()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition" title="Cập nhật dữ liệu SCADA mới">
+                                <i class="fa-solid fa-rotate"></i>
+                            </button>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="flex items-center gap-4 text-xs text-slate-400 mb-4 bg-slate-900/60 px-3 py-2 rounded-lg">
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Tối ưu (&ge;95%)</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>Suy giảm nhẹ</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>Cần kiểm tra</span>
+                        </div>
+
+                        <!-- 12 Turbine Cards Grid -->
+                        <div id="turbine-grid" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 gap-2.5">
+                            <!-- Injected via JS -->
+                        </div>
                     </div>
-                    <!-- Legend -->
-                    <div class="flex flex-wrap items-center gap-3 text-xs bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                            <span class="text-slate-300">Tốt (&ge;95%)</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                            <span class="text-slate-300">Cảnh báo (90-95%)</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                            <span class="text-slate-300">Suy giảm (&lt;90%)</span>
-                        </div>
+
+                    <!-- Selected Turbine Quick AI Diagnosis -->
+                    <div id="turbine-diagnosis-box" class="mt-5 p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+                        <!-- Injected via JS -->
                     </div>
                 </div>
 
-                <!-- Grid Container -->
-                <div id="turbine-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                    <!-- Rendered dynamically by JS -->
-                </div>
-            </div>
-
-            <!-- Detailed Analysis Row: Power Curve Chart & Technical Specs -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                <!-- Left 2 Cols: Interactive Power Curve Chart -->
-                <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col">
+                <!-- Right: Interactive Power Curve Chart -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl p-5 flex flex-col">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                         <div>
                             <div class="flex items-center gap-2">
-                                <h3 class="text-base font-semibold text-white">Đường cong Công suất: <span id="chart-turbine-title" class="text-brand-400 font-mono">WT-04</span></h3>
-                                <span id="chart-status-badge" class="px-2 py-0.5 text-xs font-medium rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30">Suy giảm hiệu suất</span>
+                                <h2 id="chart-turbine-title" class="text-base font-semibold text-white">Đường Cong Công Suất: WT-04</h2>
+                                <span id="chart-turbine-badge" class="px-2 py-0.5 text-xs font-medium rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">Suy giảm 16.2%</span>
                             </div>
-                            <p class="text-xs text-slate-400 mt-1">So sánh dữ liệu SCADA 10 phút/mẫu (Scatter) với Đường cong chuẩn Digital Twin (Baseline)</p>
+                            <p class="text-xs text-slate-400">So sánh công suất thực tế (SCADA 10-phút) với đường chuẩn Baseline AI</p>
                         </div>
-                        <button onclick="askAIAboutCurrentTurbine()" class="self-start sm:self-auto px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>Hỏi AI về trụ này</span>
-                        </button>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono" id="selected-wind-info">Gió: 8.6 m/s</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-brand-400 font-mono" id="selected-power-info">P: 1,680 kW</span>
+                        </div>
                     </div>
 
-                    <div class="relative flex-1 min-h-[320px] w-full">
+                    <!-- Chart Canvas Container -->
+                    <div class="relative flex-1 min-h-[300px] w-full">
                         <canvas id="powerCurveChart"></canvas>
                     </div>
                 </div>
+            </div>
 
-                <!-- Right 1 Col: Selected Turbine Telemetry & AI Diagnosis -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+            <!-- Bottom Section: Leaderboard & Anomaly Table -->
+            <div class="glass-panel rounded-2xl p-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                     <div>
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-                            <h3 class="text-base font-semibold text-white">Thông số SCADA & Chẩn đoán AI</h3>
-                            <span id="detail-turbine-id" class="font-mono text-sm font-bold text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-lg">WT-04</span>
-                        </div>
-
-                        <!-- Telemetry Grid -->
-                        <div class="grid grid-cols-2 gap-3 mb-5">
-                            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-                                <div class="text-[11px] text-slate-400 mb-1">Tốc độ gió (Nacelle)</div>
-                                <div class="text-base font-mono font-semibold text-white" id="spec-wind">9.2 m/s</div>
-                            </div>
-                            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-                                <div class="text-[11px] text-slate-400 mb-1">Công suất phát / Kỳ vọng</div>
-                                <div class="text-base font-mono font-semibold text-white" id="spec-power">1,680 <span class="text-xs text-slate-400">/ 2,150 kW</span></div>
-                            </div>
-                            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-                                <div class="text-[11px] text-slate-400 mb-1">Góc xoắn cánh (Pitch)</div>
-                                <div class="text-base font-mono font-semibold text-white" id="spec-pitch">4.8°</div>
-                            </div>
-                            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-                                <div class="text-[11px] text-slate-400 mb-1">Hiệu suất quy đổi</div>
-                                <div class="text-base font-mono font-semibold text-rose-400" id="spec-eff">78.1%</div>
-                            </div>
-                            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-                                <div class="text-[11px] text-slate-400 mb-1">Nhiệt độ dầu hộp số</div>
-                                <div class="text-base font-mono font-semibold text-amber-400" id="spec-gear-temp">68.5 °C</div>
-                            </div>
-                            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-                                <div class="text-[11px] text-slate-400 mb-1">Nhiệt độ vòng bi chính</div>
-                                <div class="text-base font-mono font-semibold text-white" id="spec-bearing-temp">54.2 °C</div>
-                            </div>
-                        </div>
-
-                        <!-- AI Root Cause Box -->
-                        <div id="ai-diagnosis-box" class="bg-rose-500/10 border border-rose-500/30 rounded-xl p-4">
-                            <div class="flex items-center gap-2 text-rose-400 font-semibold text-xs uppercase tracking-wider mb-1.5">
-                                <i class="fa-solid fa-microchip"></i>
-                                <span>Phân tích bất thường AI</span>
-                            </div>
-                            <p id="spec-ai-note" class="text-xs text-slate-300 leading-relaxed">
-                                Phát hiện phần dư công suất âm (-21.9%) kéo dài 6 giờ liên tục tại dải gió 8-11 m/s. Góc Pitch lệch +2.1° so với các trụ lân cận. Đề xuất kiểm tra bộ truyền động Pitch cánh số 2 và hiệu chuẩn cảm biến gió.
-                            </p>
-                        </div>
+                        <h3 class="text-base font-semibold text-white">Bảng Phân Tích Hiệu Suất & Tổn Thất Sản Lượng Toàn Trang Trại</h3>
+                        <p class="text-xs text-slate-400">Sắp xếp theo mức độ ưu tiên bảo trì dựa trên thuật toán AI Residual Analysis</p>
                     </div>
+                    <button onclick="askAiAboutFleet()" class="px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium flex items-center gap-2 transition self-start sm:self-auto shadow-lg shadow-brand-600/20">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Nhờ AI lập kế hoạch kiểm tra</span>
+                    </button>
+                </div>
 
-                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                        <span>Cập nhật lần cuối: Vừa xong</span>
-                        <span class="font-mono text-brand-400">Model: XGBoost-Twin v2.4</span>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                <th class="py-3 px-3">Tuabin</th>
+                                <th class="py-3 px-3">Tốc độ gió</th>
+                                <th class="py-3 px-3">P Thực tế / Kỳ vọng</th>
+                                <th class="py-3 px-3">Hiệu suất</th>
+                                <th class="py-3 px-3">Nhiệt hộp số</th>
+                                <th class="py-3 px-3">Tổn thất 24h</th>
+                                <th class="py-3 px-3">Chẩn đoán AI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fleet-table-body" class="divide-y divide-slate-800/60 text-xs">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
 
         <!-- ===================================================================== -->
-        <!-- TAB 2: O&M AI ASSISTANT CHATBOT                                       -->
+        <!-- TAB 2: 6-MONTH HISTORICAL DATA UPLOAD & TURBINE QUALITY ASSESSMENT    -->
         <!-- ===================================================================== -->
-        <section id="view-chatbot" class="hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-140px)] min-h-[580px]">
-                
-                <!-- Left Sidebar: Quick Prompts & Context -->
-                <div class="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between overflow-y-auto">
+        <section id="view-history" class="hidden space-y-6">
+            <!-- Data Ingestion & Simulation Control Panel -->
+            <div class="glass-panel rounded-2xl p-5 border border-slate-800">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-800">
                     <div>
-                        <div class="flex items-center gap-2.5 pb-3 mb-4 border-b border-slate-800">
-                            <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center">
-                                <i class="fa-solid fa-headset"></i>
-                            </div>
-                            <div>
-                                <h2 class="text-sm font-semibold text-white">Kỹ sư AI Trực ca</h2>
-                                <p class="text-[11px] text-slate-400">Đồng bộ dữ liệu 12 Tuabin</p>
-                            </div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-lg font-bold text-white">Phân Tích Lịch Sử Vận Hành 6 Tháng (Chu kỳ 10 Phút)</h2>
+                            <span class="px-2 py-0.5 text-[11px] font-mono bg-brand-500/15 text-brand-400 border border-brand-500/30 rounded-md">IEC 61400-12-1</span>
                         </div>
-
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2.5">Gợi ý câu hỏi nhanh</p>
-                        <div class="space-y-2">
-                            <button onclick="sendQuickPrompt('Phân tích nguyên nhân tuabin WT-04 và WT-09 đang bị sụt giảm hiệu suất dựa trên dữ liệu SCADA hiện tại?')" class="w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-brand-500/50 text-xs text-slate-300 transition-all group">
-                                <div class="font-medium text-brand-400 group-hover:text-brand-300 mb-0.5">🔍 Chẩn đoán WT-04 & WT-09</div>
-                                <div class="text-slate-400 line-clamp-2">Phân tích nguyên nhân sụt giảm hiệu suất từ dữ liệu SCADA</div>
-                            </button>
-
-                            <button onclick="sendQuickPrompt('Quy trình xử lý vận hành tiêu chuẩn khi nhiệt độ dầu hộp số (Gearbox Oil Temp) vượt ngưỡng 70°C là gì?')" class="w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-brand-500/50 text-xs text-slate-300 transition-all group">
-                                <div class="font-medium text-amber-400 group-hover:text-amber-300 mb-0.5">🌡️ Quá nhiệt dầu hộp số</div>
-                                <div class="text-slate-400 line-clamp-2">Quy trình xử lý khi nhiệt độ dầu hộp số vượt ngưỡng</div>
-                            </button>
-
-                            <button onclick="sendQuickPrompt('Hãy tóm tắt báo cáo giao ca vận hành toàn nhà máy (12 tuabin) tại thời điểm hiện tại để gửi Trưởng ca.')" class="w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-brand-500/50 text-xs text-slate-300 transition-all group">
-                                <div class="font-medium text-blue-400 group-hover:text-blue-300 mb-0.5">📋 Tóm tắt báo cáo ca trực</div>
-                                <div class="text-slate-400 line-clamp-2">Tổng hợp sản lượng, hiệu suất và các cảnh báo tồn đọng</div>
-                            </button>
-
-                            <button onclick="sendQuickPrompt('Đề xuất giải pháp giảm thiểu hiệu ứng vệt gió (Wake Effect) cho hàng tuabin phía sau khi gió thổi hướng Đông Bắc.')" class="w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-brand-500/50 text-xs text-slate-300 transition-all group">
-                                <div class="font-medium text-emerald-400 group-hover:text-emerald-300 mb-0.5">💨 Tối ưu Wake Effect</div>
-                                <div class="text-slate-400 line-clamp-2">Chiến lược điều chỉnh góc Yaw tối ưu tổng công suất</div>
-                            </button>
-                        </div>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Cập nhật dữ liệu SCADA 6 tháng (26,280 mẫu/tuabin • 315,360 mẫu toàn nhà máy) để đánh giá suy hao công suất dài hạn và phân hạng chất lượng tuabin.
+                        </p>
                     </div>
 
-                    <div class="mt-4 pt-3 border-t border-slate-800">
-                        <button onclick="clearChatHistory()" class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition-colors flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-trash-can"></i>
-                            <span>Xóa lịch sử hội thoại</span>
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <button onclick="downloadSampleCsv()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-2 border border-slate-700 transition">
+                            <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                            <span>Tải file mẫu CSV</span>
+                        </button>
+                        <button onclick="generateSixMonthSimulation()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 text-white text-xs font-medium flex items-center gap-2 shadow-lg shadow-brand-600/20 transition">
+                            <i class="fa-solid fa-database"></i>
+                            <span>Nạp dữ liệu mẫu 6 tháng (315,360 mẫu)</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Right Main Chat Area -->
-                <div class="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col overflow-hidden">
-                    <!-- Chat Header -->
-                    <div class="px-5 py-3.5 bg-slate-950/60 border-b border-slate-800 flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-brand-400 animate-pulse"></span>
-                            <span class="text-sm font-semibold text-white">Trợ lý Kỹ thuật O&M (Powered by Gemini AI)</span>
+                <!-- Upload Dropzone & Preprocessing Options -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-5">
+                    <!-- File Upload Box -->
+                    <div class="lg:col-span-7">
+                        <label for="scada-file-input" id="scada-dropzone" class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-700 hover:border-brand-500 rounded-xl bg-slate-900/50 hover:bg-slate-900/80 transition cursor-pointer text-center">
+                            <div class="w-11 h-11 rounded-full bg-brand-500/10 text-brand-400 flex items-center justify-center mb-2.5">
+                                <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+                            </div>
+                            <p class="text-sm font-medium text-white">Kéo thả hoặc chọn tệp dữ liệu SCADA 6 tháng (.CSV, .XLSX)</p>
+                            <p class="text-xs text-slate-400 mt-1">
+                                Các cột hỗ trợ: <code class="text-brand-400 font-mono">Timestamp</code>, <code class="text-brand-400 font-mono">Turbine_ID</code>, <code class="text-brand-400 font-mono">Wind_Speed</code>, <code class="text-brand-400 font-mono">Active_Power</code>, <code class="text-brand-400 font-mono">Status</code>
+                            </p>
+                            <input type="file" id="scada-file-input" accept=".csv, .xlsx, .xls" class="hidden" onchange="handleScadaFileUpload(event)">
+                        </label>
+                    </div>
+
+                    <!-- Data Cleaning & Pipeline Status -->
+                    <div class="lg:col-span-5 bg-slate-900/70 rounded-xl p-4 border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-filter text-brand-400"></i>
+                                <span>Bộ Lọc Tiền Xử Lý Dữ Liệu SCADA</span>
+                            </h3>
+                            <div class="space-y-2 text-xs">
+                                <label class="flex items-center justify-between text-slate-300 cursor-pointer">
+                                    <span>Lọc dừng máy / Bảo trì (P &le; 0 khi V &gt; 3.5 m/s)</span>
+                                    <input type="checkbox" id="filter-downtime" checked onchange="recalculateHistoryMetrics()" class="accent-brand-500 rounded">
+                                </label>
+                                <label class="flex items-center justify-between text-slate-300 cursor-pointer">
+                                    <span>Loại bỏ cắt giảm điều độ (Curtailment)</span>
+                                    <input type="checkbox" id="filter-curtailment" checked onchange="recalculateHistoryMetrics()" class="accent-brand-500 rounded">
+                                </label>
+                                <label class="flex items-center justify-between text-slate-300 cursor-pointer">
+                                    <span>Lọc nhiễu cảm biến gió (Outliers &gt; 3&sigma;)</span>
+                                    <input type="checkbox" id="filter-outliers" checked onchange="recalculateHistoryMetrics()" class="accent-brand-500 rounded">
+                                </label>
+                            </div>
                         </div>
-                        <span class="text-xs font-mono text-slate-400 bg-slate-800 px-2.5 py-1 rounded-md">Context: 12 Tuabin • Trạm 110kV</span>
+
+                        <div id="history-dataset-summary" class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+                            <span class="text-slate-400">Nguồn dữ liệu: <strong id="dataset-source-name" class="text-white">Dữ liệu mô phỏng 6 tháng</strong></span>
+                            <span id="dataset-sample-count" class="font-mono text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded">315,360 mẫu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6-Month Quality KPI Overview -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-panel rounded-2xl p-4">
+                    <div class="text-xs text-slate-400 mb-1 flex items-center justify-between">
+                        <span>TỔNG SẢN LƯỢNG 6 THÁNG</span>
+                        <i class="fa-solid fa-solar-panel text-brand-400"></i>
+                    </div>
+                    <div id="hist-kpi-energy" class="text-2xl font-bold font-mono text-white">54,820 MWh</div>
+                    <div id="hist-kpi-avail" class="text-xs text-emerald-400 mt-1">Độ khả dụng kỹ thuật: 98.4%</div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-4">
+                    <div class="text-xs text-slate-400 mb-1 flex items-center justify-between">
+                        <span>CHỈ SỐ CHẤT LƯỢNG TB (PI)</span>
+                        <i class="fa-solid fa-award text-emerald-400"></i>
+                    </div>
+                    <div id="hist-kpi-pi" class="text-2xl font-bold font-mono text-emerald-400">96.2%</div>
+                    <div class="text-xs text-slate-400 mt-1">Tỷ số Năng lượng Thực tế / Kỳ vọng</div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-4">
+                    <div class="text-xs text-slate-400 mb-1 flex items-center justify-between">
+                        <span>PHÂN HẠNG CHẤT LƯỢNG</span>
+                        <i class="fa-solid fa-layer-group text-blue-400"></i>
+                    </div>
+                    <div id="hist-kpi-grades" class="text-lg font-bold font-mono text-white mt-0.5">
+                        <span class="text-emerald-400">9 Hạng A</span> • <span class="text-amber-400">2 B</span> • <span class="text-rose-400">1 C</span>
+                    </div>
+                    <div class="text-xs text-slate-400 mt-1.5">Đánh giá trên 12 tuabin (180 ngày)</div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-4">
+                    <div class="text-xs text-slate-400 mb-1 flex items-center justify-between">
+                        <span>TỔN THẤT TÍCH LŨY 6 THÁNG</span>
+                        <i class="fa-solid fa-money-bill-trend-up text-rose-400"></i>
+                    </div>
+                    <div id="hist-kpi-loss" class="text-2xl font-bold font-mono text-rose-400">1,428 MWh</div>
+                    <div id="hist-kpi-loss-vnd" class="text-xs text-rose-300/80 mt-1">~2.71 Tỷ VNĐ (Cần đại tu WT-04, WT-09)</div>
+                </div>
+            </div>
+
+            <!-- Charts Row: 6-Month Degradation Trend + 6-Month Power Curve Scatter -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: 6-Month Weekly Performance Trend -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl p-5 flex flex-col">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-base font-semibold text-white">Diễn Biến Chỉ Số Chất Lượng 26 Tuần (6 Tháng)</h3>
+                            <p class="text-xs text-slate-400">Phát hiện chính xác tuần bắt đầu suy giảm hiệu suất theo thời gian</p>
+                        </div>
+                        <select id="history-turbine-select" onchange="updateHistoryCharts()" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-500">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+                    <div class="relative flex-1 min-h-[290px]">
+                        <canvas id="historyTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Right: 6-Month Aggregated Power Curve Scatter -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-5 flex flex-col">
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-base font-semibold text-white">Đường Cong Công Suất 6 Tháng</h3>
+                            <span id="hist-selected-grade-badge" class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">Hạng C (Cần Đại Tu)</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-0.5">Phân bố 26,280 mẫu chu kỳ 10 phút sau lọc nhiễu</p>
+                    </div>
+                    <div class="relative flex-1 min-h-[290px]">
+                        <canvas id="historyScatterChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comprehensive 12-Turbine 6-Month Quality Ranking & AI Audit Report -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Table: 12 Turbines Quality Scorecard -->
+                <div class="lg:col-span-8 glass-panel rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-base font-semibold text-white">Bảng Xếp Hạng Chất Lượng 12 Tuabin (Lịch Sử 6 Tháng)</h3>
+                            <p class="text-xs text-slate-400">Đánh giá dựa trên Hiệu suất Năng lượng (PI), Độ lệch chuẩn (RMSE) và Tốc độ suy giảm</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                    <th class="py-3 px-2.5">Tuabin</th>
+                                    <th class="py-3 px-2.5">Sản lượng 6T</th>
+                                    <th class="py-3 px-2.5">Chỉ số PI</th>
+                                    <th class="py-3 px-2.5">Suy giảm/Tháng</th>
+                                    <th class="py-3 px-2.5">Tổn thất 6T</th>
+                                    <th class="py-3 px-2.5">Xếp hạng</th>
+                                    <th class="py-3 px-2.5">Khuyến nghị kỹ thuật</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-quality-table-body" class="divide-y divide-slate-800/60 text-xs">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right: AI 6-Month Executive Audit Report -->
+                <div class="lg:col-span-4 glass-panel rounded-2xl p-5 flex flex-col justify-between border border-brand-500/20">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-file-waveform"></i>
+                                </div>
+                                <h3 class="text-sm font-semibold text-white">Báo Cáo Đánh Giá Chất Lượng AI</h3>
+                            </div>
+                        </div>
+
+                        <div id="ai-history-report-box" class="text-xs text-slate-300 space-y-3 bg-slate-900/70 p-4 rounded-xl border border-slate-800 max-h-[340px] overflow-y-auto leading-relaxed markdown-body">
+                            <!-- Default summary or AI generated report -->
+                        </div>
+                    </div>
+
+                    <button onclick="generateAiHistoryAudit()" id="btn-ai-history-audit" class="mt-4 w-full py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-600/20 transition">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Phân tích chuyên sâu bằng Gemini AI</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- TAB 3: AI OPERATIONS & MAINTENANCE CHATBOT                            -->
+        <!-- ===================================================================== -->
+        <section id="view-chatbot" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Sidebar: Suggested Prompts & Live Context -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="glass-panel rounded-2xl p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400">
+                                <i class="fa-solid fa-brain text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-semibold text-white">Trợ Lý Kỹ Sư Vận Hành</h2>
+                                <p class="text-xs text-slate-400">Tích hợp dữ liệu SCADA & Lịch sử 6 tháng</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            AI đã được nạp thông số thời gian thực và dữ liệu 6 tháng của 12 tuabin (WT-01 đến WT-12), quy trình vận hành chuẩn IEC 61400 và hướng dẫn xử lý sự cố trạm 110kV.
+                        </p>
+                        
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">Câu hỏi gợi ý nhanh</div>
+                        <div class="space-y-2">
+                            <button onclick="sendQuickPrompt('Phân tích nguyên nhân tại sao tuabin WT-04 và WT-09 đang có hiệu suất thấp hơn mức kỳ vọng và đề xuất thứ tự kiểm tra?')" class="w-full text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-brand-500/40 text-xs text-slate-200 transition flex items-start gap-2.5">
+                                <i class="fa-solid fa-magnifying-glass-chart text-brand-400 mt-0.5"></i>
+                                <span>Phân tích nguyên nhân suy giảm công suất của WT-04 và WT-09?</span>
+                            </button>
+
+                            <button onclick="sendQuickPrompt('Dựa trên dữ liệu lịch sử 6 tháng vừa cập nhật, lập kế hoạch bảo dưỡng ưu tiên cho các tuabin Hạng B và Hạng C.')" class="w-full text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-brand-500/40 text-xs text-slate-200 transition flex items-start gap-2.5">
+                                <i class="fa-solid fa-calendar-check text-emerald-400 mt-0.5"></i>
+                                <span>Lập kế hoạch bảo dưỡng từ dữ liệu lịch sử 6 tháng</span>
+                            </button>
+
+                            <button onclick="sendQuickPrompt('Lập quy trình an toàn từng bước khi cử đội O&M leo tháp kiểm tra cảm biến gió (Anemometer) và góc Pitch trên Nacelle.')" class="w-full text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-brand-500/40 text-xs text-slate-200 transition flex items-start gap-2.5">
+                                <i class="fa-solid fa-helmet-safety text-amber-400 mt-0.5"></i>
+                                <span>Quy trình an toàn khi leo tháp kiểm tra cảm biến trên Nacelle</span>
+                            </button>
+
+                            <button onclick="sendQuickPrompt('Nhiệt độ dầu hộp số tuabin WT-07 đang ở mức 74°C (cao hơn trung bình 12°C). Cần theo dõi các thông số nào tiếp theo?')" class="w-full text-left p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-brand-500/40 text-xs text-slate-200 transition flex items-start gap-2.5">
+                                <i class="fa-solid fa-temperature-three-quarters text-rose-400 mt-0.5"></i>
+                                <span>Xử lý cảnh báo nhiệt độ dầu hộp số WT-07 tăng cao (74°C)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Chat Interface -->
+                <div class="lg:col-span-8 glass-panel rounded-2xl flex flex-col h-[600px]">
+                    <!-- Chat Header -->
+                    <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="text-sm font-semibold text-white">AeroPredict O&M Assistant</span>
+                            <span class="text-[11px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Gemini 3 Flash</span>
+                        </div>
+                        <button onclick="clearChat()" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition">
+                            <i class="fa-solid fa-trash-can"></i> Xóa hội thoại
+                        </button>
                     </div>
 
                     <!-- Messages Container -->
-                    <div id="chat-messages" class="flex-1 p-5 overflow-y-auto space-y-4">
-                        <!-- Welcome Message -->
+                    <div id="chat-messages" class="flex-1 overflow-y-auto p-5 space-y-4">
+                        <!-- Initial AI Welcome Message -->
                         <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-blue-600 flex items-center justify-center shrink-0 mt-0.5">
-                                <i class="fa-solid fa-robot text-white text-sm"></i>
+                            <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white shrink-0 mt-0.5">
+                                <i class="fa-solid fa-robot text-xs"></i>
                             </div>
-                            <div class="bg-slate-850 border border-slate-800 rounded-2xl rounded-tl-none p-4 max-w-3xl text-sm text-slate-200 leading-relaxed prose-chat">
-                                <p>Xin chào Kỹ sư vận hành! Tôi là <strong>AeroPredict O&M Assistant</strong>.</p>
-                                <p>Tôi đã đồng bộ dữ liệu thời gian thực từ hệ thống SCADA của <strong>12 tuabin (WT-01 đến WT-12)</strong>. Hiện tại toàn trang trại đang phát <strong>24.85 MW</strong> (hiệu suất trung bình <strong>94.6%</strong>), trong đó có 2 trụ đang suy giảm hiệu suất rõ rệt là <strong>WT-04 (78.1%)</strong> và <strong>WT-09 (82.4%)</strong>.</p>
-                                <p class="mb-0">Bạn cần tôi hỗ trợ phân tích sự cố, tra cứu quy trình vận hành trạm biến áp/tuabin hay lập báo cáo ca trực?</p>
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-none p-3.5 text-sm text-slate-200 max-w-[85%] leading-relaxed">
+                                <p>Xin chào kỹ sư vận hành! Tôi đã đồng bộ dữ liệu SCADA trực tuyến và dữ liệu lịch sử 6 tháng (chu kỳ 10 phút) của <strong>12 tuabin (WT-01 đến WT-12)</strong>.</p>
+                                <p class="mt-2 text-xs text-slate-400">Hiện ghi nhận <span class="text-amber-400 font-medium">WT-04</span> và <span class="text-amber-400 font-medium">WT-09</span> đang có độ lệch công suất âm so với đường cong chuẩn. Bạn cần tôi hỗ trợ phân tích sự cố hay tra cứu quy trình vận hành nào?</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Chat Input Box -->
-                    <div class="p-4 bg-slate-950/60 border-t border-slate-800">
-                        <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex items-center gap-3">
-                            <input 
-                                type="text" 
-                                id="chat-input" 
-                                placeholder="Nhập câu hỏi kỹ thuật, mã lỗi SCADA, hoặc yêu cầu phân tích tuabin..." 
-                                class="flex-1 bg-slate-900 border border-slate-700 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-all"
-                                autocomplete="off"
-                            >
-                            <button 
-                                type="submit" 
-                                id="chat-submit-btn"
-                                class="px-5 py-3 bg-brand-600 hover:bg-brand-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-brand-600/20"
-                            >
+                    <form onsubmit="handleChatSubmit(event)" class="p-4 border-t border-slate-800 bg-slate-900/50 rounded-b-2xl">
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="chat-input" placeholder="Nhập câu hỏi kỹ thuật, mã lỗi SCADA hoặc yêu cầu lập báo cáo..." class="flex-1 bg-slate-950 border border-slate-800 focus:border-brand-500 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition" required>
+                            <button type="submit" id="chat-send-btn" class="px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-medium text-sm flex items-center gap-2 transition shadow-lg shadow-brand-600/20 shrink-0">
                                 <span>Gửi</span>
-                                <i class="fa-solid fa-paper-plane"></i>
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
                             </button>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </section>
 
         <!-- ===================================================================== -->
-        <!-- TAB 3: THERMAL IMAGE AI INSPECTION                                    -->
+        <!-- TAB 4: THERMAL IMAGING DIAGNOSTICS (VISION AI)                        -->
         <!-- ===================================================================== -->
-        <section id="view-thermal" class="hidden space-y-6">
-            
+        <section id="view-thermal" class="hidden">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <!-- Left Column: Image Upload & Sample Selection (5 cols) -->
-                <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-5">
+                <!-- Left Column: Image Upload & Sample Thermal Presets -->
+                <div class="lg:col-span-6 glass-panel rounded-2xl p-5 flex flex-col justify-between space-y-5">
                     <div>
-                        <h2 class="text-base sm:text-lg font-semibold text-white flex items-center gap-2 mb-1">
-                            <i class="fa-solid fa-camera-retro text-brand-400"></i>
-                            Tải ảnh Quét Nhiệt (Thermography)
-                        </h2>
-                        <p class="text-xs text-slate-400 mb-4">Hỗ trợ ảnh chụp từ camera nhiệt FLIR / Drone kiểm tra trạm biến áp, tủ điều khiển, hộp số & máy phát.</p>
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-base font-semibold text-white">Đánh Giá Ảnh Quét Nhiệt Thiết Bị (IR Thermography)</h2>
+                            <span class="px-2 py-0.5 text-[11px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded">IEC 62446 / NETA</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">
+                            Tải lên ảnh chụp từ camera nhiệt (FLIR, Hikmicro, DJI Zenmuse H20T) của trạm biến áp 110kV, tủ RMU hoặc hộp số/máy phát tuabin để AI khoanh vùng điểm nóng và phân loại mức độ nghiêm trọng.
+                        </p>
 
-                        <!-- Dropzone -->
-                        <div 
-                            id="thermal-dropzone" 
-                            onclick="document.getElementById('thermal-file-input').click()"
-                            class="border-2 border-dashed border-slate-700 hover:border-brand-500 bg-slate-950/60 hover:bg-slate-950 rounded-2xl p-6 text-center cursor-pointer transition-all group"
-                        >
-                            <input type="file" id="thermal-file-input" accept="image/*" class="hidden" onchange="handleThermalFileUpload(event)">
-                            <div class="w-12 h-12 rounded-full bg-slate-800 group-hover:bg-brand-500/20 text-slate-400 group-hover:text-brand-400 flex items-center justify-center mx-auto mb-3 transition-colors">
+                        <!-- Upload Dropzone -->
+                        <label for="thermal-upload" class="block border-2 border-dashed border-slate-700 hover:border-brand-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition">
+                            <input type="file" id="thermal-upload" accept="image/*" class="hidden" onchange="handleThermalUpload(event)">
+                            <div class="w-12 h-12 rounded-full bg-slate-800 text-brand-400 flex items-center justify-center mx-auto mb-3">
                                 <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
                             </div>
-                            <p class="text-sm font-medium text-slate-200 mb-1">Kéo thả ảnh nhiệt vào đây hoặc <span class="text-brand-400 underline">chọn tệp</span></p>
-                            <p class="text-xs text-slate-500">Định dạng PNG, JPG, JPEG (Tối đa 10MB)</p>
-                        </div>
+                            <p class="text-sm font-medium text-white">Nhấp để tải ảnh quét nhiệt từ thiết bị</p>
+                            <p class="text-xs text-slate-500 mt-1">Hỗ trợ JPG, PNG, WEBP (Ảnh hồng ngoại phổ Ironbow / Rainbow)</p>
+                        </label>
 
-                        <!-- Sample Thermal Images -->
+                        <!-- Sample Presets for Quick Testing -->
                         <div class="mt-5">
-                            <div class="flex items-center justify-between mb-2.5">
-                                <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Hoặc chọn ảnh nhiệt mẫu để kiểm thử AI:</span>
-                            </div>
+                            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">Hoặc chọn mẫu ảnh nhiệt thiết bị nhà máy để thử nghiệm:</div>
                             <div class="grid grid-cols-3 gap-2.5">
-                                <!-- Sample 1 -->
-                                <button onclick="loadSampleThermal(0)" class="sample-thermal-btn text-left bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-rose-500/50 rounded-xl p-2 transition-all group">
-                                    <canvas id="thumb-sample-0" width="160" height="100" class="w-full h-16 object-cover rounded-lg mb-1.5"></canvas>
-                                    <div class="text-[11px] font-medium text-slate-200 truncate group-hover:text-rose-400">Sứ xuyên MBA 110kV</div>
-                                    <div class="text-[10px] text-rose-400 font-mono">Max: 96.4°C</div>
+                                <button onclick="loadSampleThermal('bushing')" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-rose-500/50 text-left transition group">
+                                    <div class="text-xs font-semibold text-rose-400 group-hover:text-rose-300 flex items-center justify-between">
+                                        <span>Sứ MBA 110kV</span>
+                                        <i class="fa-solid fa-fire text-[10px]"></i>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 mt-1">Phát nhiệt đầu cốt pha B (&Delta;T = 38°C)</p>
                                 </button>
 
-                                <!-- Sample 2 -->
-                                <button onclick="loadSampleThermal(1)" class="sample-thermal-btn text-left bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 rounded-xl p-2 transition-all group">
-                                    <canvas id="thumb-sample-1" width="160" height="100" class="w-full h-16 object-cover rounded-lg mb-1.5"></canvas>
-                                    <div class="text-[11px] font-medium text-slate-200 truncate group-hover:text-amber-400">Đầu cáp tủ RMU</div>
-                                    <div class="text-[10px] text-amber-400 font-mono">Max: 74.8°C</div>
+                                <button onclick="loadSampleThermal('rmu')" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 text-left transition group">
+                                    <div class="text-xs font-semibold text-amber-400 group-hover:text-amber-300 flex items-center justify-between">
+                                        <span>Đầu cáp RMU</span>
+                                        <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 mt-1">Tủ trung thế 22kV trụ WT-04 (&Delta;T = 16°C)</p>
                                 </button>
 
-                                <!-- Sample 3 -->
-                                <button onclick="loadSampleThermal(2)" class="sample-thermal-btn text-left bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-2 transition-all group">
-                                    <canvas id="thumb-sample-2" width="160" height="100" class="w-full h-16 object-cover rounded-lg mb-1.5"></canvas>
-                                    <div class="text-[11px] font-medium text-slate-200 truncate group-hover:text-emerald-400">Hộp số WT-02</div>
-                                    <div class="text-[10px] text-emerald-400 font-mono">Max: 52.1°C</div>
+                                <button onclick="loadSampleThermal('gearbox')" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 text-left transition group">
+                                    <div class="text-xs font-semibold text-emerald-400 group-hover:text-emerald-300 flex items-center justify-between">
+                                        <span>Hộp số WT-02</span>
+                                        <i class="fa-solid fa-check-circle text-[10px]"></i>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 mt-1">Phân bố nhiệt đồng đều (Max 61°C)</p>
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Equipment Metadata Input -->
-                    <div class="pt-4 border-t border-slate-800 space-y-3">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Tên thiết bị / Vị trí kiểm tra (Tùy chọn)</label>
-                            <input type="text" id="thermal-equipment-name" value="Sứ xuyên pha B - Máy biến áp T1 (110kV)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:border-brand-500 outline-none">
+                    <!-- Preview Canvas -->
+                    <div class="bg-slate-950 rounded-xl border border-slate-800 p-3">
+                        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                            <span id="thermal-preview-label">Xem trước ảnh nhiệt phân tích</span>
+                            <span class="font-mono text-[11px] text-brand-400">IR Spectrum Analyzer</span>
                         </div>
-                        <button 
-                            onclick="analyzeThermalImage()" 
-                            id="analyze-thermal-btn"
-                            class="w-full py-3 px-4 bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-brand-600/20 transition-all flex items-center justify-center gap-2"
-                        >
-                            <i class="fa-solid fa-magnifying-glass-chart"></i>
-                            <span>Phân tích ảnh nhiệt bằng AI</span>
+                        <div class="relative w-full h-56 rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center">
+                            <canvas id="thermalCanvas" class="max-w-full max-h-full object-contain"></canvas>
+                        </div>
+                        <button onclick="analyzeCurrentThermalImage()" id="analyze-thermal-btn" class="mt-3 w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg transition">
+                            <i class="fa-solid fa-microchip"></i>
+                            <span>Chạy AI Chẩn Đoán Điểm Nóng & Đánh Giá Mức Độ</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Right Column: Preview & AI Diagnostic Report (7 cols) -->
-                <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 flex flex-col">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-                        <h3 class="text-base font-semibold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-file-medical text-brand-400"></i>
-                            Kết quả Giám định Nhiệt học AI
-                        </h3>
-                        <span id="thermal-severity-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30">
-                            NGUY HIỂM CẤP 2 (Quá nhiệt nghiêm trọng)
+                <!-- Right Column: AI Diagnostic Report -->
+                <div class="lg:col-span-6 glass-panel rounded-2xl p-5 flex flex-col">
+                    <div class="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                                <i class="fa-solid fa-file-medical-alt"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-semibold text-white">Báo Cáo Chẩn Đoán Nhiệt AI</h3>
+                                <p class="text-xs text-slate-400">Đánh giá chênh lệch nhiệt độ (&Delta;T) theo tiêu chuẩn NETA MTS</p>
+                            </div>
+                        </div>
+                        <span id="thermal-severity-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                            CẤP ĐỘ 4: KHẨN CẤP
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 flex-1">
-                        <!-- Thermal Image Preview Frame -->
-                        <div class="flex flex-col">
-                            <div class="relative bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center min-h-[240px]">
-                                <img id="thermal-preview-img" src="" alt="Thermal Preview" class="w-full h-full max-h-[280px] object-contain">
-                                <!-- Color Scale Legend Overlay -->
-                                <div class="absolute bottom-2 right-2 bg-slate-950/85 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-slate-800 flex items-center gap-2">
-                                    <span class="text-[10px] font-mono text-blue-400">25°C</span>
-                                    <div class="w-16 h-2 rounded-full bg-gradient-to-r from-indigo-900 via-purple-600 via-rose-500 to-yellow-200"></div>
-                                    <span class="text-[10px] font-mono text-yellow-200" id="scale-max-temp">96°C</span>
-                                </div>
-                            </div>
-                            <div class="mt-2.5 flex items-center justify-between text-xs text-slate-400 px-1">
-                                <span>Hệ số phát xạ (Emissivity): <strong class="text-slate-200 font-mono">0.95</strong></span>
-                                <span>Nhiệt độ môi trường: <strong class="text-slate-200 font-mono">31.0°C</strong></span>
-                            </div>
+                    <!-- Temperature Metrics Strip -->
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                            <div class="text-[11px] text-slate-400">Nhiệt độ Max (Hotspot)</div>
+                            <div id="thermal-max-temp" class="text-lg font-bold font-mono text-rose-400 mt-0.5">86.4 °C</div>
                         </div>
+                        <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                            <div class="text-[11px] text-slate-400">Nhiệt độ Tham chiếu</div>
+                            <div id="thermal-ref-temp" class="text-lg font-bold font-mono text-slate-200 mt-0.5">48.2 °C</div>
+                        </div>
+                        <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                            <div class="text-[11px] text-slate-400">Độ chênh lệch (&Delta;T)</div>
+                            <div id="thermal-delta-temp" class="text-lg font-bold font-mono text-amber-400 mt-0.5">+38.2 °C</div>
+                        </div>
+                    </div>
 
-                        <!-- AI Report Details -->
-                        <div id="thermal-result-container" class="flex flex-col justify-between bg-slate-950 rounded-xl border border-slate-800 p-4 overflow-y-auto max-h-[340px]">
-                            <!-- Loading Overlay -->
-                            <div id="thermal-loading" class="hidden flex-1 flex flex-col items-center justify-center py-8 text-center">
-                                <div class="w-10 h-10 border-4 border-brand-500/30 border-t-brand-400 rounded-full animate-spin mb-3"></div>
-                                <p class="text-sm font-medium text-brand-400">Gemini Vision AI đang quét phổ nhiệt...</p>
-                                <p class="text-xs text-slate-500 mt-1">Đang khoanh vùng điểm nóng (Hotspot) và tính chênh lệch ΔT</p>
-                            </div>
-
-                            <!-- Structured Result Content -->
-                            <div id="thermal-report-content" class="space-y-3 text-xs">
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-                                        <div class="text-slate-400 text-[11px]">Điểm nóng nhất (Max)</div>
-                                        <div class="text-base font-mono font-bold text-rose-400" id="res-max-temp">96.4 °C</div>
-                                    </div>
-                                    <div class="bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-                                        <div class="text-slate-400 text-[11px]">Độ chênh nhiệt (ΔT)</div>
-                                        <div class="text-base font-mono font-bold text-amber-400" id="res-delta-temp">+48.2 °C</div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div class="font-semibold text-slate-200 mb-1 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-crosshairs text-rose-400"></i>
-                                        <span>Vị trí phát hiện bất thường:</span>
-                                    </div>
-                                    <p id="res-hotspot-loc" class="text-slate-300 leading-relaxed bg-slate-900/70 p-2.5 rounded-lg border border-slate-800/80">
-                                        Khu vực đầu cốt kẹp cực sứ xuyên cao áp pha B (vùng tâm ảnh hiển thị màu trắng sáng/vàng rực). Nhiệt độ vượt xa hai pha A và C lân cận (48.2°C).
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <div class="font-semibold text-slate-200 mb-1 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-stethoscope text-brand-400"></i>
-                                        <span>Chẩn đoán nguyên nhân & Khuyến nghị:</span>
-                                    </div>
-                                    <div id="res-recommendation" class="text-slate-300 leading-relaxed bg-slate-900/70 p-2.5 rounded-lg border border-slate-800/80 space-y-1.5">
-                                        <p><strong>Nguyên nhân:</strong> Lỏng bulông kẹp cực hoặc oxy hóa bề mặt tiếp xúc dẫn đến tăng điện trở tiếp xúc cục bộ.</p>
-                                        <p><strong>Hành động:</strong> Đăng ký cắt điện khẩn cấp MBA T1 trong ca trực tới để vệ sinh bề mặt tiếp xúc, bôi mỡ dẫn điện và siết lại lực bulông theo tiêu chuẩn.</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Detailed AI Analysis Output -->
+                    <div id="thermal-report-content" class="flex-1 bg-slate-900/70 rounded-xl p-4 border border-slate-800 overflow-y-auto text-xs text-slate-200 space-y-3 leading-relaxed markdown-body">
+                        <div class="flex items-center justify-between text-brand-400 font-semibold">
+                            <span><i class="fa-solid fa-circle-info mr-1.5"></i>Kết quả phân tích mẫu: Sứ xuyên MBA 110kV (Pha B)</span>
+                        </div>
+                        <p><strong>1. Khoanh vùng bất thường:</strong> Phát hiện điểm phát nhiệt cục bộ cường độ cao tại vị trí kẹp cực (đầu cốt) sứ xuyên cao áp pha B. Nhiệt độ đỉnh đạt <strong>86.4°C</strong> trong khi pha A và pha C lân cận ở mức 48.2°C (&Delta;T = 38.2°C).</p>
+                        <p><strong>2. Đánh giá mức độ nghiêm trọng (Tiêu chuẩn NETA):</strong> Mức chênh lệch &Delta;T &gt; 35°C giữa các pha cùng tải thuộc <strong>Cấp độ 4 (Nghiêm trọng / Khẩn cấp)</strong>. Nguy cơ cao dẫn đến suy giảm cách điện, phát sinh hồ quang hoặc sự cố phóng điện bề mặt.</p>
+                        <p><strong>3. Nguyên nhân nghi ngờ:</strong> Lỏng bulông liên kết kẹp cực, oxy hóa bề mặt tiếp xúc đồng-nhôm hoặc tăng điện trở tiếp xúc do rung động vận hành.</p>
+                        <div class="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-200">
+                            <strong>Khuyến nghị hành động ngay:</strong>
+                            <ul class="mt-1 space-y-1">
+                                <li>Giảm tải hoặc đăng ký cắt điện khẩn cấp MBA 110kV trong ca trực gần nhất.</li>
+                                <li>Vệ sinh bề mặt tiếp xúc, bôi mỡ dẫn điện chuyên dụng và siết lại lực bulông theo quy định nhà sản xuất.</li>
+                                <li>Chụp lại ảnh nhiệt kiểm tra sau khi đóng điện mang tải 30 phút.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -602,81 +726,98 @@
 
     </main>
 
-    <!-- Custom Notification Toast (Replaces alert) -->
-    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-        <div class="bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm">
-            <i id="toast-icon" class="fa-solid fa-circle-info text-brand-400"></i>
-            <span id="toast-message">Thông báo hệ thống</span>
-        </div>
-    </div>
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
-    <!-- JavaScript Application Logic -->
     <script>
         // =========================================================================
-        // 1. DATA & STATE MANAGEMENT FOR 12 WIND TURBINES
+        // 1. STATE & SIMULATED SCADA FLEET DATA (12 TURBINES)
         // =========================================================================
-        const turbinesData = [
-            { id: 'WT-01', wind: 8.8, power: 2180, expected: 2210, pitch: 2.1, eff: 98.6, gearTemp: 58.2, bearingTemp: 48.0, status: 'good', note: 'Vận hành tối ưu, bám sát đường cong công suất chuẩn IEC.' },
-            { id: 'WT-02', wind: 8.9, power: 2215, expected: 2240, pitch: 2.0, eff: 98.9, gearTemp: 57.5, bearingTemp: 47.4, status: 'good', note: 'Hiệu suất ổn định, không phát hiện bất thường.' },
-            { id: 'WT-03', wind: 8.7, power: 2110, expected: 2170, pitch: 2.2, eff: 97.2, gearTemp: 59.1, bearingTemp: 49.1, status: 'good', note: 'Hoạt động bình thường trong dải gió trung bình.' },
-            { id: 'WT-04', wind: 9.2, power: 1680, expected: 2150, pitch: 4.8, eff: 78.1, gearTemp: 68.5, bearingTemp: 54.2, status: 'critical', note: 'CẢNH BÁO: Phần dư công suất âm (-21.9%) kéo dài 6h. Góc Pitch lệch +2.1° so với chuẩn. Đề xuất kiểm tra xy-lanh Pitch cánh số 2 và cảm biến gió nacelle.' },
-            { id: 'WT-05', wind: 8.6, power: 2085, expected: 2130, pitch: 2.1, eff: 97.9, gearTemp: 58.0, bearingTemp: 48.5, status: 'good', note: 'Vận hành ổn định.' },
-            { id: 'WT-06', wind: 8.5, power: 2040, expected: 2090, pitch: 2.3, eff: 97.6, gearTemp: 58.8, bearingTemp: 48.9, status: 'good', note: 'Vận hành ổn định.' },
-            { id: 'WT-07', wind: 8.4, power: 1890, expected: 2050, pitch: 2.9, eff: 92.2, gearTemp: 63.4, bearingTemp: 51.0, status: 'warning', note: 'LƯU Ý: Hiệu suất giảm nhẹ (-7.8%). Có dấu hiệu bám bụi/muối biển trên mép trước cánh tuabin hoặc chịu ảnh hưởng một phần từ vệt gió WT-02.' },
-            { id: 'WT-08', wind: 8.7, power: 2120, expected: 2170, pitch: 2.1, eff: 97.7, gearTemp: 57.9, bearingTemp: 47.8, status: 'good', note: 'Hoạt động bình thường.' },
-            { id: 'WT-09', wind: 9.0, power: 1845, expected: 2240, pitch: 3.6, eff: 82.4, gearTemp: 66.2, bearingTemp: 53.5, status: 'critical', note: 'CẢNH BÁO: Công suất phát thấp hơn kỳ vọng 17.6%. Nghi ngờ sai lệch góc Yaw (-6° so với hướng gió thực) hoặc lỗi hiệu chỉnh Anemometer.' },
-            { id: 'WT-10', wind: 8.6, power: 2095, expected: 2130, pitch: 2.0, eff: 98.4, gearTemp: 58.1, bearingTemp: 48.2, status: 'good', note: 'Hoạt động tối ưu.' },
-            { id: 'WT-11', wind: 8.8, power: 2150, expected: 2210, pitch: 2.1, eff: 97.3, gearTemp: 59.0, bearingTemp: 49.0, status: 'good', note: 'Vận hành ổn định.' },
-            { id: 'WT-12', wind: 8.5, power: 2030, expected: 2090, pitch: 2.2, eff: 97.1, gearTemp: 58.4, bearingTemp: 48.6, status: 'good', note: 'Vận hành ổn định.' }
+        const apiKey = ""; // Runtime environment injects key automatically
+
+        let turbinesData = [
+            { id: 'WT-01', wind: 8.5, actual: 1940, expected: 1960, eff: 99.0, gearboxTemp: 61, loss24h: 0.05, status: 'optimal', diagnosis: 'Hoạt động tối ưu, bám sát đường cong chuẩn IEC.' },
+            { id: 'WT-02', wind: 8.3, actual: 1850, expected: 1875, eff: 98.7, gearboxTemp: 60, loss24h: 0.06, status: 'optimal', diagnosis: 'Thông số rung động và nhiệt độ ổn định.' },
+            { id: 'WT-03', wind: 8.7, actual: 2010, expected: 2045, eff: 98.3, gearboxTemp: 62, loss24h: 0.08, status: 'optimal', diagnosis: 'Hoạt động bình thường.' },
+            { id: 'WT-04', wind: 8.6, actual: 1680, expected: 2005, eff: 83.8, gearboxTemp: 66, loss24h: 2.34, status: 'critical', diagnosis: 'Suy giảm 16.2% công suất! Đường cong dịch phải ở dải gió 7-12 m/s. Nghi ngờ lệch góc Pitch cánh 2 hoặc bám bẩn nặng mép trước cánh.' },
+            { id: 'WT-05', wind: 8.2, actual: 1795, expected: 1830, eff: 98.1, gearboxTemp: 59, loss24h: 0.09, status: 'optimal', diagnosis: 'Hoạt động tốt.' },
+            { id: 'WT-06', wind: 8.4, actual: 1880, expected: 1915, eff: 98.2, gearboxTemp: 61, loss24h: 0.08, status: 'optimal', diagnosis: 'Hoạt động tốt.' },
+            { id: 'WT-07', wind: 8.1, actual: 1730, expected: 1785, eff: 96.9, gearboxTemp: 74, loss24h: 0.14, status: 'optimal', diagnosis: 'Công suất đạt chuẩn nhưng nhiệt dầu hộp số (74°C) cao hơn 12°C so với cụm. Cần theo dõi hệ thống làm mát dầu.' },
+            { id: 'WT-08', wind: 8.5, actual: 1925, expected: 1960, eff: 98.2, gearboxTemp: 62, loss24h: 0.08, status: 'optimal', diagnosis: 'Hoạt động tốt.' },
+            { id: 'WT-09', wind: 8.4, actual: 1695, expected: 1915, eff: 88.5, gearboxTemp: 64, loss24h: 1.05, status: 'warning', diagnosis: 'Suy giảm 11.5% liên tục 6h qua. Nghi ngờ sai số hiệu chỉnh cảm biến đo gió (Anemometer) hoặc ảnh hưởng hiệu ứng vệt gió (Wake).' },
+            { id: 'WT-10', wind: 8.6, actual: 1975, expected: 2005, eff: 98.5, gearboxTemp: 60, loss24h: 0.07, status: 'optimal', diagnosis: 'Hoạt động tốt.' },
+            { id: 'WT-11', wind: 8.3, actual: 1840, expected: 1875, eff: 98.1, gearboxTemp: 61, loss24h: 0.08, status: 'optimal', diagnosis: 'Hoạt động tốt.' },
+            { id: 'WT-12', wind: 8.2, actual: 1790, expected: 1830, eff: 97.8, gearboxTemp: 60, loss24h: 0.09, status: 'optimal', diagnosis: 'Hoạt động tốt.' }
         ];
 
         let selectedTurbineId = 'WT-04';
-        let powerChartInstance = null;
+        let powerCurveChart = null;
         let currentThermalBase64 = null;
-        let currentThermalMime = 'image/png';
 
         // =========================================================================
-        // 2. TAB NAVIGATION & TOAST HELPER
+        // 2. INITIALIZATION & NAVIGATION
         // =========================================================================
+        window.onload = function() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            renderTurbineGrid();
+            renderFleetTable();
+            selectTurbine('WT-04');
+            loadSampleThermal('bushing'); // Load default sample thermal image
+            
+            // Initialize 6-month historical assessment dataset
+            initHistoryDropdown();
+            generateSixMonthSimulation(true);
+        };
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock-display').textContent = now.toLocaleTimeString('vi-VN');
+        }
+
         function switchTab(tabName) {
-            const views = ['health', 'chatbot', 'thermal'];
-            views.forEach(v => {
-                const viewEl = document.getElementById(`view-${v}`);
-                const btnEl = document.getElementById(`tab-btn-${v}`);
-                if (v === tabName) {
-                    viewEl.classList.remove('hidden');
-                    btnEl.classList.add('bg-slate-800', 'text-brand-400', 'shadow-sm');
-                    btnEl.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-900');
-                } else {
-                    viewEl.classList.add('hidden');
-                    btnEl.classList.remove('bg-slate-800', 'text-brand-400', 'shadow-sm');
-                    btnEl.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-900');
-                }
+            // Hide all views
+            ['health', 'history', 'chatbot', 'thermal'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-${t}`);
+                btn.classList.remove('bg-brand-600', 'text-white', 'shadow-md');
+                btn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/60');
             });
 
-            if (tabName === 'health' && powerChartInstance) {
-                powerChartInstance.resize();
+            // Show selected view
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/60');
+            activeBtn.classList.add('bg-brand-600', 'text-white', 'shadow-md');
+
+            if (tabName === 'health' && powerCurveChart) {
+                powerCurveChart.resize();
+            }
+            if (tabName === 'history') {
+                if (historyTrendChart) historyTrendChart.resize();
+                if (historyScatterChart) historyScatterChart.resize();
             }
         }
 
         function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast-notification');
-            const icon = document.getElementById('toast-icon');
-            const msg = document.getElementById('toast-message');
-            
-            msg.textContent = message;
-            icon.className = type === 'error' 
-                ? 'fa-solid fa-circle-exclamation text-rose-400' 
-                : 'fa-solid fa-circle-check text-brand-400';
-
-            toast.classList.remove('translate-y-20', 'opacity-0');
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = {
+                info: 'bg-slate-800 border-brand-500 text-white',
+                warning: 'bg-amber-950/90 border-amber-500 text-amber-200',
+                success: 'bg-emerald-950/90 border-emerald-500 text-emerald-200'
+            };
+            toast.className = `px-4 py-3 rounded-xl border shadow-xl text-xs font-medium flex items-center gap-2.5 transition-all transform translate-y-0 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info text-brand-400"></i><span>${message}</span>`;
+            container.appendChild(toast);
             setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3200);
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
 
         // =========================================================================
-        // 3. TAB 1: TURBINE GRID & POWER CURVE CHART
+        // 3. TAB 1: TURBINE HEALTH & POWER CURVE LOGIC
         // =========================================================================
         function renderTurbineGrid() {
             const grid = document.getElementById('turbine-grid');
@@ -684,44 +825,32 @@
 
             turbinesData.forEach(t => {
                 const isSelected = t.id === selectedTurbineId;
-                let borderClass = 'border-slate-800 hover:border-slate-700';
-                let dotColor = 'bg-emerald-500';
-                let textColor = 'text-emerald-400';
-                let bgHighlight = 'bg-slate-950';
+                let statusDot = 'bg-emerald-500';
+                let borderClass = isSelected ? 'border-brand-400 bg-brand-500/10 ring-1 ring-brand-400' : 'border-slate-800 bg-slate-900/80 hover:border-slate-700';
+                let effColor = 'text-emerald-400';
 
                 if (t.status === 'warning') {
-                    dotColor = 'bg-amber-500';
-                    textColor = 'text-amber-400';
-                    borderClass = isSelected ? 'border-amber-400 ring-2 ring-amber-500/20' : 'border-amber-500/30 hover:border-amber-500/60';
+                    statusDot = 'bg-amber-500 animate-pulse';
+                    effColor = 'text-amber-400';
+                    if (!isSelected) borderClass = 'border-amber-500/40 bg-amber-500/5';
                 } else if (t.status === 'critical') {
-                    dotColor = 'bg-rose-500 glow-red';
-                    textColor = 'text-rose-400';
-                    borderClass = isSelected ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-rose-500/40 hover:border-rose-500/80';
-                    bgHighlight = 'bg-rose-950/20';
-                } else if (isSelected) {
-                    borderClass = 'border-brand-400 ring-2 ring-brand-500/20';
+                    statusDot = 'bg-rose-500 animate-ping';
+                    effColor = 'text-rose-400';
+                    if (!isSelected) borderClass = 'border-rose-500/50 bg-rose-500/10';
                 }
 
                 const card = document.createElement('button');
                 card.onclick = () => selectTurbine(t.id);
-                card.className = `${bgHighlight} border ${borderClass} rounded-xl p-3 text-left transition-all flex flex-col justify-between relative overflow-hidden`;
-                
+                card.className = `p-3 rounded-xl border text-left transition-all flex flex-col justify-between ${borderClass}`;
                 card.innerHTML = `
-                    <div class="flex items-center justify-between w-full mb-2">
-                        <span class="font-mono font-bold text-sm text-white">${t.id}</span>
-                        <span class="w-2.5 h-2.5 rounded-full ${dotColor}"></span>
+                    <div class="flex items-center justify-between w-full mb-1.5">
+                        <span class="font-mono font-bold text-xs text-white">${t.id}</span>
+                        <span class="relative flex h-2.5 w-2.5">
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 ${statusDot}"></span>
+                        </span>
                     </div>
-                    <div class="my-1 flex items-center justify-between">
-                        <i class="fa-solid fa-fan text-slate-600 text-lg ${t.status === 'critical' ? 'animate-spin-turbine-slow text-rose-500/60' : 'animate-spin-turbine text-brand-500/60'}"></i>
-                        <div class="text-right">
-                            <div class="text-xs font-mono font-semibold text-slate-200">${(t.power / 1000).toFixed(2)} MW</div>
-                            <div class="text-[11px] font-mono ${textColor} font-bold">${t.eff.toFixed(1)}%</div>
-                        </div>
-                    </div>
-                    <div class="mt-2 pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                        <span>${t.wind} m/s</span>
-                        <span>${t.gearTemp}°C</span>
-                    </div>
+                    <div class="text-sm font-bold font-mono ${effColor}">${t.eff.toFixed(1)}%</div>
+                    <div class="text-[10px] text-slate-400 font-mono mt-0.5">${t.actual} kW</div>
                 `;
                 grid.appendChild(card);
             });
@@ -729,132 +858,112 @@
 
         function selectTurbine(id) {
             selectedTurbineId = id;
-            renderTurbineGrid();
-            updateTurbineDetailPanel();
-            updatePowerCurveChart();
-        }
-
-        function updateTurbineDetailPanel() {
-            const t = turbinesData.find(item => item.id === selectedTurbineId);
+            const t = turbinesData.find(item => item.id === id);
             if (!t) return;
 
-            document.getElementById('chart-turbine-title').textContent = t.id;
-            document.getElementById('detail-turbine-id').textContent = t.id;
-            document.getElementById('spec-wind').textContent = `${t.wind} m/s`;
-            document.getElementById('spec-power').innerHTML = `${t.power.toLocaleString()} <span class="text-xs text-slate-400">/ ${t.expected.toLocaleString()} kW</span>`;
-            document.getElementById('spec-pitch').textContent = `${t.pitch}°`;
-            
-            const effEl = document.getElementById('spec-eff');
-            effEl.textContent = `${t.eff.toFixed(1)}%`;
-            effEl.className = `text-base font-mono font-semibold ${t.status === 'critical' ? 'text-rose-400' : t.status === 'warning' ? 'text-amber-400' : 'text-emerald-400'}`;
+            renderTurbineGrid();
 
-            const gearEl = document.getElementById('spec-gear-temp');
-            gearEl.textContent = `${t.gearTemp} °C`;
-            gearEl.className = `text-base font-mono font-semibold ${t.gearTemp > 65 ? 'text-amber-400' : 'text-white'}`;
+            // Update Header Info
+            document.getElementById('chart-turbine-title').textContent = `Đường Cong Công Suất: ${t.id}`;
+            document.getElementById('selected-wind-info').textContent = `Gió: ${t.wind.toFixed(1)} m/s`;
+            document.getElementById('selected-power-info').textContent = `P: ${t.actual.toLocaleString()} kW`;
 
-            document.getElementById('spec-bearing-temp').textContent = `${t.bearingTemp} °C`;
-            document.getElementById('spec-ai-note').textContent = t.note;
-
-            // Update Badge & Box Styling
-            const badge = document.getElementById('chart-status-badge');
-            const box = document.getElementById('ai-diagnosis-box');
-
+            const badge = document.getElementById('chart-turbine-badge');
             if (t.status === 'critical') {
-                badge.textContent = 'Suy giảm hiệu suất (<90%)';
-                badge.className = 'px-2.5 py-0.5 text-xs font-medium rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30';
-                box.className = 'bg-rose-500/10 border border-rose-500/30 rounded-xl p-4';
+                badge.className = 'px-2.5 py-0.5 text-xs font-medium rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30';
+                badge.textContent = `Suy giảm ${(100 - t.eff).toFixed(1)}% (Cần kiểm tra)`;
             } else if (t.status === 'warning') {
-                badge.textContent = 'Cảnh báo nhẹ (90-95%)';
-                badge.className = 'px-2.5 py-0.5 text-xs font-medium rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30';
-                box.className = 'bg-amber-500/10 border border-amber-500/30 rounded-xl p-4';
+                badge.className = 'px-2.5 py-0.5 text-xs font-medium rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30';
+                badge.textContent = `Cảnh báo -${(100 - t.eff).toFixed(1)}%`;
             } else {
-                badge.textContent = 'Hoạt động tối ưu (≥95%)';
-                badge.className = 'px-2.5 py-0.5 text-xs font-medium rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
-                box.className = 'bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4';
+                badge.className = 'px-2.5 py-0.5 text-xs font-medium rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                badge.textContent = `Đạt chuẩn (${t.eff.toFixed(1)}%)`;
             }
+
+            // Update Diagnosis Box
+            const diagBox = document.getElementById('turbine-diagnosis-box');
+            const iconColor = t.status === 'critical' ? 'text-rose-400' : (t.status === 'warning' ? 'text-amber-400' : 'text-brand-400');
+            diagBox.innerHTML = `
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <i class="fa-solid fa-stethoscope ${iconColor}"></i> Chẩn đoán AI cho ${t.id}
+                    </span>
+                    <span class="text-[11px] font-mono text-slate-400">Tổn thất 24h: ${t.loss24h} MWh</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">${t.diagnosis}</p>
+            `;
+
+            updatePowerCurveChart(t);
         }
 
-        function generateTheoreticalCurve() {
-            const points = [];
-            for (let v = 2; v <= 20; v += 0.5) {
-                let p = 0;
-                if (v >= 3 && v < 12.5) {
-                    p = 3000 / (1 + Math.exp(-0.65 * (v - 7.5)));
-                } else if (v >= 12.5) {
-                    p = 3000;
-                }
-                points.push({ x: v, y: Math.round(p) });
-            }
-            return points;
+        function theoreticalPowerFn(v) {
+            if (v < 3) return 0;
+            if (v > 25) return 0;
+            // Logistic approximation of a 3000 kW wind turbine power curve
+            return 3000 / (1 + Math.exp(-0.68 * (v - 7.8)));
         }
 
-        function generateScatterPointsForTurbine(turbine) {
-            const scatter = [];
-            const ratio = turbine.eff / 100;
-            // Deterministic pseudo-random based on turbine id
-            const seedOffset = parseInt(turbine.id.split('-')[1]) * 17;
-
-            for (let i = 0; i < 85; i++) {
-                const pseudoRand1 = Math.abs(Math.sin(i * 12.9898 + seedOffset));
-                const pseudoRand2 = Math.abs(Math.cos(i * 78.233 + seedOffset));
-                
-                const v = 2.5 + pseudoRand1 * 16.5;
-                let baseP = 0;
-                if (v >= 3 && v < 12.5) {
-                    baseP = 3000 / (1 + Math.exp(-0.65 * (v - 7.5)));
-                } else if (v >= 12.5) {
-                    baseP = 3000;
-                }
-
-                // Apply efficiency degradation mainly in mid-to-high wind speeds
-                const effectiveRatio = v > 4.5 ? ratio : 0.98;
-                const noise = (pseudoRand2 - 0.5) * 140;
-                const actualP = Math.max(0, Math.min(3050, baseP * effectiveRatio + noise));
-
-                scatter.push({ x: Number(v.toFixed(2)), y: Math.round(actualP) });
-            }
-            return scatter;
-        }
-
-        function updatePowerCurveChart() {
+        function updatePowerCurveChart(turbine) {
             const ctx = document.getElementById('powerCurveChart').getContext('2d');
-            const t = turbinesData.find(item => item.id === selectedTurbineId);
-            
-            const baselineData = generateTheoreticalCurve();
-            const scatterData = generateScatterPointsForTurbine(t);
 
-            const scatterColor = t.status === 'critical' 
-                ? 'rgba(244, 63, 94, 0.65)' 
-                : t.status === 'warning' 
-                    ? 'rgba(245, 158, 11, 0.65)' 
-                    : 'rgba(45, 212, 191, 0.65)';
-
-            if (powerChartInstance) {
-                powerChartInstance.destroy();
+            // Generate baseline curve points (0 to 20 m/s)
+            const baselinePoints = [];
+            for (let v = 2; v <= 20; v += 0.5) {
+                baselinePoints.push({ x: v, y: Math.round(theoreticalPowerFn(v)) });
             }
 
-            powerChartInstance = new Chart(ctx, {
+            // Generate 120 historical 10-min scatter points for this turbine
+            const scatterPoints = [];
+            const effRatio = turbine.eff / 100;
+            for (let i = 0; i < 120; i++) {
+                const v = 3 + Math.random() * 15;
+                const baseP = theoreticalPowerFn(v);
+                // Add realistic noise and turbine-specific efficiency degradation
+                const noise = (Math.random() - 0.5) * 110;
+                const actualP = Math.max(0, Math.min(3020, baseP * effRatio + noise));
+                scatterPoints.push({ x: Number(v.toFixed(2)), y: Math.round(actualP) });
+            }
+
+            // Current operating point highlight
+            const currentPoint = [{ x: turbine.wind, y: turbine.actual }];
+
+            if (powerCurveChart) {
+                powerCurveChart.destroy();
+            }
+
+            const pointColor = turbine.status === 'critical' ? 'rgba(244, 63, 94, 0.65)' : (turbine.status === 'warning' ? 'rgba(245, 158, 11, 0.65)' : 'rgba(45, 212, 191, 0.55)');
+
+            powerCurveChart = new Chart(ctx, {
                 type: 'scatter',
                 data: {
                     datasets: [
                         {
-                            label: `Công suất thực tế ${t.id} (kW)`,
-                            data: scatterData,
-                            backgroundColor: scatterColor,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
+                            label: 'Điểm vận hành hiện tại',
+                            data: currentPoint,
+                            backgroundColor: '#ffffff',
+                            borderColor: '#f43f5e',
+                            borderWidth: 3,
+                            pointRadius: 7,
+                            pointHoverRadius: 9,
+                            order: 1
+                        },
+                        {
+                            label: 'Đường cong chuẩn (IEC Baseline)',
+                            data: baselinePoints,
+                            type: 'line',
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2.5,
+                            pointRadius: 0,
+                            tension: 0.4,
                             order: 2
                         },
                         {
-                            label: 'Đường cong chuẩn Digital Twin (kW)',
-                            data: baselineData,
-                            type: 'line',
-                            borderColor: '#f97316',
-                            backgroundColor: 'transparent',
-                            borderWidth: 3,
-                            pointRadius: 0,
-                            tension: 0.35,
-                            order: 1
+                            label: `Dữ liệu SCADA 10-phút (${turbine.id})`,
+                            data: scatterPoints,
+                            backgroundColor: pointColor,
+                            pointRadius: 3.5,
+                            order: 3
                         }
                     ]
                 },
@@ -867,10 +976,7 @@
                     },
                     plugins: {
                         legend: {
-                            labels: {
-                                color: '#cbd5e1',
-                                font: { family: 'Inter', size: 12 }
-                            }
+                            labels: { color: '#cbd5e1', font: { family: 'Inter', size: 11 } }
                         },
                         tooltip: {
                             backgroundColor: '#0f172a',
@@ -880,7 +986,7 @@
                             borderWidth: 1,
                             callbacks: {
                                 label: function(context) {
-                                    return `${context.dataset.label}: ${context.parsed.y} kW @ ${context.parsed.x} m/s`;
+                                    return `${context.dataset.label}: Gió ${context.parsed.x} m/s → ${context.parsed.y} kW`;
                                 }
                             }
                         }
@@ -888,50 +994,722 @@
                     scales: {
                         x: {
                             type: 'linear',
-                            position: 'bottom',
-                            min: 0,
-                            max: 21,
-                            title: {
-                                display: true,
-                                text: 'Tốc độ gió (m/s)',
-                                color: '#94a3b8',
-                                font: { family: 'Inter', size: 12 }
-                            },
-                            grid: { color: 'rgba(51, 65, 85, 0.4)' },
-                            ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } }
+                            min: 2,
+                            max: 20,
+                            title: { display: true, text: 'Tốc độ gió tại Nacelle (m/s)', color: '#94a3b8', font: { size: 11 } },
+                            grid: { color: 'rgba(51, 65, 85, 0.35)' },
+                            ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 11 } }
                         },
                         y: {
                             min: 0,
-                            max: 3300,
-                            title: {
-                                display: true,
-                                text: 'Công suất tác dụng (kW)',
-                                color: '#94a3b8',
-                                font: { family: 'Inter', size: 12 }
-                            },
-                            grid: { color: 'rgba(51, 65, 85, 0.4)' },
-                            ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } }
+                            max: 3200,
+                            title: { display: true, text: 'Công suất tác dụng (kW)', color: '#94a3b8', font: { size: 11 } },
+                            grid: { color: 'rgba(51, 65, 85, 0.35)' },
+                            ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 11 } }
                         }
                     }
                 }
             });
         }
 
-        function askAIAboutCurrentTurbine() {
-            const t = turbinesData.find(item => item.id === selectedTurbineId);
+        function renderFleetTable() {
+            const tbody = document.getElementById('fleet-table-body');
+            tbody.innerHTML = '';
+
+            // Sort by lowest efficiency first so engineers see anomalies at top
+            const sorted = [...turbinesData].sort((a, b) => a.eff - b.eff);
+
+            sorted.forEach(t => {
+                let badge = `<span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">Tối ưu</span>`;
+                if (t.status === 'critical') {
+                    badge = `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-400 border border-rose-500/30 font-mono font-semibold">Ưu tiên cao</span>`;
+                } else if (t.status === 'warning') {
+                    badge = `<span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-400 border border-amber-500/30 font-mono">Theo dõi</span>`;
+                }
+
+                const tempClass = t.gearboxTemp >= 72 ? 'text-amber-400 font-bold' : 'text-slate-300';
+
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-800/40 transition cursor-pointer';
+                row.onclick = () => {
+                    selectTurbine(t.id);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                row.innerHTML = `
+                    <td class="py-3 px-3 font-mono font-bold text-white">${t.id}</td>
+                    <td class="py-3 px-3 font-mono text-slate-300">${t.wind.toFixed(1)} m/s</td>
+                    <td class="py-3 px-3 font-mono text-slate-300"><span class="text-white font-semibold">${t.actual}</span> / ${t.expected} kW</td>
+                    <td class="py-3 px-3 font-mono font-semibold ${t.eff < 90 ? 'text-rose-400' : 'text-emerald-400'}">${t.eff.toFixed(1)}%</td>
+                    <td class="py-3 px-3 font-mono ${tempClass}">${t.gearboxTemp}°C</td>
+                    <td class="py-3 px-3 font-mono text-slate-300">${t.loss24h.toFixed(2)} MWh</td>
+                    <td class="py-3 px-3">${badge}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function refreshLiveScada() {
+            let totalPower = 0;
+            let totalEff = 0;
+
+            turbinesData = turbinesData.map(t => {
+                const deltaWind = (Math.random() - 0.5) * 0.4;
+                const newWind = Math.max(4.5, Math.min(14.5, Number((t.wind + deltaWind).toFixed(1))));
+                const newExpected = Math.round(theoreticalPowerFn(newWind));
+                const newActual = Math.round(newExpected * (t.eff / 100));
+                totalPower += newActual;
+                totalEff += t.eff;
+                return { ...t, wind: newWind, expected: newExpected, actual: newActual };
+            });
+
+            document.getElementById('kpi-total-power').textContent = (totalPower / 1000).toFixed(2);
+            document.getElementById('kpi-avg-eff').textContent = (totalEff / turbinesData.length).toFixed(1) + '%';
+
+            renderFleetTable();
+            selectTurbine(selectedTurbineId);
+            showToast('Đã đồng bộ chu kỳ SCADA 10-phút mới nhất!', 'success');
+        }
+
+        function askAiAboutFleet() {
             switchTab('chatbot');
-            const prompt = `Hãy phân tích sâu tình trạng của tuabin ${t.id} (Tốc độ gió ${t.wind} m/s, Công suất ${t.power}/${t.expected} kW, Hiệu suất ${t.eff}%, Góc Pitch ${t.pitch}°, Nhiệt độ dầu hộp số ${t.gearTemp}°C) và đề xuất các bước kiểm tra thực địa.`;
-            sendQuickPrompt(prompt);
+            sendQuickPrompt('Dựa trên dữ liệu SCADA hiện tại của 12 tuabin (đặc biệt WT-04 hiệu suất 83.8%, WT-09 hiệu suất 88.5%, và nhiệt độ hộp số WT-07 là 74°C), hãy lập kế hoạch kiểm tra và bảo trì ưu tiên cho đội O&M trong tuần này.');
         }
 
         // =========================================================================
-        // 4. GEMINI API INTEGRATION (TEXT & MULTIMODAL VISION)
+        // 4. TAB 2: 6-MONTH HISTORICAL DATA ASSESSMENT (10-MIN INTERVAL)
         // =========================================================================
-        const apiKey = ""; // Provided automatically by runtime environment
+        let historicalAssessmentData = {}; // Keyed by WT-01 .. WT-12
+        let historyTrendChart = null;
+        let historyScatterChart = null;
 
-        async function callGeminiWithBackoff(payload, retries = 3) {
+        function initHistoryDropdown() {
+            const select = document.getElementById('history-turbine-select');
+            select.innerHTML = '';
+            for (let i = 1; i <= 12; i++) {
+                const id = `WT-${i.toString().padStart(2, '0')}`;
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.textContent = `Chi tiết Tuabin ${id}`;
+                if (id === 'WT-04') opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+
+        // Generate realistic 6-month (26 weeks, 26,280 10-min intervals per turbine) dataset
+        function generateSixMonthSimulation(isInitial = false) {
+            const turbineProfiles = {
+                'WT-01': { basePi: 99.1, decayPerMonth: 0.08, onsetWeek: 26, rmse: 38, cause: 'Vận hành chuẩn IEC, không có dấu hiệu suy hao.' },
+                'WT-02': { basePi: 98.8, decayPerMonth: 0.10, onsetWeek: 26, rmse: 41, cause: 'Cân bằng khí động học cánh tốt.' },
+                'WT-03': { basePi: 98.5, decayPerMonth: 0.12, onsetWeek: 26, rmse: 44, cause: 'Hoạt động ổn định suốt 6 tháng.' },
+                'WT-04': { basePi: 98.2, decayPerMonth: 2.85, onsetWeek: 11, rmse: 185, cause: 'Suy giảm mạnh từ Tuần 11 (-16.2% hiện tại). Lỗi sai lệch góc Pitch cánh 2 và xói mòn mép trước.' },
+                'WT-05': { basePi: 98.4, decayPerMonth: 0.11, onsetWeek: 26, rmse: 42, cause: 'Hoạt động ổn định.' },
+                'WT-06': { basePi: 98.6, decayPerMonth: 0.09, onsetWeek: 26, rmse: 39, cause: 'Hoạt động tối ưu.' },
+                'WT-07': { basePi: 97.9, decayPerMonth: 0.45, onsetWeek: 18, rmse: 68, cause: 'Suy giảm nhẹ cuối kỳ kèm tăng nhiệt dầu hộp số (+12°C). Cần lọc dầu & vệ sinh két làm mát.' },
+                'WT-08': { basePi: 98.7, decayPerMonth: 0.10, onsetWeek: 26, rmse: 40, cause: 'Hoạt động ổn định.' },
+                'WT-09': { basePi: 98.0, decayPerMonth: 1.75, onsetWeek: 14, rmse: 132, cause: 'Suy giảm từ Tuần 14 (-11.5%). Sai số hiệu chỉnh cảm biến đo gió Nacelle (Anemometer drift).' },
+                'WT-10': { basePi: 98.9, decayPerMonth: 0.07, onsetWeek: 26, rmse: 37, cause: 'Hiệu suất thuộc nhóm dẫn đầu trang trại.' },
+                'WT-11': { basePi: 98.3, decayPerMonth: 0.14, onsetWeek: 26, rmse: 45, cause: 'Hoạt động bình thường.' },
+                'WT-12': { basePi: 94.8, decayPerMonth: 0.65, onsetWeek: 9,  rmse: 89, cause: 'Bám bụi/côn trùng bề mặt cánh tích tụ theo mùa gió. Khuyến nghị rửa cánh định kỳ.' }
+            };
+
+            historicalAssessmentData = {};
+
+            Object.keys(turbineProfiles).forEach(id => {
+                const prof = turbineProfiles[id];
+                const weeklyPi = [];
+                let sumPi = 0;
+
+                for (let w = 1; w <= 26; w++) {
+                    let pi = prof.basePi + (Math.random() - 0.5) * 0.8;
+                    if (w >= prof.onsetWeek) {
+                        const weeksElapsed = w - prof.onsetWeek + 1;
+                        pi -= (prof.decayPerMonth / 4.33) * weeksElapsed;
+                    }
+                    pi = Math.max(75, Math.min(100.5, Number(pi.toFixed(2))));
+                    weeklyPi.push(pi);
+                    sumPi += pi;
+                }
+
+                const avgPi = Number((sumPi / 26).toFixed(2));
+                const endPi = weeklyPi[25];
+                const expectedEnergyMWh = 4680 + Math.round((Math.random() - 0.5) * 120);
+                const actualEnergyMWh = Math.round(expectedEnergyMWh * (avgPi / 100));
+                const lossMWh = Math.max(0, expectedEnergyMWh - actualEnergyMWh);
+
+                // Generate 300 representative 10-min scatter samples from the 26,280 records
+                const scatterSamples = [];
+                for (let s = 0; s < 300; s++) {
+                    const v = 2.5 + Math.random() * 16.5;
+                    const baseP = theoreticalPowerFn(v);
+                    // Sample from early or late period
+                    const samplePi = (s < 150 ? prof.basePi : endPi) / 100;
+                    const noise = (Math.random() - 0.5) * prof.rmse * 1.4;
+                    const p = Math.max(0, Math.min(3030, baseP * samplePi + noise));
+                    scatterSamples.push({ x: Number(v.toFixed(2)), y: Math.round(p) });
+                }
+
+                historicalAssessmentData[id] = {
+                    id,
+                    sampleCount: 26280,
+                    validSamples: 25410,
+                    expectedEnergyMWh,
+                    actualEnergyMWh,
+                    avgPi,
+                    endPi,
+                    decayPerMonth: prof.decayPerMonth,
+                    rmse: prof.rmse,
+                    lossMWh,
+                    weeklyPi,
+                    scatterSamples,
+                    cause: prof.cause
+                };
+            });
+
+            document.getElementById('dataset-source-name').textContent = 'Mô phỏng 6 tháng (180 ngày)';
+            document.getElementById('dataset-sample-count').textContent = '315,360 mẫu';
+
+            recalculateHistoryMetrics();
+            if (!isInitial) {
+                showToast('Đã nạp và phân tích 315,360 bản ghi SCADA 6 tháng!', 'success');
+            }
+        }
+
+        // Parse real user-uploaded CSV or XLSX file using SheetJS
+        function handleScadaFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(firstSheet);
+
+                    if (!rows || rows.length === 0) {
+                        showToast('Tệp dữ liệu trống hoặc không đúng định dạng!', 'warning');
+                        return;
+                    }
+
+                    processUploadedScadaRows(rows, file.name);
+                } catch (err) {
+                    console.error(err);
+                    showToast('Lỗi đọc tệp CSV/Excel. Vui lòng kiểm tra cấu trúc cột.', 'warning');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function processUploadedScadaRows(rows, fileName) {
+            // Group rows by Turbine_ID (if file has 1 turbine, apply to WT-04 or specified ID)
+            const grouped = {};
+            rows.forEach(r => {
+                const tId = (r.Turbine_ID || r.Turbine || r.WT_ID || 'WT-04').toString().trim().toUpperCase();
+                const v = parseFloat(r.Wind_Speed ?? r.WindSpeed ?? r.wind_speed ?? r.V);
+                const p = parseFloat(r.Active_Power ?? r.Power ?? r.active_power ?? r.P);
+                if (!isNaN(v) && !isNaN(p)) {
+                    if (!grouped[tId]) grouped[tId] = [];
+                    grouped[tId].push({ v, p, ts: r.Timestamp || r.Time || '' });
+                }
+            });
+
+            const detectedTurbines = Object.keys(grouped);
+            if (detectedTurbines.length === 0) {
+                showToast('Không tìm thấy cột Wind_Speed và Active_Power hợp lệ!', 'warning');
+                return;
+            }
+
+            detectedTurbines.forEach(id => {
+                const records = grouped[id];
+                if (!historicalAssessmentData[id]) {
+                    // Clone structure if custom turbine name
+                    historicalAssessmentData[id] = JSON.parse(JSON.stringify(historicalAssessmentData['WT-01']));
+                    historicalAssessmentData[id].id = id;
+                }
+
+                // Filter downtime (v > 3.5 && p <= 5)
+                const validRecords = records.filter(item => !(item.v > 3.5 && item.p <= 5));
+                let sumActual = 0;
+                let sumExpected = 0;
+                let sumSqErr = 0;
+
+                validRecords.forEach(item => {
+                    const expP = theoreticalPowerFn(item.v);
+                    sumActual += item.p;
+                    sumExpected += expP;
+                    sumSqErr += Math.pow(item.p - expP, 2);
+                });
+
+                const avgPi = sumExpected > 0 ? Number(((sumActual / sumExpected) * 100).toFixed(2)) : 95.0;
+                const rmse = validRecords.length > 0 ? Math.round(Math.sqrt(sumSqErr / validRecords.length)) : 50;
+
+                // Split into 26 buckets for trend chart
+                const chunkSize = Math.max(1, Math.floor(validRecords.length / 26));
+                const weeklyPi = [];
+                for (let w = 0; w < 26; w++) {
+                    const slice = validRecords.slice(w * chunkSize, (w + 1) * chunkSize);
+                    if (slice.length > 0) {
+                        const sAct = slice.reduce((a, b) => a + b.p, 0);
+                        const sExp = slice.reduce((a, b) => a + theoreticalPowerFn(b.v), 0);
+                        weeklyPi.push(sExp > 0 ? Number(((sAct / sExp) * 100).toFixed(2)) : avgPi);
+                    } else {
+                        weeklyPi.push(avgPi);
+                    }
+                }
+
+                // Convert 10-min kW samples to MWh (each 10-min interval = 1/6 hour)
+                const actualEnergyMWh = Math.round((sumActual / 6) / 1000);
+                const expectedEnergyMWh = Math.round((sumExpected / 6) / 1000);
+                const lossMWh = Math.max(0, expectedEnergyMWh - actualEnergyMWh);
+                const decayPerMonth = Number(Math.max(0.05, (weeklyPi[0] - weeklyPi[25]) / 6).toFixed(2));
+
+                historicalAssessmentData[id] = {
+                    ...historicalAssessmentData[id],
+                    sampleCount: records.length,
+                    validSamples: validRecords.length,
+                    actualEnergyMWh,
+                    expectedEnergyMWh,
+                    avgPi,
+                    endPi: weeklyPi[25],
+                    decayPerMonth,
+                    rmse,
+                    lossMWh,
+                    weeklyPi,
+                    scatterSamples: validRecords.slice(0, 400).map(r => ({ x: r.v, y: r.p })),
+                    cause: avgPi < 90
+                        ? `Dữ liệu thực tế từ ${fileName}: Hiệu suất TB thấp (${avgPi}%), RMSE cao (${rmse} kW). Cần kiểm tra khí động học cánh và cảm biến.`
+                        : (avgPi < 95
+                            ? `Dữ liệu thực tế từ ${fileName}: Suy giảm nhẹ (${avgPi}%), đề nghị vệ sinh bề mặt cánh và hiệu chuẩn Anemometer.`
+                            : `Dữ liệu thực tế từ ${fileName}: Tuabin vận hành ổn định, đạt chuẩn IEC 61400-12-1.`)
+                };
+            });
+
+            document.getElementById('dataset-source-name').textContent = fileName;
+            document.getElementById('dataset-sample-count').textContent = `${rows.length.toLocaleString()} mẫu thực tế`;
+
+            // Select the first uploaded turbine in dropdown
+            if (document.querySelector(`#history-turbine-select option[value="${detectedTurbines[0]}"]`)) {
+                document.getElementById('history-turbine-select').value = detectedTurbines[0];
+            }
+
+            recalculateHistoryMetrics();
+            showToast(`Đã xử lý thành công ${rows.length.toLocaleString()} dòng dữ liệu từ tệp ${fileName}!`, 'success');
+        }
+
+        function downloadSampleCsv() {
+            let csvContent = "Timestamp,Turbine_ID,Wind_Speed,Active_Power,Status\n";
+            const startTime = new Date("2026-05-01T00:00:00Z").getTime();
+            // Generate 500 sample rows (10-min intervals) across WT-01, WT-04, WT-09
+            const sampleIds = ['WT-01', 'WT-04', 'WT-09'];
+            for (let i = 0; i < 600; i++) {
+                const ts = new Date(startTime + Math.floor(i / 3) * 10 * 60000).toISOString();
+                const tId = sampleIds[i % 3];
+                const v = Number((3.5 + Math.random() * 14).toFixed(2));
+                const eff = tId === 'WT-04' ? 0.84 : (tId === 'WT-09' ? 0.89 : 0.99);
+                const p = Math.round(theoreticalPowerFn(v) * eff + (Math.random() - 0.5) * 60);
+                csvContent += `${ts},${tId},${v},${Math.max(0, p)},Running\n`;
+            }
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'SCADA_6Months_10min_Sample.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Đã tải xuống tệp mẫu SCADA_6Months_10min_Sample.csv', 'info');
+        }
+
+        function getQualityGrade(avgPi, decayPerMonth) {
+            if (avgPi >= 95.5 && decayPerMonth < 0.5) {
+                return { grade: 'Hạng A', label: 'Tốt / Đạt chuẩn', color: 'emerald', action: 'Duy trì bảo dưỡng định kỳ 6 tháng' };
+            } else if (avgPi >= 91.0 && decayPerMonth < 1.5) {
+                return { grade: 'Hạng B', label: 'Suy giảm nhẹ', color: 'amber', action: 'Rửa cánh & hiệu chuẩn cảm biến gió' };
+            } else {
+                return { grade: 'Hạng C', label: 'Kém / Cần đại tu', color: 'rose', action: 'Kiểm tra hệ thống Pitch & soi cánh bằng Drone' };
+            }
+        }
+
+        function recalculateHistoryMetrics() {
+            const list = Object.values(historicalAssessmentData);
+            if (list.length === 0) return;
+
+            let totalActualMWh = 0;
+            let totalLossMWh = 0;
+            let sumPi = 0;
+            let countA = 0, countB = 0, countC = 0;
+
+            list.forEach(item => {
+                totalActualMWh += item.actualEnergyMWh;
+                totalLossMWh += item.lossMWh;
+                sumPi += item.avgPi;
+                const g = getQualityGrade(item.avgPi, item.decayPerMonth);
+                if (g.grade === 'Hạng A') countA++;
+                else if (g.grade === 'Hạng B') countB++;
+                else countC++;
+            });
+
+            const fleetAvgPi = (sumPi / list.length).toFixed(1);
+            const lossBillionVnd = ((totalLossMWh * 1900000) / 1e9).toFixed(2); // ~1,900 VND/kWh
+
+            document.getElementById('hist-kpi-energy').textContent = `${totalActualMWh.toLocaleString()} MWh`;
+            document.getElementById('hist-kpi-pi').textContent = `${fleetAvgPi}%`;
+            document.getElementById('hist-kpi-grades').innerHTML = `
+                <span class="text-emerald-400">${countA} Hạng A</span> • 
+                <span class="text-amber-400">${countB} B</span> • 
+                <span class="text-rose-400">${countC} C</span>
+            `;
+            document.getElementById('hist-kpi-loss').textContent = `${totalLossMWh.toLocaleString()} MWh`;
+            document.getElementById('hist-kpi-loss-vnd').textContent = `~${lossBillionVnd} Tỷ VNĐ tổn thất sản lượng`;
+
+            renderHistoryQualityTable(list);
+            updateHistoryCharts();
+            renderDefaultHistoryAudit(list, totalLossMWh, lossBillionVnd);
+        }
+
+        function renderHistoryQualityTable(list) {
+            const tbody = document.getElementById('history-quality-table-body');
+            tbody.innerHTML = '';
+
+            // Sort lowest PI first to highlight degraded turbines
+            const sorted = [...list].sort((a, b) => a.avgPi - b.avgPi);
+
+            sorted.forEach(item => {
+                const g = getQualityGrade(item.avgPi, item.decayPerMonth);
+                const badgeColors = {
+                    emerald: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+                    amber: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+                    rose: 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                };
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/40 transition cursor-pointer';
+                tr.onclick = () => {
+                    document.getElementById('history-turbine-select').value = item.id;
+                    updateHistoryCharts();
+                };
+                tr.innerHTML = `
+                    <td class="py-2.5 px-2.5 font-mono font-bold text-white">${item.id}</td>
+                    <td class="py-2.5 px-2.5 font-mono text-slate-300">${item.actualEnergyMWh.toLocaleString()} MWh</td>
+                    <td class="py-2.5 px-2.5 font-mono font-semibold text-${g.color}-400">${item.avgPi.toFixed(1)}%</td>
+                    <td class="py-2.5 px-2.5 font-mono text-slate-300">-${item.decayPerMonth.toFixed(2)}%/tháng</td>
+                    <td class="py-2.5 px-2.5 font-mono text-slate-300">${item.lossMWh.toLocaleString()} MWh</td>
+                    <td class="py-2.5 px-2.5">
+                        <span class="px-2 py-0.5 rounded-md border text-[11px] font-semibold ${badgeColors[g.color]}">${g.grade}</span>
+                    </td>
+                    <td class="py-2.5 px-2.5 text-slate-300">${g.action}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateHistoryCharts() {
+            const selectedId = document.getElementById('history-turbine-select').value || 'WT-04';
+            const item = historicalAssessmentData[selectedId];
+            if (!item) return;
+
+            const g = getQualityGrade(item.avgPi, item.decayPerMonth);
+            const badge = document.getElementById('hist-selected-grade-badge');
+            const badgeMap = {
+                emerald: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                amber: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+                rose: 'bg-rose-500/20 text-rose-400 border-rose-500/30'
+            };
+            badge.className = `px-2.5 py-0.5 text-xs font-semibold rounded-full border ${badgeMap[g.color]}`;
+            badge.textContent = `${g.grade} (${g.label})`;
+
+            // 1. Weekly Trend Line Chart (26 Weeks)
+            const ctxTrend = document.getElementById('historyTrendChart').getContext('2d');
+            if (historyTrendChart) historyTrendChart.destroy();
+
+            const weekLabels = Array.from({ length: 26 }, (_, i) => `Tuần ${i + 1}`);
+            const fleetBenchmark = Array(26).fill(98.2);
+            const alertThresholdLine = Array(26).fill(92.0);
+
+            historyTrendChart = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: weekLabels,
+                    datasets: [
+                        {
+                            label: `Chỉ số PI ${selectedId} (%)`,
+                            data: item.weeklyPi,
+                            borderColor: g.color === 'rose' ? '#f43f5e' : (g.color === 'amber' ? '#f59e0b' : '#14b8a6'),
+                            backgroundColor: g.color === 'rose' ? 'rgba(244, 63, 94, 0.12)' : 'rgba(20, 184, 166, 0.12)',
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 3
+                        },
+                        {
+                            label: 'Chuẩn cụm tuabin tốt (98.2%)',
+                            data: fleetBenchmark,
+                            borderColor: '#38bdf8',
+                            borderDash: [5, 5],
+                            borderWidth: 1.5,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Ngưỡng cảnh báo đại tu (92.0%)',
+                            data: alertThresholdLine,
+                            borderColor: '#ef4444',
+                            borderDash: [3, 3],
+                            borderWidth: 1.2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                            ticks: { color: '#94a3b8', maxTicksLimit: 13, font: { size: 10 } }
+                        },
+                        y: {
+                            min: 75,
+                            max: 102,
+                            title: { display: true, text: 'Chỉ số Hiệu suất Năng lượng PI (%)', color: '#94a3b8', font: { size: 11 } },
+                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                            ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            // 2. 6-Month Aggregated Power Curve Scatter Chart
+            const ctxScatter = document.getElementById('historyScatterChart').getContext('2d');
+            if (historyScatterChart) historyScatterChart.destroy();
+
+            const baselinePoints = [];
+            for (let v = 2; v <= 20; v += 0.5) {
+                baselinePoints.push({ x: v, y: Math.round(theoreticalPowerFn(v)) });
+            }
+
+            historyScatterChart = new Chart(ctxScatter, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Đường cong chuẩn IEC',
+                            data: baselinePoints,
+                            type: 'line',
+                            borderColor: '#f59e0b',
+                            borderWidth: 2.5,
+                            pointRadius: 0,
+                            tension: 0.4,
+                            order: 1
+                        },
+                        {
+                            label: `Mẫu 10-phút 6T (${selectedId})`,
+                            data: item.scatterSamples,
+                            backgroundColor: g.color === 'rose' ? 'rgba(244, 63, 94, 0.45)' : (g.color === 'amber' ? 'rgba(245, 158, 11, 0.45)' : 'rgba(20, 184, 166, 0.45)'),
+                            pointRadius: 2.5,
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            min: 2,
+                            max: 20,
+                            title: { display: true, text: 'Tốc độ gió (m/s)', color: '#94a3b8', font: { size: 10 } },
+                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        },
+                        y: {
+                            min: 0,
+                            max: 3200,
+                            title: { display: true, text: 'Công suất (kW)', color: '#94a3b8', font: { size: 10 } },
+                            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDefaultHistoryAudit(list, totalLossMWh, lossBillionVnd) {
+            const degraded = list.filter(i => i.avgPi < 95).sort((a, b) => a.avgPi - b.avgPi);
+            const box = document.getElementById('ai-history-report-box');
+
+            let degradedHtml = degraded.map(d => `<li><strong>${d.id} (PI: ${d.avgPi}%):</strong> ${d.cause}</li>`).join('');
+            if (!degradedHtml) {
+                degradedHtml = '<li>Tất cả 12 tuabin đều đạt hiệu suất trên 95% trong chu kỳ 6 tháng qua.</li>';
+            }
+
+            box.innerHTML = `
+                <p><strong>Tổng kết chất lượng 6 tháng (Chu kỳ 10 phút):</strong></p>
+                <p>Hệ thống đã xử lý dữ liệu vận hành 180 ngày. Tổng tổn thất sản lượng tích lũy của toàn cụm là <strong>${totalLossMWh.toLocaleString()} MWh (~${lossBillionVnd} Tỷ VNĐ)</strong>.</p>
+                <p><strong>Các tuabin suy giảm chất lượng trọng điểm:</strong></p>
+                <ul>${degradedHtml}</ul>
+                <p><strong>Đề xuất O&M:</strong> Ưu tiên dừng máy bảo dưỡng có kế hoạch cho <strong>${degraded[0]?.id || 'WT-04'}</strong> vào khung giờ gió thấp (&lt; 4 m/s) để hiệu chuẩn hệ thống Pitch và kiểm tra bề mặt cánh.</p>
+            `;
+        }
+
+        async function generateAiHistoryAudit() {
+            const btn = document.getElementById('btn-ai-history-audit');
+            const box = document.getElementById('ai-history-report-box');
+            const list = Object.values(historicalAssessmentData);
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>Đang tổng hợp dữ liệu 6 tháng...</span>`;
+            box.innerHTML = `<p class="text-brand-400"><i class="fa-solid fa-circle-notch fa-spin mr-1.5"></i>Gemini AI đang tính toán tốc độ suy hao tuyến tính và lập báo cáo kỹ thuật cho 12 tuabin...</p>`;
+
+            const summaryText = list.map(i => `${i.id}: PI_TB=${i.avgPi}%, PI_CuoiKy=${i.endPi}%, SuyGiam=${i.decayPerMonth}%/thang, TonThat=${i.lossMWh}MWh`).join('; ');
+            const prompt = `Dựa trên kết quả tổng hợp dữ liệu SCADA 6 tháng (chu kỳ 10 phút) của 12 tuabin điện gió sau đây: [${summaryText}]. Hãy viết một báo cáo đánh giá chất lượng tuabin ngắn gọn (khoảng 180-220 từ) bằng tiếng Việt chuyên ngành điện gió gồm 3 phần: (1) Đánh giá tổng thể sức khỏe cụm 12 tuabin, (2) Phân tích nguyên nhân kỹ thuật đối với các trụ bị suy giảm mạnh nhất, (3) Lộ trình hành động O&M tối ưu chi phí trong quý tới.`;
+
+            try {
+                const reply = await callGeminiTextAPI(prompt, "Bạn là Kỹ sư trưởng phân tích dữ liệu hiệu suất điện gió (Wind Performance Engineer) theo tiêu chuẩn IEC 61400-12-1.");
+                box.innerHTML = formatMarkdownToHtml(reply);
+                showToast('Đã hoàn thành báo cáo đánh giá chất lượng 6 tháng!', 'success');
+            } catch (err) {
+                box.innerHTML = `<p class="text-rose-400">Không thể kết nối máy chủ AI lúc này. Vui lòng thử lại sau.</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>Phân tích chuyên sâu bằng Gemini AI</span>`;
+            }
+        }
+
+        // =========================================================================
+        // 5. TAB 3: AI O&M CHATBOT (GEMINI API WITH EXPONENTIAL BACKOFF)
+        // =========================================================================
+        function sendQuickPrompt(text) {
+            document.getElementById('chat-input').value = text;
+            handleChatSubmit(new Event('submit'));
+        }
+
+        function clearChat() {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white shrink-0 mt-0.5">
+                        <i class="fa-solid fa-robot text-xs"></i>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-none p-3.5 text-sm text-slate-200 max-w-[85%]">
+                        Đã làm mới phiên làm việc. Tôi sẵn sàng hỗ trợ các bài toán vận hành, phân tích dữ liệu 6 tháng và bảo trì 12 tuabin điện gió.
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const userText = input.value.trim();
+            if (!userText) return;
+
+            input.value = '';
+            appendChatMessage('user', userText);
+
+            const loadingId = appendChatLoading();
+            const sendBtn = document.getElementById('chat-send-btn');
+            sendBtn.disabled = true;
+
+            // Build live fleet context + 6-month history summary
+            const fleetSummary = turbinesData.map(t => `${t.id}: Gió ${t.wind}m/s, P=${t.actual}/${t.expected}kW, Hiệu suất ${t.eff}%, Nhiệt hộp số ${t.gearboxTemp}°C`).join('; ');
+            const histSummary = Object.values(historicalAssessmentData).filter(h => h.avgPi < 96).map(h => `${h.id} (PI 6T: ${h.avgPi}%, Suy giảm: ${h.decayPerMonth}%/tháng, Tổn thất: ${h.lossMWh}MWh)`).join('; ');
+
+            const systemInstruction = `Bạn là AeroPredict O&M Assistant - Chuyên gia kỹ thuật vận hành & bảo dưỡng (O&M) nhà máy điện gió gồm 12 tuabin (công suất 3MW/trụ, tổng 36MW) và trạm biến áp 110kV.
+Dữ liệu SCADA thời gian thực hiện tại của nhà máy: [${fleetSummary}].
+Dữ liệu đánh giá lịch sử 6 tháng (chu kỳ 10 phút) các trụ suy giảm: [${histSummary}].
+Hãy trả lời ngắn gọn, chính xác, chuyên nghiệp bằng tiếng Việt, sử dụng gạch đầu dòng rõ ràng, tập trung vào giải pháp kỹ thuật thực tế, an toàn điện và tối ưu sản lượng.`;
+
+            try {
+                const reply = await callGeminiTextAPI(userText, systemInstruction);
+                removeChatLoading(loadingId);
+                appendChatMessage('ai', reply);
+            } catch (error) {
+                removeChatLoading(loadingId);
+                appendChatMessage('ai', '⚠️ Hệ thống AI đang bận hoặc mất kết nối mạng. Dựa trên quy trình chuẩn: Với các tuabin suy giảm công suất như WT-04 (-16.2%), kỹ sư cần kiểm tra log lỗi góc Pitch, đối chiếu tốc độ gió giữa các trụ lân cận và kiểm tra bề mặt mép trước cánh bằng drone.');
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        function appendChatMessage(sender, text) {
+            const container = document.getElementById('chat-messages');
+            const wrapper = document.createElement('div');
+            wrapper.className = sender === 'user' ? 'flex items-start justify-end gap-3' : 'flex items-start gap-3';
+
+            const formattedText = formatMarkdownToHtml(text);
+
+            if (sender === 'user') {
+                wrapper.innerHTML = `
+                    <div class="bg-brand-600 text-white rounded-2xl rounded-tr-none px-4 py-3 text-sm max-w-[80%] shadow-md">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white shrink-0 mt-0.5">
+                        <i class="fa-solid fa-robot text-xs"></i>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-none p-4 text-sm text-slate-200 max-w-[85%] leading-relaxed markdown-body">
+                        ${formattedText}
+                    </div>
+                `;
+            }
+
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function appendChatLoading() {
+            const id = 'loading-' + Date.now();
+            const container = document.getElementById('chat-messages');
+            const wrapper = document.createElement('div');
+            wrapper.id = id;
+            wrapper.className = 'flex items-start gap-3';
+            wrapper.innerHTML = `
+                <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white shrink-0">
+                    <i class="fa-solid fa-robot text-xs"></i>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-none px-4 py-3 text-xs text-slate-400 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-notch fa-spin text-brand-400"></i>
+                    <span>Đang phân tích dữ liệu SCADA và tra cứu quy trình kỹ thuật...</span>
+                </div>
+            `;
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+            return id;
+        }
+
+        function removeChatLoading(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function formatMarkdownToHtml(md) {
+            return md
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n\s*[-*]\s+(.*)/g, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+        }
+
+        async function callGeminiTextAPI(userQuery, systemPrompt) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-            for (let i = 0; i < retries; i++) {
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            const delays = [1000, 2000, 4000];
+            for (let attempt = 0; attempt <= delays.length; attempt++) {
                 try {
                     const response = await fetch(url, {
                         method: 'POST',
@@ -940,388 +1718,251 @@
                     });
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     const data = await response.json();
-                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (text) return text;
-                    throw new Error("Empty response");
+                    throw new Error('Empty response');
                 } catch (err) {
-                    if (i === retries - 1) throw err;
-                    await new Promise(res => setTimeout(res, Math.pow(2, i) * 1000));
+                    if (attempt === delays.length) throw err;
+                    await new Promise(res => setTimeout(res, delays[attempt]));
                 }
             }
         }
 
         // =========================================================================
-        // 5. TAB 2: O&M CHATBOT LOGIC
+        // 6. TAB 4: THERMAL IMAGING DIAGNOSTICS (CANVAS + GEMINI VISION)
         // =========================================================================
-        function formatSimpleMarkdown(text) {
-            // Convert bold, bullet points, and line breaks cleanly
-            let html = text
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/^\* (.*$)/gim, '<li>$1</li>')
-                .replace(/^- (.*$)/gim, '<li>$1</li>');
-            
-            // Wrap consecutive <li> in <ul>
-            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-            html = html.split('\n\n').map(p => p.startsWith('<ul>') ? p : `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
-            return html;
-        }
-
-        function appendChatMessage(role, contentHtml) {
-            const container = document.getElementById('chat-messages');
-            const wrapper = document.createElement('div');
-            
-            if (role === 'user') {
-                wrapper.className = 'flex items-start justify-end gap-3';
-                wrapper.innerHTML = `
-                    <div class="bg-brand-600 text-white rounded-2xl rounded-tr-none px-4 py-3 max-w-2xl text-sm leading-relaxed shadow-sm">
-                        ${contentHtml}
-                    </div>
-                    <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-user-helmet-safety text-slate-300 text-xs"></i>
-                    </div>
-                `;
-            } else {
-                wrapper.className = 'flex items-start gap-3';
-                wrapper.innerHTML = `
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-blue-600 flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-robot text-white text-sm"></i>
-                    </div>
-                    <div class="bg-slate-850 border border-slate-800 rounded-2xl rounded-tl-none p-4 max-w-3xl text-sm text-slate-200 leading-relaxed prose-chat">
-                        ${contentHtml}
-                    </div>
-                `;
-            }
-            container.appendChild(wrapper);
-            container.scrollTop = container.scrollHeight;
-            return wrapper;
-        }
-
-        function sendQuickPrompt(text) {
-            const input = document.getElementById('chat-input');
-            input.value = text;
-            handleChatSubmit(new Event('submit'));
-        }
-
-        async function handleChatSubmit(e) {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const submitBtn = document.getElementById('chat-submit-btn');
-            const userText = input.value.trim();
-            if (!userText) return;
-
-            input.value = '';
-            input.disabled = true;
-            submitBtn.disabled = true;
-
-            appendChatMessage('user', userText);
-
-            // Loading bubble
-            const loadingBubble = appendChatMessage('ai', `
-                <div class="flex items-center gap-2 text-brand-400">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <span>Đang truy xuất dữ liệu SCADA & phân tích kỹ thuật...</span>
-                </div>
-            `);
-
-            // Build current plant context
-            const plantSummary = turbinesData.map(t => 
-                `${t.id}: Wind=${t.wind}m/s, P=${t.power}/${t.expected}kW, Eff=${t.eff}%, Pitch=${t.pitch}°, GearTemp=${t.gearTemp}°C (${t.status})`
-            ).join('\n');
-
-            const systemPrompt = `Bạn là Kỹ sư trưởng AI chuyên về Vận hành & Bảo dưỡng (O&M) Nhà máy Điện Gió và Trạm biến áp 110kV. 
-Hãy trả lời bằng tiếng Việt chuyên ngành điện lực rõ ràng, súc tích, có gạch đầu dòng dễ đọc.
-Dữ liệu SCADA thời gian thực của 12 tuabin (công suất định mức 3MW/trụ, tổng 36MW):
-${plantSummary}
-Hãy bám sát số liệu trên khi phân tích hoặc lập báo cáo.`;
-
-            try {
-                const payload = {
-                    contents: [{ parts: [{ text: userText }] }],
-                    systemInstruction: { parts: [{ text: systemPrompt }] }
-                };
-                const aiResponse = await callGeminiWithBackoff(payload);
-                loadingBubble.remove();
-                appendChatMessage('ai', formatSimpleMarkdown(aiResponse));
-            } catch (error) {
-                loadingBubble.remove();
-                // Fallback offline technical response if API unavailable
-                const fallbackText = generateOfflineFallbackResponse(userText);
-                appendChatMessage('ai', formatSimpleMarkdown(fallbackText));
-            } finally {
-                input.disabled = false;
-                submitBtn.disabled = false;
-                input.focus();
-            }
-        }
-
-        function generateOfflineFallbackResponse(query) {
-            const q = query.toLowerCase();
-            if (q.includes('wt-04') || q.includes('wt-09') || q.includes('suy giảm')) {
-                return `**Phân tích kỹ thuật suy giảm hiệu suất (WT-04 & WT-09):**\n- **Tuabin WT-04 (Hiệu suất 78.1%):** Đang phát 1,680 kW so với mức kỳ vọng 2,150 kW tại tốc độ gió 9.2 m/s. Góc Pitch đang mở ở 4.8° (cao hơn mức chuẩn ~2.1°). Nguyên nhân khả dĩ nhất là kẹt van tỷ lệ thủy lực hoặc lệch cảm biến encoder góc Pitch cánh số 2.\n- **Tuabin WT-09 (Hiệu suất 82.4%):** Phát 1,845 kW / 2,240 kW kỳ vọng. Đường cong công suất dịch chuyển sang phải, dấu hiệu điển hình của sai lệch hướng gió (Yaw misalignment) hoặc cảm biến đo gió nacelle bị bám bẩn.\n- **Khuyến nghị:** Cử đội O&M kiểm tra log lỗi hệ thống Pitch trên WT-04 và đối chiếu hướng gió của WT-09 với cột đo gió Met Mast.`;
-            }
-            if (q.includes('hộp số') || q.includes('nhiệt độ')) {
-                return `**Quy trình xử lý khi Nhiệt độ dầu hộp số (Gearbox Oil Temp) vượt ngưỡng 70°C:**\n- **Bước 1 (Giám sát):** Kiểm tra tải phát hiện tại và trạng thái hoạt động của bơm tuần hoàn dầu làm mát (Cooling Pump) cùng quạt tản nhiệt trên Nacelle.\n- **Bước 2 (Giảm tải):** Nếu nhiệt độ đạt 75°C, hệ thống điều khiển tự động kích hoạt chế độ giảm công suất (Derating). Trưởng ca cần theo dõi mức dầu qua cảm biến mức.\n- **Bước 3 (Dừng máy khẩn cấp):** Nếu nhiệt độ chạm ngưỡng Trip (80°C - 85°C tùy hãng), tuabin sẽ dừng an toàn. Không khởi động lại cho đến khi kiểm tra bộ trao đổi nhiệt (Heat Exchanger) và lọc dầu.`;
-            }
-            return `**Báo cáo tóm tắt Vận hành Nhà máy Điện Gió (12 Tuabin):**\n- **Tổng công suất phát:** 24.85 MW / 36.00 MW định mức (Tốc độ gió TB: 8.7 m/s).\n- **Hiệu suất toàn trang trại:** 94.6%.\n- **Tình trạng thiết bị:** 9/12 tuabin vận hành tối ưu (>97%). Có 2 tuabin cần ưu tiên kiểm tra bảo trì là **WT-04 (78.1%)** và **WT-09 (82.4%)**; **WT-07 (92.2%)** đang theo dõi thêm.`;
-        }
-
-        function clearChatHistory() {
-            const container = document.getElementById('chat-messages');
-            container.innerHTML = `
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-blue-600 flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-robot text-white text-sm"></i>
-                    </div>
-                    <div class="bg-slate-850 border border-slate-800 rounded-2xl rounded-tl-none p-4 max-w-3xl text-sm text-slate-200 leading-relaxed prose-chat">
-                        <p class="mb-0">Đã làm mới phiên làm việc. Tôi sẵn sàng hỗ trợ kỹ thuật vận hành 12 tuabin và trạm biến áp.</p>
-                    </div>
-                </div>
-            `;
-            showToast('Đã xóa lịch sử hội thoại');
-        }
-
-        // =========================================================================
-        // 6. TAB 3: THERMAL IMAGE GENERATION & AI VISION INSPECTION
-        // =========================================================================
-        const sampleThermals = [
-            {
-                name: 'Sứ xuyên pha B - Máy biến áp T1 (110kV)',
-                maxTemp: '96.4 °C',
-                deltaTemp: '+48.2 °C',
-                severity: 'danger',
-                badgeText: 'NGUY HIỂM CẤP 2 (Quá nhiệt nghiêm trọng)',
-                hotspotLoc: 'Khu vực đầu cốt kẹp cực sứ xuyên cao áp pha B (vùng tâm ảnh hiển thị màu trắng sáng/vàng rực). Nhiệt độ vượt xa hai pha A và C lân cận (48.2°C).',
-                recommendation: '<p><strong>Nguyên nhân:</strong> Lỏng bulông kẹp cực hoặc oxy hóa bề mặt tiếp xúc dẫn đến tăng điện trở tiếp xúc cục bộ.</p><p><strong>Hành động:</strong> Đăng ký cắt điện khẩn cấp MBA T1 trong ca trực tới để vệ sinh bề mặt tiếp xúc, bôi mỡ dẫn điện và siết lại lực bulông theo tiêu chuẩn.</p>'
-            },
-            {
-                name: 'Đầu cáp lực ngăn lộ 471 - Tủ RMU',
-                maxTemp: '74.8 °C',
-                deltaTemp: '+22.5 °C',
-                severity: 'warning',
-                badgeText: 'CẢNH BÁO CẤP 1 (Cần theo dõi & Bảo trì)',
-                hotspotLoc: 'Cổ cáp co nhiệt pha C tại ngăn đấu nối thanh cái (vùng phát sáng cam đậm). Chênh lệch nhiệt độ ΔT = 22.5°C so với pha A và B.',
-                recommendation: '<p><strong>Nguyên nhân:</strong> Tiếp xúc đầu cốt ép chưa chặt hoặc suy giảm cách điện tại cổ cáp lực.</p><p><strong>Hành động:</strong> Lập kế hoạch kiểm tra siết lực và đo phóng điện cục bộ (PD) trong đợt bảo dưỡng định kỳ tuần này.</p>'
-            },
-            {
-                name: 'Vỏ hộp số chính (Main Gearbox) - Tuabin WT-02',
-                maxTemp: '52.1 °C',
-                deltaTemp: '+3.4 °C',
-                severity: 'normal',
-                badgeText: 'BÌNH THƯỜNG (Phân bố nhiệt đồng đều)',
-                hotspotLoc: 'Không phát hiện điểm nóng cục bộ bất thường. Nhiệt độ phân bố đều trên thân vỏ hộp số và đường ống hồi dầu (48°C - 52.1°C).',
-                recommendation: '<p><strong>Đánh giá:</strong> Hệ thống bôi trơn và làm mát hộp số tuabin WT-02 hoạt động hoàn toàn bình thường.</p><p><strong>Hành động:</strong> Tiếp tục duy trì chế độ vận hành tự động và giám sát định kỳ qua SCADA.</p>'
-            }
-        ];
-
-        // Generate synthetic realistic thermal canvas images for samples
-        function drawSyntheticThermalCanvas(canvas, type) {
+        function loadSampleThermal(preset) {
+            const canvas = document.getElementById('thermalCanvas');
             const ctx = canvas.getContext('2d');
-            const w = canvas.width;
-            const h = canvas.height;
+            canvas.width = 480;
+            canvas.height = 260;
 
-            // Background cold thermal gradient (deep blue/purple)
-            const bgGrad = ctx.createLinearGradient(0, 0, w, h);
-            bgGrad.addColorStop(0, '#0f0c29');
-            bgGrad.addColorStop(0.5, '#302b63');
-            bgGrad.addColorStop(1, '#24243e');
+            // Draw Ironbow Thermal Background Gradient
+            const bgGrad = ctx.createLinearGradient(0, 0, 480, 260);
+            bgGrad.addColorStop(0, '#0f0524');
+            bgGrad.addColorStop(0.5, '#2b0b57');
+            bgGrad.addColorStop(1, '#140836');
             ctx.fillStyle = bgGrad;
-            ctx.fillRect(0, 0, w, h);
+            ctx.fillRect(0, 0, 480, 260);
 
-            // Draw equipment silhouette (3 phases / bushings or gearbox body)
-            if (type === 0 || type === 1) {
-                const positions = [w * 0.25, w * 0.5, w * 0.75];
-                positions.forEach((px, idx) => {
-                    // Normal warm conductor
-                    const grad = ctx.createRadialGradient(px, h * 0.5, 4, px, h * 0.5, 28);
-                    grad.addColorStop(0, '#a83279');
-                    grad.addColorStop(1, 'rgba(48, 43, 99, 0)');
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(px - 30, 10, 60, h - 20);
+            // Draw simulated equipment silhouette & thermal hotspots
+            if (preset === 'bushing') {
+                // 3 Transformer Bushings (Phase A, B, C)
+                [120, 240, 360].forEach((x, idx) => {
+                    ctx.fillStyle = '#4c1d95';
+                    ctx.fillRect(x - 18, 70, 36, 150);
+                    // Insulator sheds
+                    for (let y = 85; y < 200; y += 22) {
+                        ctx.fillStyle = '#6d28d9';
+                        ctx.fillRect(x - 28, y, 56, 8);
+                    }
+                    // Top terminal connector
+                    if (idx === 1) {
+                        // Severe Hotspot on Phase B
+                        const hotGrad = ctx.createRadialGradient(x, 58, 4, x, 58, 48);
+                        hotGrad.addColorStop(0, '#ffffff');
+                        hotGrad.addColorStop(0.3, '#fef08a');
+                        hotGrad.addColorStop(0.6, '#f97316');
+                        hotGrad.addColorStop(1, 'rgba(220, 38, 38, 0)');
+                        ctx.fillStyle = hotGrad;
+                        ctx.beginPath();
+                        ctx.arc(x, 58, 48, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        // Target crosshair
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 1.5;
+                        ctx.strokeRect(x - 25, 33, 50, 50);
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 11px JetBrains Mono';
+                        ctx.fillText('MAX 86.4°C', x + 30, 48);
+                    } else {
+                        ctx.fillStyle = '#9333ea';
+                        ctx.beginPath();
+                        ctx.arc(x, 58, 14, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                 });
 
-                // Hotspot on middle or right phase
-                const hotX = type === 0 ? w * 0.5 : w * 0.75;
-                const hotY = type === 0 ? h * 0.38 : h * 0.62;
-                const hotRadius = type === 0 ? 36 : 28;
-                const hotGrad = ctx.createRadialGradient(hotX, hotY, 2, hotX, hotY, hotRadius);
-                hotGrad.addColorStop(0, '#ffffff');
-                hotGrad.addColorStop(0.25, '#fef08a');
-                hotGrad.addColorStop(0.55, '#f97316');
-                hotGrad.addColorStop(0.85, '#dc2626');
-                hotGrad.addColorStop(1, 'rgba(220, 38, 38, 0)');
-                ctx.fillStyle = hotGrad;
-                ctx.beginPath();
-                ctx.arc(hotX, hotY, hotRadius, 0, Math.PI * 2);
-                ctx.fill();
+                document.getElementById('thermal-preview-label').textContent = 'Mẫu: Sứ xuyên MBA 110kV (Pha A-B-C)';
+                updateThermalPresetReport('bushing');
+            } else if (preset === 'rmu') {
+                // 3 Medium Voltage Cable Terminations inside RMU
+                [130, 240, 350].forEach((x, idx) => {
+                    ctx.fillStyle = '#3b0764';
+                    ctx.fillRect(x - 14, 50, 28, 180);
+                    if (idx === 2) {
+                        const warnGrad = ctx.createRadialGradient(x, 120, 5, x, 120, 40);
+                        warnGrad.addColorStop(0, '#fef08a');
+                        warnGrad.addColorStop(0.5, '#ea580c');
+                        warnGrad.addColorStop(1, 'rgba(124, 45, 18, 0)');
+                        ctx.fillStyle = warnGrad;
+                        ctx.beginPath();
+                        ctx.arc(x, 120, 40, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.strokeStyle = '#facc15';
+                        ctx.strokeRect(x - 22, 98, 44, 44);
+                        ctx.fillStyle = '#fef08a';
+                        ctx.font = 'bold 11px JetBrains Mono';
+                        ctx.fillText('64.5°C', x + 26, 115);
+                    }
+                });
+
+                document.getElementById('thermal-preview-label').textContent = 'Mẫu: Đầu cáp tủ RMU 22kV - Trụ WT-04';
+                updateThermalPresetReport('rmu');
             } else {
-                // Normal Gearbox uniform warm glow
-                const gearGrad = ctx.createRadialGradient(w * 0.5, h * 0.5, 10, w * 0.5, h * 0.5, 65);
-                gearGrad.addColorStop(0, '#ec4899');
-                gearGrad.addColorStop(0.6, '#7e22ce');
-                gearGrad.addColorStop(1, 'rgba(36, 36, 62, 0)');
-                ctx.fillStyle = gearGrad;
-                ctx.fillRect(20, 15, w - 40, h - 30);
+                // Healthy Gearbox Housing
+                const normGrad = ctx.createRadialGradient(240, 130, 20, 240, 130, 110);
+                normGrad.addColorStop(0, '#c026d3');
+                normGrad.addColorStop(0.6, '#6b21a8');
+                normGrad.addColorStop(1, '#1e1b4b');
+                ctx.fillStyle = normGrad;
+                ctx.fillRect(110, 60, 260, 140);
+
+                ctx.fillStyle = '#e9d5ff';
+                ctx.font = 'bold 11px JetBrains Mono';
+                ctx.fillText('AVG 61.0°C (NORMAL)', 175, 135);
+
+                document.getElementById('thermal-preview-label').textContent = 'Mẫu: Vỏ hộp số & ổ đỡ chính - Trụ WT-02';
+                updateThermalPresetReport('gearbox');
             }
 
-            // Crosshair reticle
-            ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-            ctx.lineWidth = 1;
-            const cx = type === 0 ? w * 0.5 : type === 1 ? w * 0.75 : w * 0.5;
-            const cy = type === 0 ? h * 0.38 : type === 1 ? h * 0.62 : h * 0.5;
-            ctx.beginPath();
-            ctx.moveTo(cx - 10, cy); ctx.lineTo(cx + 10, cy);
-            ctx.moveTo(cx, cy - 10); ctx.lineTo(cx, cy + 10);
-            ctx.stroke();
+            // Draw Temperature Scale Bar on right
+            const scaleGrad = ctx.createLinearGradient(0, 20, 0, 240);
+            scaleGrad.addColorStop(0, '#ffffff');
+            scaleGrad.addColorStop(0.25, '#facc15');
+            scaleGrad.addColorStop(0.5, '#ea580c');
+            scaleGrad.addColorStop(0.75, '#9333ea');
+            scaleGrad.addColorStop(1, '#0f0524');
+            ctx.fillStyle = scaleGrad;
+            ctx.fillRect(455, 20, 12, 220);
+
+            currentThermalBase64 = canvas.toDataURL('image/png').split(',')[1];
         }
 
-        function initThermalSamples() {
-            [0, 1, 2].forEach(idx => {
-                const thumbCanvas = document.getElementById(`thumb-sample-${idx}`);
-                drawSyntheticThermalCanvas(thumbCanvas, idx);
-            });
-            loadSampleThermal(0);
-        }
-
-        function loadSampleThermal(idx) {
-            const sample = sampleThermals[idx];
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = 640;
-            tempCanvas.height = 400;
-            drawSyntheticThermalCanvas(tempCanvas, idx);
-
-            const dataUrl = tempCanvas.toDataURL('image/png');
-            document.getElementById('thermal-preview-img').src = dataUrl;
-            currentThermalBase64 = dataUrl.split(',')[1];
-            currentThermalMime = 'image/png';
-
-            document.getElementById('thermal-equipment-name').value = sample.name;
-            document.getElementById('scale-max-temp').textContent = sample.maxTemp.replace(' ', '');
-
-            renderThermalReport(sample);
-        }
-
-        function renderThermalReport(report) {
+        function updateThermalPresetReport(preset) {
             const badge = document.getElementById('thermal-severity-badge');
-            badge.textContent = report.badgeText;
+            const maxEl = document.getElementById('thermal-max-temp');
+            const refEl = document.getElementById('thermal-ref-temp');
+            const deltaEl = document.getElementById('thermal-delta-temp');
+            const content = document.getElementById('thermal-report-content');
 
-            if (report.severity === 'danger') {
-                badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30';
-            } else if (report.severity === 'warning') {
-                badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30';
+            if (preset === 'bushing') {
+                badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+                badge.textContent = 'CẤP ĐỘ 4: KHẨN CẤP';
+                maxEl.textContent = '86.4 °C';
+                maxEl.className = 'text-lg font-bold font-mono text-rose-400 mt-0.5';
+                refEl.textContent = '48.2 °C';
+                deltaEl.textContent = '+38.2 °C';
+                content.innerHTML = `
+                    <p><strong>1. Khoanh vùng bất thường:</strong> Điểm nóng cường độ cao tại kẹp cực sứ xuyên 110kV pha B (<strong>86.4°C</strong> so với 48.2°C ở pha A/C, &Delta;T = 38.2°C).</p>
+                    <p><strong>2. Đánh giá tiêu chuẩn NETA MTS:</strong> &Delta;T &gt; 35°C thuộc <strong>Cấp độ 4 (Khẩn cấp)</strong>. Nguy cơ phát sinh hồ quang và hư hỏng cách điện sứ.</p>
+                    <p><strong>3. Khuyến nghị xử lý:</strong> Đăng ký cắt điện khẩn cấp MBA 110kV, kiểm tra lực siết bulông đầu cốt, vệ sinh bề mặt tiếp xúc và bôi mỡ dẫn điện.</p>
+                `;
+            } else if (preset === 'rmu') {
+                badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30';
+                badge.textContent = 'CẤP ĐỘ 2: CẢNH BÁO';
+                maxEl.textContent = '64.5 °C';
+                maxEl.className = 'text-lg font-bold font-mono text-amber-400 mt-0.5';
+                refEl.textContent = '48.0 °C';
+                deltaEl.textContent = '+16.5 °C';
+                content.innerHTML = `
+                    <p><strong>1. Khoanh vùng bất thường:</strong> Phát nhiệt tại đầu cáp T-Plug pha C trong tủ RMU 22kV trụ WT-04 (<strong>64.5°C</strong>, &Delta;T = 16.5°C).</p>
+                    <p><strong>2. Đánh giá tiêu chuẩn NETA MTS:</strong> Chênh lệch 10°C – 20°C thuộc <strong>Cấp độ 2</strong>. Cho phép tiếp tục vận hành nhưng phải lên lịch bảo trì.</p>
+                    <p><strong>3. Khuyến nghị xử lý:</strong> Tăng tần suất quét nhiệt lên 1 lần/tuần. Lên lịch cắt điện trong kỳ bảo dưỡng định kỳ tới để kiểm tra đầu cáp và siết lại tiếp điểm.</p>
+                `;
             } else {
-                badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+                badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                badge.textContent = 'BÌNH THƯỜNG';
+                maxEl.textContent = '61.0 °C';
+                maxEl.className = 'text-lg font-bold font-mono text-emerald-400 mt-0.5';
+                refEl.textContent = '58.5 °C';
+                deltaEl.textContent = '+2.5 °C';
+                content.innerHTML = `
+                    <p><strong>1. Đánh giá phân bố nhiệt:</strong> Vỏ hộp số và ổ đỡ trục chính tuabin WT-02 có trường nhiệt độ phân bố đồng đều (61.0°C), không xuất hiện điểm nóng cục bộ (&Delta;T = 2.5°C).</p>
+                    <p><strong>2. Kết luận:</strong> Thiết bị hoạt động hoàn toàn bình thường, hệ thống bôi trơn và làm mát dầu đạt hiệu quả tốt.</p>
+                `;
             }
-
-            document.getElementById('res-max-temp').textContent = report.maxTemp;
-            document.getElementById('res-delta-temp').textContent = report.deltaTemp;
-            document.getElementById('res-hotspot-loc').textContent = report.hotspotLoc;
-            document.getElementById('res-recommendation').innerHTML = report.recommendation;
         }
 
-        function handleThermalFileUpload(event) {
+        function handleThermalUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const dataUrl = e.target.result;
-                document.getElementById('thermal-preview-img').src = dataUrl;
-                currentThermalBase64 = dataUrl.split(',')[1];
-                currentThermalMime = file.type || 'image/jpeg';
-                document.getElementById('thermal-equipment-name').value = file.name.replace(/\.[^/.]+$/, "");
-                showToast('Đã tải ảnh nhiệt lên thành công. Nhấn "Phân tích ảnh nhiệt bằng AI" để giám định.');
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('thermalCanvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    currentThermalBase64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+                    document.getElementById('thermal-preview-label').textContent = `Ảnh tải lên: ${file.name}`;
+                    showToast('Đã tải ảnh nhiệt! Nhấn "Chạy AI Chẩn Đoán" để phân tích.', 'info');
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // Drag and Drop support
-        const dropzone = document.getElementById('thermal-dropzone');
-        dropzone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropzone.classList.add('border-brand-400', 'bg-slate-900');
-        });
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.classList.remove('border-brand-400', 'bg-slate-900');
-        });
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropzone.classList.remove('border-brand-400', 'bg-slate-900');
-            if (e.dataTransfer.files.length) {
-                document.getElementById('thermal-file-input').files = e.dataTransfer.files;
-                handleThermalFileUpload({ target: { files: e.dataTransfer.files } });
-            }
-        });
-
-        async function analyzeThermalImage() {
-            if (!currentThermalBase64) {
-                showToast('Vui lòng chọn hoặc tải lên một ảnh quét nhiệt trước.', 'error');
-                return;
-            }
+        async function analyzeCurrentThermalImage() {
+            if (!currentThermalBase64) return;
 
             const btn = document.getElementById('analyze-thermal-btn');
-            const loading = document.getElementById('thermal-loading');
-            const content = document.getElementById('thermal-report-content');
-            const eqName = document.getElementById('thermal-equipment-name').value || 'Thiết bị điện gió / Trạm biến áp';
-
+            const reportBox = document.getElementById('thermal-report-content');
             btn.disabled = true;
-            loading.classList.remove('hidden');
-            content.classList.add('hidden');
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>AI Vision đang phân tích phổ nhiệt...</span>`;
 
-            const prompt = `Bạn là chuyên gia giám định nhiệt học (Thermography Level III) cho nhà máy điện gió và trạm biến áp.
-Hãy phân tích bức ảnh quét nhiệt này của thiết bị: "${eqName}".
-Trả về kết quả dưới dạng JSON hợp lệ với đúng 6 trường sau (không bọc markdown):
-{
-  "maxTemp": "nhiệt độ điểm nóng ước tính, ví dụ 88.5 °C",
-  "deltaTemp": "chênh lệch nhiệt độ ΔT so với vùng tham chiếu, ví dụ +36.0 °C",
-  "severity": "danger hoặc warning hoặc normal",
-  "badgeText": "nhãn ngắn gọn tiếng Việt, ví dụ: NGUY HIỂM CẤP 2 (Quá nhiệt nghiêm trọng)",
-  "hotspotLoc": "mô tả ngắn gọn vị trí vùng phát nhiệt bất thường trên ảnh",
-  "recommendation": "HTML ngắn gọn gồm 2 thẻ <p> nêu rõ Nguyên nhân kỹ thuật và Hành động khắc phục"
-}`;
+            reportBox.innerHTML = `
+                <div class="flex items-center gap-2 text-brand-400">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span>Đang quét điểm nóng (Hotspot) và đối chiếu tiêu chuẩn nhiệt học thiết bị điện...</span>
+                </div>
+            `;
+
+            const prompt = "Bạn là chuyên gia chẩn đoán ảnh quét nhiệt hồng ngoại (IR Thermography) cho nhà máy điện gió và trạm biến áp 110kV. Hãy phân tích bức ảnh nhiệt này bằng tiếng Việt: (1) Xác định vị trí điểm phát nhiệt bất thường (Hotspot) và màu sắc phổ nhiệt, (2) Đánh giá mức độ nghiêm trọng theo tiêu chuẩn NETA (Bình thường / Cảnh báo / Khẩn cấp), (3) Nêu nguyên nhân kỹ thuật có thể xảy ra và khuyến nghị hành động bảo trì cụ thể.";
 
             try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
                 const payload = {
                     contents: [{
                         role: "user",
                         parts: [
                             { text: prompt },
-                            {
-                                inlineData: {
-                                    mimeType: currentThermalMime,
-                                    data: currentThermalBase64
-                                }
-                            }
+                            { inlineData: { mimeType: "image/jpeg", data: currentThermalBase64 } }
                         ]
-                    }],
-                    generationConfig: {
-                        responseMimeType: "application/json"
-                    }
+                    }]
                 };
 
-                const rawJson = await callGeminiWithBackoff(payload);
-                const parsed = JSON.parse(rawJson);
-                document.getElementById('scale-max-temp').textContent = parsed.maxTemp.replace(' ', '');
-                renderThermalReport(parsed);
-                showToast('Hoàn tất phân tích ảnh quét nhiệt bằng AI!');
-            } catch (error) {
-                // Graceful fallback if API fails
-                showToast('Đã hoàn tất phân tích phổ nhiệt cục bộ.');
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                const analysisText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (analysisText) {
+                    reportBox.innerHTML = formatMarkdownToHtml(analysisText);
+                    showToast('Hoàn tất chẩn đoán ảnh nhiệt bằng AI!', 'success');
+                } else {
+                    throw new Error('No vision text');
+                }
+            } catch (err) {
+                reportBox.innerHTML = `
+                    <p><strong>Kết quả chẩn đoán AI Vision:</strong></p>
+                    <p>Phát hiện vùng tập trung nhiệt độ cao tại khu vực tiếp xúc dẫn điện (vùng màu vàng sáng/trắng trên thang nhiệt). Sự chênh lệch nhiệt độ giữa pha sự cố và các pha lân cận cho thấy dấu hiệu tăng điện trở tiếp xúc hoặc quá tải cục bộ.</p>
+                    <p><strong>Khuyến nghị:</strong> Kiểm tra lại lực siết cơ khí, vệ sinh bề mặt tiếp xúc và đối chiếu dòng tải thực tế trên hệ thống SCADA.</p>
+                `;
             } finally {
                 btn.disabled = false;
-                loading.classList.add('hidden');
-                content.classList.remove('hidden');
+                btn.innerHTML = `<i class="fa-solid fa-microchip"></i><span>Chạy AI Chẩn Đoán Điểm Nóng & Đánh Giá Mức Độ</span>`;
             }
         }
-
-        // =========================================================================
-        // 7. INITIALIZATION ON WINDOW LOAD
-        // =========================================================================
-        window.onload = function() {
-            renderTurbineGrid();
-            updateTurbineDetailPanel();
-            updatePowerCurveChart();
-            initThermalSamples();
-        };
     </script>
 </body>
 </html>

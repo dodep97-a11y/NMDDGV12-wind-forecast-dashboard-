@@ -1,78 +1,74 @@
-function handleScadaFileUpload(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const data = new Uint8Array(evt.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    const firstSheet = workbook.SheetNames[0];
-                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
-                    
-                    if (rows.length === 0) {
-                        alert('Tệp không có dữ liệu!');
-                        return;
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroPredict - Hệ Thống AI & Vận Hành Nhà Máy Điện Gió NMDGV12 Trà Vinh</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfb1',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            900: '#134e4a',
+                        }
                     }
-
-                    // Hiển thị khu vực kết quả
-                    document.getElementById('history-placeholder').classList.add('hidden');
-                    document.getElementById('history-results-area').classList.remove('hidden');
-
-                    // Lọc các cột công suất active power của các trụ
-                    const sampleRow = rows[0];
-                    const powerCols = Object.keys(sampleRow).filter(k => k.includes('Grid-side Active Power(kW)'));
-                    
-                    let totalPowerSum = 0;
-                    let count = 0;
-                    let turbineStats = {};
-
-                    powerCols.forEach(col => {
-                        const tName = col.split(' - ')[0]; // Trích xuất tên trụ (VD: WT01, WT09...)
-                        turbineStats[tName] = { powerSum: 0, count: 0 };
-                    });
-
-                    // Tính toán tổng hợp từ 12,960 bản ghi 3 tháng
-                    rows.forEach(row => {
-                        powerCols.forEach(col => {
-                            const tName = col.split(' - ')[0];
-                            let val = parseFloat(row[col]);
-                            if (!isNaN(val)) {
-                                turbineStats[tName].powerSum += val;
-                                turbineStats[tName].count++;
-                                totalPowerSum += val;
-                                count++;
-                            }
-                        });
-                    });
-
-                    // Cập nhật các chỉ số tổng quan bằng dữ liệu thực
-                    const avgPowerMW = (totalPowerSum / (count || 1) / 1000).toFixed(2);
-                    document.getElementById('stat-avg-pi').textContent = `${Math.min(98, 85 + (avgPowerMW * 0.4)).toFixed(1)}%`;
-                    document.getElementById('stat-total-loss').textContent = `${(rows.length * 0.035).toFixed(1)} MWh`;
-
-                    // Cập nhật bảng xếp hạng thực tế từ dữ liệu 3 tháng
-                    const tbody = document.getElementById('turbine-ranking-tbody');
-                    tbody.innerHTML = '';
-                    Object.keys(turbineStats).forEach(tName => {
-                        const stats = turbineStats[tName];
-                        const avgP = stats.count > 0 ? (stats.powerSum / stats.count / 1000).toFixed(2) : 0;
-                        const pi = Math.min(99, Math.max(75, (avgP / 2.8) * 100)).toFixed(1);
-                        const isWarn = (tName === 'WT-04' || tName === 'WT-09' || pi < 88);
-
-                        tbody.innerHTML += `
-                            <tr class="hover:bg-slate-900/50">
-                                <td class="p-2.5 font-bold text-white">${tName}</td>
-                                <td class="p-2.5 ${isWarn ? 'text-amber-400 font-bold' : 'text-slate-300'}">${pi}%</td>
-                                <td class="p-2.5 text-slate-300">${(150.2 - avgP*20).toFixed(1)} MWh</td>
-                                <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] ${isWarn ? 'bg-amber-500/20 text-amber-400 font-bold' : 'bg-emerald-500/20 text-emerald-400'}">${isWarn ? 'Hạng C (Cần kiểm tra)' : 'Hạng A (Tối ưu)'}</span></td>
-                            </tr>
-                        `;
-                    });
-
-                    alert(`Đã nạp và phân tích thành công ${rows.length.toLocaleString()} bản ghi SCADA 3 tháng cho 12 tuabin!`);
-                } catch(err) {
-                    alert('Lỗi phân tích tệp SCADA: ' + err.message);
                 }
-            };
-            reader.readAsArrayBuffer(file);
+            }
         }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for interactive charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (xlsx) for Excel & CSV processing -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app-container" class="flex-1 flex flex-col">
+        <!-- HEADER -->
+        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-slate-950 font-bold text-xl shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-wind"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-white tracking-wide">AeroPredict AI <span class="text-xs px-2 py-0.5 bg-brand-500/20 text-brand-400 rounded-full font-normal">NMDGV12 Trà Vinh (36 MW)</span></h1>
+                    <p class="text-xs text-slate-400">Hệ thống Giám sát & Chẩn đoán Tuabin Gió Thông Minh</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <nav class="hidden md:flex space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-sm font-medium">
+                    <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-4 py-2 rounded-lg transition-all text-brand-400 bg-slate-900 shadow">Giám sát Tuabin</button>
+                    <button onclick="switchTab('history')" id="tab-btn-history" class="px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200">Đánh giá & Nạp SCADA</button>
+                    <button onclick="switchTab('assistant')" id="tab-btn-assistant" class="px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200">Trợ lý AI</button>
+                </nav>
+                <div class="flex items-center space-x-3 border-l border-slate-800 pl-4">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs font-medium text-white">nmdgv12travinh</div>
+                        <div class="text-[10px] text-brand-400">Kỹ sư Trực ca</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENT TABS -->
+        <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+            
+            <!-- TAB 1: GIÁM SÁT TUAB

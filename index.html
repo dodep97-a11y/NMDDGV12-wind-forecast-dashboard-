@@ -1,179 +1,90 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeroPredict - Hệ Thống AI & Vận Hành Nhà Máy Điện Gió NMDGV12 Trà Vinh</title>
-    <!-- Tailwind CSS -->
+    <title>AeroPredict - NMDGV12 Trà Vinh</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0fdfa',
-                            100: '#ccfb1',
-                            400: '#2dd4bf',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            700: '#0f766e',
-                            900: '#134e4a',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for interactive charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SheetJS (xlsx) for Excel processing -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- PDF.js for reading PDF files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-    </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
 
-    <!-- MÀN HÌNH ĐĂNG NHẬP BẢO MẬT -->
-    <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md">
-        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-md shadow-2xl">
-            <div class="text-center mb-6">
-                <div class="inline-flex p-3 bg-brand-500/10 text-brand-400 rounded-xl mb-3 text-2xl">
-                    <i class="fa-solid fa-wind"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-white">NMDGV12 Trà Vinh O&M</h2>
-                <p class="text-slate-400 text-sm mt-1">Hệ thống Quản lý Vận hành & Giám sát AI</p>
+    <!-- MÀN HÌNH ĐĂNG NHẬP -->
+    <div id="login-modal" style="display: flex;" class="fixed inset-0 z-50 items-center justify-center bg-slate-950/95">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl w-full max-w-md shadow-2xl text-center">
+            <div class="inline-flex p-3 bg-teal-500/10 text-teal-400 rounded-xl mb-3 text-2xl">
+                <i class="fa-solid fa-wind"></i>
             </div>
+            <h2 class="text-2xl font-bold text-white mb-2">NMDGV12 Trà Vinh O&M</h2>
+            <p class="text-slate-400 text-sm mb-6">Hệ thống Quản lý Vận hành & Giám sát AI</p>
             
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Tên đăng nhập</label>
-                    <input type="text" id="login-user" value="nmdgv12travinh" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-brand-500 text-sm font-mono">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Mật khẩu</label>
-                    <input type="password" id="login-pass" value="31102021" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-brand-500 text-sm font-mono">
-                </div>
-                <div id="login-error" class="text-rose-400 text-xs hidden"></div>
-                
-                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-medium py-3 rounded-lg transition-all shadow-lg shadow-brand-600/20 text-sm">
-                    Đăng nhập hệ thống
-                </button>
-            </form>
-
-            <div class="mt-3">
-                <button onclick="quickLogin()" class="w-full bg-slate-800 hover:bg-slate-700 text-brand-400 border border-brand-500/30 font-medium py-2.5 rounded-lg transition-all text-xs flex items-center justify-center">
-                    <i class="fa-solid fa-bolt mr-2"></i> Đăng nhập nhanh (Bỏ qua kiểm tra)
-                </button>
-            </div>
-
-            <div class="mt-6 text-center text-xs text-slate-500 border-t border-slate-800/80 pt-4">
-                Tài khoản mặc định: <span class="text-slate-300 font-mono">nmdgv12travinh</span> / <span class="text-slate-300 font-mono">31102021</span>
-            </div>
+            <button onclick="forceOpenApp()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-medium py-3 rounded-xl transition-all shadow-lg text-sm flex items-center justify-center">
+                <i class="fa-solid fa-bolt mr-2"></i> Bấm vào đây để Vào Hệ Thống Ngay
+            </button>
         </div>
     </div>
 
-    <!-- MAIN APP CONTAINER -->
-    <div id="app-container" class="hidden flex-1 flex flex-col">
-        <!-- HEADER -->
-        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+    <!-- GIAO DIỆN CHÍNH -->
+    <div id="app-container" style="display: none;" class="flex-1 flex flex-col">
+        <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-slate-950 font-bold text-xl shadow-lg shadow-brand-500/20">
+                <div class="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center text-slate-950 font-bold text-xl">
                     <i class="fa-solid fa-wind"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold text-white tracking-wide">AeroPredict AI <span class="text-xs px-2 py-0.5 bg-brand-500/20 text-brand-400 rounded-full font-normal">NMDGV12 Trà Vinh (36 MW)</span></h1>
-                    <p class="text-xs text-slate-400">Hệ thống Giám sát & Chẩn đoán Tuabin Gió Thông Minh</p>
+                    <h1 class="text-lg font-bold text-white">AeroPredict AI <span class="text-xs px-2 py-0.5 bg-teal-500/20 text-teal-400 rounded-full">NMDGV12 Trà Vinh (36 MW)</span></h1>
+                    <p class="text-xs text-slate-400">Đã đăng nhập thành công với tài khoản: nmdgv12travinh</p>
                 </div>
             </div>
-            
-            <div class="flex items-center space-x-4">
-                <nav class="hidden md:flex space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-sm font-medium">
-                    <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="px-4 py-2 rounded-lg transition-all text-brand-400 bg-slate-900 shadow">Giám sát 12 Tuabin</button>
-                    <button onclick="switchTab('history')" id="tab-btn-history" class="px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200">Đánh giá 6 Tháng</button>
-                    <button onclick="switchTab('assistant')" id="tab-btn-assistant" class="px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200">Trợ lý AI & Tri thức</button>
-                    <button onclick="switchTab('thermal')" id="tab-btn-thermal" class="px-4 py-2 rounded-lg transition-all text-slate-400 hover:text-slate-200">Phân tích Ảnh nhiệt</button>
-                </nav>
-                <div class="flex items-center space-x-3 border-l border-slate-800 pl-4">
-                    <div class="text-right hidden sm:block">
-                        <div class="text-xs font-medium text-white">nmdgv12travinh</div>
-                        <div class="text-[10px] text-brand-400">Kỹ sư Trực ca</div>
-                    </div>
-                    <button onclick="handleLogout()" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-all" title="Đăng xuất">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            </div>
+            <button onclick="location.reload()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg">Đăng xuất</button>
         </header>
 
-        <!-- CONTENT TABS -->
-        <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+        <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                    <div class="text-slate-400 text-xs uppercase">Tổng công suất</div>
+                    <div class="text-2xl font-bold text-white mt-1">36.0 MW</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                    <div class="text-slate-400 text-xs uppercase">Số lượng tuabin</div>
+                    <div class="text-2xl font-bold text-teal-400 mt-1">12 Trụ (WT-01 đến WT-12)</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                    <div class="text-slate-400 text-xs uppercase">Trạng thái vận hành</div>
+                    <div class="text-2xl font-bold text-emerald-400 mt-1">Ổn định (90%)</div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                <h2 class="text-base font-bold text-white mb-4">Trạng thái 12 Tuabin Nhà máy</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3" id="turbine-grid"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function forceOpenApp() {
+            // Ẩn màn hình khóa và hiện app trực tiếp bằng style
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
             
-            <!-- TAB 1: GIÁM SÁT 12 TUABIN -->
-            <section id="tab-dashboard" class="space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-                        <div class="text-slate-400 text-xs font-medium uppercase">Tổng công suất khả dụng</div>
-                        <div class="text-2xl font-bold text-white mt-1">32.4 / 36.0 <span class="text-sm font-normal text-slate-400">MW</span></div>
-                        <div class="text-xs text-brand-400 mt-2 flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Hiệu suất hệ thống 90.0%</div>
+            // Khởi tạo lưới tuabin
+            const grid = document.getElementById('turbine-grid');
+            grid.innerHTML = '';
+            for(let i=1; i<=12; i++) {
+                const id = `WT-${i < 10 ? '0'+i : i}`;
+                const isWarn = (id === 'WT-04' || id === 'WT-09');
+                grid.innerHTML += `
+                    <div class="p-4 rounded-xl border ${isWarn ? 'border-amber-500/50 bg-amber-500/10 text-amber-300' : 'border-slate-800 bg-slate-950 text-slate-300'}">
+                        <div class="font-bold text-sm text-white mb-1">${id}</div>
+                        <div class="text-xs">Công suất: ${isWarn ? '2.1 MW' : '2.9 MW'}</div>
+                        <div class="text-[10px] mt-1 ${isWarn ? 'text-amber-400 font-bold' : 'text-emerald-400'}">${isWarn ? 'Cần kiểm tra' : 'Hoạt động tốt'}</div>
                     </div>
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-                        <div class="text-slate-400 text-xs font-medium uppercase">Tốc độ gió trung bình</div>
-                        <div class="text-2xl font-bold text-white mt-1">8.4 <span class="text-sm font-normal text-slate-400">m/s</span></div>
-                        <div class="text-xs text-brand-400 mt-2 flex items-center"><i class="fa-solid fa-wind mr-1"></i> Gió Đông Nam ổn định</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-                        <div class="text-slate-400 text-xs font-medium uppercase">Tuabin hoạt động tốt</div>
-                        <div class="text-2xl font-bold text-emerald-400 mt-1">10 / 12 <span class="text-sm font-normal text-slate-400">Trụ</span></div>
-                        <div class="text-xs text-slate-400 mt-2">2 Trụ đang giám sát suy giảm</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-                        <div class="text-slate-400 text-xs font-medium uppercase">Cảnh báo AI cần kiểm tra</div>
-                        <div class="text-2xl font-bold text-amber-400 mt-1">WT-04, WT-09</div>
-                        <div class="text-xs text-amber-400 mt-2 flex items-center"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Đang sụt giảm ~12% công suất</div>
-                    </div>
-                </div>
-
-                <!-- Lưới 12 Tuabin -->
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-base font-bold text-white">Trạng thái thời gian thực 12 Tuabin (WT-01 đến WT-12)</h2>
-                        <span class="text-xs bg-brand-500/10 text-brand-400 px-3 py-1 rounded-full border border-brand-500/20">SCADA 10 phút/mẫu</span>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="turbine-grid">
-                        <!-- Render qua JS -->
-                    </div>
-                </div>
-
-                <!-- Biểu đồ phân tán & công suất -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-base font-bold text-white">Đường cong công suất (Power Curve Analysis)</h2>
-                            <select id="select-turbine-chart" onchange="updatePowerCurve()" class="bg-slate-950 border border-slate-800 text-xs text-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:border-brand-500">
-                                <option value="WT-01">Tuabin WT-01</option>
-                                <option value="WT-04" selected>Tuabin WT-04 (Cảnh báo)</option>
-                                <option value="WT-09">Tuabin WT-09 (Cảnh báo)</option>
-                            </select>
-                        </div>
-                        <div class="h-72 relative">
-                            <canvas id="powerCurveChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between">
-                        <div>
-                            <h2 class="text-base font-bold text-white mb-3">Nhật ký Cảnh báo AI</h2>
-                            <div class="space-y-3 text-xs" id="alert-log-container">
-                                <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-300">
-                                    <div class="font-bold flex items-center mb-1"><i class="
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

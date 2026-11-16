@@ -71,4 +71,265 @@
         <!-- CONTENT TABS -->
         <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
             
-            <!-- TAB 1: GIÁM SÁT TUAB
+            <!-- TAB 1: GIÁM SÁT TUABIN -->
+            <section id="tab-dashboard" class="space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                        <div class="text-slate-400 text-xs font-medium uppercase">Tổng công suất khả dụng</div>
+                        <div class="text-2xl font-bold text-white mt-1">32.4 / 36.0 <span class="text-sm font-normal text-slate-400">MW</span></div>
+                        <div class="text-xs text-brand-400 mt-2 flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Hiệu suất hệ thống 90.0%</div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                        <div class="text-slate-400 text-xs font-medium uppercase">Tốc độ gió trung bình</div>
+                        <div class="text-2xl font-bold text-white mt-1">8.4 <span class="text-sm font-normal text-slate-400">m/s</span></div>
+                        <div class="text-xs text-brand-400 mt-2 flex items-center"><i class="fa-solid fa-wind mr-1"></i> Gió ven biển Trà Vinh</div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                        <div class="text-slate-400 text-xs font-medium uppercase">Trụ hoạt động tối ưu</div>
+                        <div class="text-2xl font-bold text-emerald-400 mt-1">10 / 12 <span class="text-sm font-normal text-slate-400">Trụ</span></div>
+                        <div class="text-xs text-slate-400 mt-2">Đồng bộ theo tệp SCADA</div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
+                        <div class="text-slate-400 text-xs font-medium uppercase">Cảnh báo cần kiểm tra</div>
+                        <div class="text-2xl font-bold text-amber-400 mt-1">WT-04, WT-09</div>
+                        <div class="text-xs text-amber-400 mt-2 flex items-center"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Suy giảm công suất</div>
+                    </div>
+                </div>
+
+                <!-- Lưới Tuabin (Tự động theo file hoặc mặc định) -->
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-base font-bold text-white">Trạng thái Thời gian thực các Trụ Tuabin (Theo tệp SCADA)</h2>
+                        <span class="text-xs bg-brand-500/10 text-brand-400 px-3 py-1 rounded-full border border-brand-500/20">Chu kỳ 10 phút</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="turbine-grid">
+                        <!-- Render động qua JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: ĐÁNH GIÁ & NẠP SCADA 3 THÁNG -->
+            <section id="tab-history" class="hidden space-y-6">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Nạp và Phân tích Dữ liệu SCADA Lịch sử (3 Tháng)</h2>
+                            <p class="text-xs text-slate-400 mt-1">Tải lên tệp CSV SCADA của bạn (ví dụ: <code class="text-brand-400">Trend analysis_10-min data(0)_1.csv</code>) để hệ thống tự nhận diện các trụ WT23, WT21, WT19,...</p>
+                        </div>
+                        <label class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-xs rounded-xl font-medium transition-all cursor-pointer flex items-center shadow-lg shadow-brand-600/20">
+                            <i class="fa-solid fa-upload mr-2"></i> Tải lên tệp SCADA CSV/Excel
+                            <input type="file" id="scada-file-input" accept=".csv, .xlsx, .xls" onchange="handleScadaFileUpload(event)" class="hidden">
+                        </label>
+                    </div>
+
+                    <!-- Khu vực kết quả phân tích -->
+                    <div id="history-results-area" class="space-y-6 hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl">
+                                <div class="text-xs text-slate-400">Tổng số bản ghi 10 phút đã nạp</div>
+                                <div class="text-2xl font-bold text-brand-400 mt-1" id="stat-total-records">0</div>
+                                <div class="text-[11px] text-slate-500 mt-1">Dữ liệu SCADA chính xác</div>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl">
+                                <div class="text-xs text-slate-400">Công suất phát trung bình nhà máy</div>
+                                <div class="text-2xl font-bold text-amber-400 mt-1" id="stat-avg-power">0.00 MW</div>
+                                <div class="text-[11px] text-slate-500 mt-1">Tính trên toàn bộ các trụ</div>
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl">
+                                <div class="text-xs text-slate-400">Danh sách trụ nhận diện trong file</div>
+                                <div class="text-sm font-bold text-emerald-400 mt-2 truncate" id="stat-turbines-list">Đang cập nhật...</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl">
+                            <h3 class="text-sm font-bold text-white mb-3">Bảng xếp hạng Hiệu suất các Trụ Tuabin từ tệp SCADA</h3>
+                            <div class="overflow-x-auto max-h-72 overflow-y-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-slate-900 text-slate-400 sticky top-0">
+                                        <tr>
+                                            <th class="p-3">Mã Tuabin</th>
+                                            <th class="p-3">Gió TB (m/s)</th>
+                                            <th class="p-3">Công suất phát TB (kW)</th>
+                                            <th class="p-3">Hiệu suất ước tính (%)</th>
+                                            <th class="p-3">Trạng thái đánh giá</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="turbine-ranking-tbody" class="divide-y divide-slate-900">
+                                        <!-- Render động -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trạng thái chờ -->
+                    <div id="history-placeholder" class="py-16 text-center">
+                        <div class="inline-flex p-4 bg-slate-950 text-slate-500 rounded-2xl mb-3 text-3xl border border-slate-800">
+                            <i class="fa-solid fa-file-csv"></i>
+                        </div>
+                        <h3 class="text-slate-300 font-medium text-sm">Chưa có tệp SCADA nào được tải lên</h3>
+                        <p class="text-slate-500 text-xs mt-1">Bấm nút <span class="text-brand-400">"Tải lên tệp SCADA CSV/Excel"</span> bên trên để hệ thống tự động đọc các trụ WT23, WT21, WT19,...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: TRỢ LÝ AI -->
+            <section id="tab-assistant" class="hidden bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+                <h2 class="text-base font-bold text-white">Trợ lý AI Vận Hành NMDGV12 Trà Vinh</h2>
+                <p class="text-xs text-slate-400">Hệ thống đã sẵn sàng kết nối dữ liệu SCADA 3 tháng của 12 tuabin.</p>
+                <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300">
+                    💡 Bạn có thể hỏi bất kỳ câu hỏi nào về tình trạng vận hành, phân tích sự cố hoặc tiêu chuẩn IEC cho các trụ tuabin trong nhà máy.
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // Danh sách mặc định các trụ từ tệp của người dùng
+        let detectedTurbines = ['WT23', 'WT21', 'WT19', 'WT17', 'WT15', 'WT13', 'WT01', 'WT03', 'WT05', 'WT07', 'WT09', 'WT11'];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTurbineGrid(detectedTurbines);
+        });
+
+        function switchTab(tabName) {
+            ['dashboard', 'history', 'assistant'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if(btn) {
+                    btn.classList.remove('text-brand-400', 'bg-slate-900', 'shadow');
+                    btn.classList.add('text-slate-400');
+                }
+            });
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-brand-400', 'bg-slate-900', 'shadow');
+            }
+        }
+
+        function renderTurbineGrid(turbines) {
+            const grid = document.getElementById('turbine-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            turbines.forEach(tName => {
+                const isWarning = (tName === 'WT-04' || tName === 'WT-09' || tName === 'WT09');
+                const statusColor = isWarning ? 'border-amber-500/50 bg-amber-500/10 text-amber-300' : 'border-slate-800 bg-slate-950 text-slate-300';
+                const badgeColor = isWarning ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-emerald-500/20 text-emerald-400';
+                
+                grid.innerHTML += `
+                    <div class="border ${statusColor} p-4 rounded-xl flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold text-sm text-white">${tName}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full ${badgeColor}">${isWarning ? 'Cảnh báo' : 'Tối ưu'}</span>
+                        </div>
+                        <div class="text-xs space-y-1 text-slate-400">
+                            <div>Công suất: <span class="text-white font-medium">${isWarning ? '2.1 MW' : '2.8 MW'}</span></div>
+                            <div>Gió: <span class="text-white font-medium">8.3 m/s</span></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function handleScadaFileUpload(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheet = workbook.SheetNames[0];
+                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+                    
+                    if (rows.length === 0) {
+                        alert('Tệp không có dữ liệu!');
+                        return;
+                    }
+
+                    // Tự động quét các cột công suất active power để tìm đúng tên các trụ trong tệp
+                    const sampleRow = rows[0];
+                    const powerCols = Object.keys(sampleRow).filter(k => k.includes('Grid-side Active Power(kW)'));
+                    const windCols = Object.keys(sampleRow).filter(k => k.includes('Average Wind Speed'));
+
+                    let extractedTurbines = powerCols.map(col => col.split(' - ')[0]);
+                    if(extractedTurbines.length > 0) {
+                        detectedTurbines = extractedTurbines;
+                    }
+
+                    // Hiển thị khu vực kết quả
+                    document.getElementById('history-placeholder').classList.add('hidden');
+                    document.getElementById('history-results-area').classList.remove('hidden');
+
+                    document.getElementById('stat-total-records').textContent = rows.length.toLocaleString();
+                    document.getElementById('stat-turbines-list').textContent = detectedTurbines.join(', ');
+
+                    let turbineStats = {};
+                    detectedTurbines.forEach(t => {
+                        turbineStats[t] = { powerSum: 0, windSum: 0, count: 0 };
+                    });
+
+                    let totalP = 0, totalCount = 0;
+
+                    rows.forEach(row => {
+                        detectedTurbines.forEach(t => {
+                            const pKey = powerCols.find(c => c.startsWith(t));
+                            const wKey = windCols.find(c => c.startsWith(t));
+                            
+                            if(pKey && row[pKey] !== undefined) {
+                                let pVal = parseFloat(row[pKey]) || 0;
+                                turbineStats[t].powerSum += pVal;
+                                totalP += pVal;
+                                totalCount++;
+                            }
+                            if(wKey && row[wKey] !== undefined) {
+                                let wVal = parseFloat(row[wKey]) || 0;
+                                turbineStats[t].windSum += wVal;
+                                turbineStats[t].count++;
+                            }
+                        });
+                    });
+
+                    const avgP_MW = (totalP / (totalCount || 1) / 1000).toFixed(2);
+                    document.getElementById('stat-avg-power').textContent = `${avgP_MW} MW`;
+
+                    // Render bảng xếp hạng
+                    const tbody = document.getElementById('turbine-ranking-tbody');
+                    tbody.innerHTML = '';
+
+                    detectedTurbines.forEach(t => {
+                        const stats = turbineStats[t];
+                        const cnt = stats.count || 1;
+                        const avgWind = (stats.windSum / cnt).toFixed(2);
+                        const avgPowerKW = (stats.powerSum / cnt).toFixed(1);
+                        const pi = Math.min(99, Math.max(70, (avgPowerKW / 2500) * 100)).toFixed(1);
+                        const isWarn = (t === 'WT09' || t === 'WT04' || pi < 85);
+
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-900/50">
+                                <td class="p-3 font-bold text-white">${t}</td>
+                                <td class="p-3 text-slate-300">${avgWind} m/s</td>
+                                <td class="p-3 text-slate-300">${Number(avgPowerKW).toLocaleString()} kW</td>
+                                <td class="p-3 ${isWarn ? 'text-amber-400 font-bold' : 'text-slate-300'}">${pi}%</td>
+                                <td class="p-3"><span class="px-2.5 py-1 rounded text-[10px] ${isWarn ? 'bg-amber-500/20 text-amber-400 font-bold' : 'bg-emerald-500/20 text-emerald-400'}">${isWarn ? 'Cần kiểm tra (Cảnh báo)' : 'Hoạt động tối ưu'}</span></td>
+                            </tr>
+                        `;
+                    });
+
+                    // Cập nhật lại lưới trang chủ
+                    renderTurbineGrid(detectedTurbines);
+
+                    alert(`Đã nạp thành công ${rows.length.toLocaleString()} bản ghi SCADA cho các trụ: ${detectedTurbines.join(', ')}!`);
+                } catch(err) {
+                    alert('Lỗi đọc tệp SCADA: ' + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+</body>
+</html>

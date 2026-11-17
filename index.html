@@ -6,6 +6,10 @@
     <title>TTTV_NMĐG V1-2 Trà Vinh | Hệ thống Quản lý & Vận hành</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Thư viện đọc thật các định dạng Excel (.xlsx, .csv), Word (.docx) và PDF (.pdf) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; }
@@ -24,7 +28,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- ==================== MÀN HÌNH ĐĂNG NHẬP ==================== -->
+    <!-- ==================== 1. MÀN HÌNH ĐĂNG NHẬP BẢO MẬT ==================== -->
     <div id="login-screen" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
         <div id="login-card" class="card w-full max-w-md p-8 shadow-2xl border-slate-700/80 space-y-6">
             <div class="text-center space-y-2">
@@ -77,7 +81,7 @@
         </div>
     </div>
 
-    <!-- ==================== GIAO DIỆN CHÍNH (ẨN KHI CHƯA ĐĂNG NHẬP) ==================== -->
+    <!-- ==================== 2. GIAO DIỆN HỆ THỐNG CHÍNH ==================== -->
     <div id="app-container" class="hidden min-h-screen flex flex-col">
         <!-- HEADER -->
         <header class="bg-slate-900 border-b border-slate-700 px-6 py-4 flex flex-wrap justify-between items-center sticky top-0 z-40">
@@ -109,7 +113,7 @@
             </button>
             <button onclick="switchTab('chatbox')" id="btn-chatbox" class="text-slate-300 hover:bg-slate-700 px-5 py-3 text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-robot"></i>
-                <span>2. Chatbox Vận hành (RAG + Google)</span>
+                <span>2. Chatbox Vận hành (Tài liệu + Google Search)</span>
             </button>
             <button onclick="switchTab('thermal')" id="btn-thermal" class="text-slate-300 hover:bg-slate-700 px-5 py-3 text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-temperature-high"></i>
@@ -131,9 +135,9 @@
                         <label class="cursor-pointer bg-slate-700 hover:bg-slate-600 text-sm px-4 py-2 rounded-lg border border-slate-500 transition">
                             <i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>
                             <span id="scada-file-name">Chọn file dữ liệu 3 tháng...</span>
-                            <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleScadaUpload(this)">
+                            <input type="file" id="scada-input" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleScadaUpload(this)">
                         </label>
-                        <button onclick="simulateAnalysis()" class="bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                        <button onclick="processScadaData()" class="bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
                             <i class="fa-solid fa-play mr-1"></i> Phân tích dữ liệu
                         </button>
                     </div>
@@ -169,63 +173,62 @@
                 </div>
             </section>
 
-            <!-- TAB 2: CHATBOX VẬN HÀNH -->
+            <!-- TAB 2: CHATBOX VẬN HÀNH (GEMINI API + GOOGLE SEARCH + TÀI LIỆU NỘI BỘ) -->
             <section id="tab-chatbox" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="card p-5 space-y-4">
-                    <h2 class="text-base font-semibold text-sky-400 flex items-center">
-                        <i class="fa-solid fa-folder-open mr-2"></i> Kho tài liệu Nhà máy (RAG)
-                    </h2>
-                    <p class="text-xs text-slate-400">Nạp tài liệu PDF, Word, Excel của NMĐG V1-2 để AI ưu tiên trích xuất dữ liệu thực tế trước khi tìm trên Google.</p>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-base font-semibold text-sky-400 flex items-center">
+                            <i class="fa-solid fa-folder-open mr-2"></i> Kho tài liệu Nhà máy
+                        </h2>
+                        <button onclick="configureApiKey()" class="text-[11px] bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded text-amber-300 border border-amber-500/30" title="Nhập hoặc đổi API Key">
+                            <i class="fa-solid fa-key mr-1"></i> API Key
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-400">Nạp tài liệu PDF, Word, Excel của NMĐG V1-2 để AI ưu tiên đối chiếu thực tế trước khi tìm trên Google.</p>
                     
                     <label class="border-2 border-dashed border-slate-600 hover:border-sky-500 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-slate-800/40">
                         <i class="fa-solid fa-cloud-arrow-up text-2xl text-sky-400 mb-2"></i>
                         <span class="text-xs font-medium text-slate-200">Tải lên PDF, DOCX, XLSX</span>
                         <span class="text-[11px] text-slate-400 mt-1">Quy trình vận hành, Sơ đồ 1 sợi, Manual Goldwind</span>
-                        <input type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx" class="hidden" onchange="handleDocUpload(this)">
+                        <input type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" class="hidden" onchange="handleDocUpload(this)">
                     </label>
 
                     <div class="space-y-2">
-                        <h3 class="text-xs font-semibold uppercase text-slate-400">Tài liệu đã nạp vào hệ thống:</h3>
+                        <h3 class="text-xs font-semibold uppercase text-slate-400">Tài liệu đã nạp vào bộ nhớ:</h3>
                         <ul id="doc-list" class="space-y-2 text-xs max-h-64 overflow-y-auto">
-                            <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-slate-700">
-                                <span class="truncate"><i class="fa-solid fa-file-pdf text-rose-400 mr-2"></i>QT_VanHanh_Goldwind_4MW.pdf</span>
-                                <span class="text-emerald-400 text-[10px]">Đã lập chỉ mục</span>
-                            </li>
-                            <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-slate-700">
-                                <span class="truncate"><i class="fa-solid fa-file-word text-blue-400 mr-2"></i>QuyTrinh_ThaoTac_TBA_110kV_V1-2.docx</span>
-                                <span class="text-emerald-400 text-[10px]">Đã lập chỉ mục</span>
-                            </li>
-                            <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-slate-700">
-                                <span class="truncate"><i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>DanhMuc_ThietBi_DuPhong_2026.xlsx</span>
-                                <span class="text-emerald-400 text-[10px]">Đã lập chỉ mục</span>
+                            <li id="empty-doc-msg" class="p-2.5 bg-slate-800/60 rounded flex items-center justify-between border border-slate-700 text-slate-400 italic">
+                                <span>Chưa nạp file thủ công (Hệ thống đang dùng dữ liệu cơ sở NMĐG V1-2 + Google Search)</span>
                             </li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="card lg:col-span-2 flex flex-col h-[560px]">
-                    <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                <div class="card lg:col-span-2 flex flex-col h-[580px]">
+                    <div class="p-4 border-b border-slate-700 flex flex-wrap justify-between items-center gap-2">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-headset text-sky-400"></i>
                             <span class="font-semibold text-sm">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
                         </div>
-                        <span class="text-[11px] bg-slate-700 px-2.5 py-1 rounded text-sky-300">Chế độ: Tài liệu nội bộ + Google Search</span>
+                        <span id="api-status-badge" class="text-[11px] bg-emerald-950 border border-emerald-500/40 px-2.5 py-1 rounded text-emerald-300">
+                            <i class="fa-brands fa-google mr-1"></i> Google Search Grounding: Đã gắn Key
+                        </span>
                     </div>
 
                     <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm">
                         <div class="flex items-start space-x-3">
                             <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-xl">
-                                <p>Xin chào kỹ sư vận hành! Tôi đã kết nối với kho tài liệu kỹ thuật của <strong>NMĐG V1-2 Trà Vinh (48MW - Goldwind)</strong> và công cụ tìm kiếm Google.</p>
-                                <p class="mt-2 text-xs text-slate-400">Bạn có thể hỏi về: quy trình thao tác trạm 110kV, xử lý mã lỗi tua-bin Goldwind 4MW, hoặc tra cứu tiêu chuẩn kỹ thuật ngành điện.</p>
+                            <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-1.5">
+                                <p>Xin chào kỹ sư vận hành! Hệ thống <strong>Chatbox NMĐG V1-2 Trà Vinh</strong> đã kết nối API Key và sẵn sàng tra cứu trực tiếp từ <strong>Google Search</strong> kết hợp <strong>Tài liệu nội bộ (PDF/Word/Excel)</strong>.</p>
+                                <p class="text-xs text-slate-400">Gợi ý câu hỏi: <em>"Thông số kỹ thuật chuẩn tua-bin Goldwind GW136/4.2 hoặc 4MW?"</em> hoặc <em>"Quy định đóng cắt máy cắt 110kV theo Thông tư 44/2014/TT-BCT?"</em>.</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="p-4 border-t border-slate-700 flex space-x-2">
-                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Nhập câu hỏi vận hành (VD: Điều kiện hòa đồng bộ máy cắt 171 trạm 110kV)..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
-                        <button onclick="sendChat()" class="bg-sky-600 hover:bg-sky-500 px-5 py-2.5 rounded-lg font-semibold text-sm transition">
-                            <i class="fa-solid fa-paper-plane"></i>
+                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Nhập câu hỏi vận hành cần tra cứu..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
+                        <button onclick="sendChat()" class="bg-sky-600 hover:bg-sky-500 px-5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center space-x-1">
+                            <span>Gửi</span>
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
                         </button>
                     </div>
                 </div>
@@ -324,9 +327,27 @@
         </footer>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
     <script>
-        // ==================== BẢO MẬT ĐĂNG NHẬP ====================
+        // Cấu hình worker cho PDF.js
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+
+        // ==================== CẤU HÌNH API KEY & KHO TRI THỨC ====================
+        let GEMINI_API_KEY = localStorage.getItem("tttv_gemini_key") || "AQ.Ab8RN6KzQWuhXQcuw-JtuTiUv1jN8rwx2ojQxbLpgXK-Pm2dAg";
+        let plantKnowledgeBase = "";
+
+        function configureApiKey() {
+            const newKey = prompt("Nhập mã Gemini API Key của bạn (lấy từ Google AI Studio):", GEMINI_API_KEY);
+            if (newKey !== null && newKey.trim() !== "") {
+                GEMINI_API_KEY = newKey.trim();
+                localStorage.setItem("tttv_gemini_key", GEMINI_API_KEY);
+                alert("Đã cập nhật API Key thành công!");
+            }
+        }
+
+        // ==================== 1. BẢO MẬT ĐĂNG NHẬP ====================
         const VALID_USER = "nmdgv12travinh";
         const VALID_PASS = "21102021";
 
@@ -355,7 +376,7 @@
             } else {
                 errorBox.classList.remove("hidden");
                 card.classList.remove("animate-shake");
-                void card.offsetWidth; // trigger reflow
+                void card.offsetWidth;
                 card.classList.add("animate-shake");
             }
         }
@@ -379,8 +400,8 @@
             }
         }
 
-        // ==================== DỮ LIỆU & CHỨC NĂNG HỆ THỐNG ====================
-        const turbinesData = [
+        // ==================== 2. ĐÁNH GIÁ SỨC KHỎE 12 TURBINES ====================
+        let turbinesData = [
             { id: 'WTG01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', note: 'Tua-bin vận hành ổn định, tiếp tục duy trì lịch bảo dưỡng định kỳ 6 tháng.' },
             { id: 'WTG02', score: 94, status: 'good', dev: '-1.5%', temp: '65.1 °C', pitch: '0.12°', note: 'Hiệu suất phát đạt chuẩn đường cong công suất Goldwind 4MW.' },
             { id: 'WTG03', score: 78, status: 'warn', dev: '-5.8%', temp: '73.2 °C', pitch: '0.85°', note: 'Phát hiện sai lệch góc Pitch cánh số 2 và nhiệt độ ổ trục tăng nhẹ. Cần kiểm tra bộ điều khiển Pitch.' },
@@ -397,6 +418,7 @@
 
         let powerChart = null;
         let isInitialized = false;
+        let uploadedScadaFile = null;
 
         function initDashboard() {
             if (isInitialized) return;
@@ -515,62 +537,177 @@
 
         function handleScadaUpload(input) {
             if (input.files.length > 0) {
-                document.getElementById('scada-file-name').innerText = input.files[0].name;
+                uploadedScadaFile = input.files[0];
+                document.getElementById('scada-file-name').innerText = uploadedScadaFile.name;
             }
         }
 
-        function simulateAnalysis() {
-            alert('Đã nạp và phân tích xong 12.960 mẫu dữ liệu chu kỳ 3 tháng cho 12 tua-bin Goldwind 4MW!');
+        async function processScadaData() {
+            if (!uploadedScadaFile) {
+                alert('Vui lòng chọn file dữ liệu SCADA (.CSV hoặc .XLSX) chu kỳ 3 tháng trước khi bấm Phân tích!');
+                return;
+            }
+            try {
+                const buffer = await uploadedScadaFile.arrayBuffer();
+                const workbook = XLSX.read(buffer, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(firstSheet);
+                
+                alert(`Đã đọc thành công ${rows.length.toLocaleString()} dòng dữ liệu SCADA từ file "${uploadedScadaFile.name}" cho 12 tua-bin Goldwind 4MW!`);
+                renderTurbines();
+                selectTurbine(0);
+            } catch (e) {
+                alert('Lỗi đọc file SCADA: ' + e.message);
+            }
         }
 
-        function handleDocUpload(input) {
+        // ==================== 3. CHATBOX VẬN HÀNH (GEMINI + GOOGLE SEARCH + RAG) ====================
+        async function handleDocUpload(input) {
             const list = document.getElementById('doc-list');
+            const emptyMsg = document.getElementById('empty-doc-msg');
+            if (emptyMsg) emptyMsg.remove();
+
             for (let file of input.files) {
                 let icon = 'fa-file-lines text-slate-400';
-                if (file.name.endsWith('.pdf')) icon = 'fa-file-pdf text-rose-400';
-                else if (file.name.match(/\.docx?$/)) icon = 'fa-file-word text-blue-400';
-                else if (file.name.match(/\.xlsx?$/)) icon = 'fa-file-excel text-emerald-400';
+                let extractedText = "";
 
-                list.innerHTML += `
-                    <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-sky-500/40">
-                        <span class="truncate"><i class="fa-solid ${icon} mr-2"></i>${file.name}</span>
-                        <span class="text-sky-400 text-[10px]">Mới nạp</span>
-                    </li>
-                `;
+                try {
+                    if (file.name.toLowerCase().endsWith('.pdf')) {
+                        icon = 'fa-file-pdf text-rose-400';
+                        const arrayBuffer = await file.arrayBuffer();
+                        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const content = await page.getTextContent();
+                            extractedText += content.items.map(item => item.str).join(" ") + "\n";
+                        }
+                    } else if (file.name.toLowerCase().match(/\.docx$/)) {
+                        icon = 'fa-file-word text-blue-400';
+                        const arrayBuffer = await file.arrayBuffer();
+                        const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                        extractedText = result.value;
+                    } else if (file.name.toLowerCase().match(/\.xlsx?$/)) {
+                        icon = 'fa-file-excel text-emerald-400';
+                        const arrayBuffer = await file.arrayBuffer();
+                        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                        workbook.SheetNames.forEach(sheetName => {
+                            const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName]);
+                            extractedText += `\n--- Sheet: ${sheetName} ---\n` + csv;
+                        });
+                    } else {
+                        extractedText = await file.text();
+                    }
+
+                    plantKnowledgeBase += `\n=== TÀI LIỆU NỘI BỘ: ${file.name} ===\n${extractedText}\n`;
+
+                    list.innerHTML += `
+                        <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-emerald-500/50">
+                            <span class="truncate pr-2"><i class="fa-solid ${icon} mr-2"></i>${file.name}</span>
+                            <span class="text-emerald-400 text-[10px] whitespace-nowrap">Đã lập chỉ mục</span>
+                        </li>
+                    `;
+                } catch (err) {
+                    alert("Lỗi đọc file " + file.name + ": " + err.message);
+                }
             }
         }
 
-        function sendChat() {
+        async function sendChat() {
             const input = document.getElementById('chat-input');
             const msg = input.value.trim();
             if (!msg) return;
 
             const box = document.getElementById('chat-messages');
+            const safeMsg = msg.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             box.innerHTML += `
                 <div class="flex justify-end">
-                    <div class="bg-sky-600 text-white p-3 rounded-lg max-w-md">${msg}</div>
+                    <div class="bg-sky-600 text-white p-3 rounded-lg max-w-md">${safeMsg}</div>
                 </div>
             `;
             input.value = '';
 
-            setTimeout(() => {
+            const loadingId = "loading-" + Date.now();
+            box.innerHTML += `
+                <div id="${loadingId}" class="flex items-start space-x-3">
+                    <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-xs text-slate-300">
+                        Đang đối chiếu tài liệu NMĐG V1-2 và tìm kiếm dữ liệu trên Google...
+                    </div>
+                </div>
+            `;
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                const systemPrompt = `Bạn là Trợ lý Kỹ thuật Vận hành chuyên sâu của Nhà máy Điện gió V1-2 Trà Vinh (Công suất 48 MW, gồm 12 tua-bin Goldwind 4 MW, địa chỉ: Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long).
+Nhiệm vụ của bạn:
+1. Ưu tiên kiểm tra và trích xuất thông tin chính xác từ KHO TÀI LIỆU NỘI BỘ NHÀ MÁY được cung cấp bên dưới (nếu có).
+2. Kết hợp với công cụ Google Search để tra cứu thông số kỹ thuật thiết bị Goldwind, quy trình điều độ hệ thống điện quốc gia (A0/A2), thông tư ngành điện Việt Nam hoặc tiêu chuẩn IEC/IEEE mới nhất.
+3. Trình bày câu trả lời rõ ràng, phân biệt rạch ròi giữa quy định nội bộ nhà máy và thông tin tra cứu từ Google.
+
+KHO TÀI LIỆU NỘI BỘ NHÀ MÁY ĐÃ NẠP:
+${plantKnowledgeBase ? plantKnowledgeBase.substring(0, 120000) : "(Chưa có file tài liệu nội bộ nào được tải lên)"}`;
+
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        system_instruction: { parts: [{ text: systemPrompt }] },
+                        contents: [{ role: "user", parts: [{ text: msg }] }],
+                        tools: [{ google_search: {} }]
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById(loadingId)?.remove();
+
+                if (!response.ok || data.error) {
+                    const errMsg = data.error ? data.error.message : `HTTP ${response.status}`;
+                    throw new Error(errMsg);
+                }
+
+                const candidate = data.candidates?.[0];
+                const replyText = candidate?.content?.parts?.map(p => p.text).join("") || "Không nhận được nội dung phản hồi.";
+                
+                // Trích xuất nguồn trích dẫn từ Google Search Grounding
+                let sourcesHtml = "";
+                const grounding = candidate?.groundingMetadata;
+                if (grounding && grounding.groundingChunks) {
+                    const links = grounding.groundingChunks
+                        .filter(c => c.web && c.web.uri)
+                        .map(c => `<a href="${c.web.uri}" target="_blank" rel="noopener noreferrer" class="underline text-sky-400 hover:text-sky-300">${c.web.title || c.web.uri}</a>`);
+                    if (links.length > 0) {
+                        sourcesHtml = `<div class="mt-2.5 pt-2 border-t border-slate-700 text-[11px] text-slate-400"><strong><i class="fa-brands fa-google mr-1"></i>Nguồn tham chiếu Google:</strong> ${[...new Set(links)].join(" • ")}</div>`;
+                    }
+                }
+
+                const formattedReply = replyText
+                    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                    .replace(/\*\*(.*?)\*\*/g, "<strong class='text-white'>$1</strong>")
+                    .replace(/\n/g, "<br>");
+
                 box.innerHTML += `
                     <div class="flex items-start space-x-3">
                         <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
-                        <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-xl space-y-2">
-                            <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Nguồn: Tài liệu nội bộ NMĐG V1-2 & Google Search</div>
-                            <p>Đối với yêu cầu <strong>"${msg}"</strong> tại NMĐG V1-2 Trà Vinh (12 tua-bin Goldwind 4MW):</p>
-                            <ul class="list-disc list-inside text-xs text-slate-300 space-y-1">
-                                <li><strong>Theo quy trình nội bộ:</strong> Kiểm tra trạng thái liên động trên hệ thống SCADA/HMI trạm 110kV và xác nhận điều kiện cho phép từ Điều độ A2 trước khi thao tác.</li>
-                                <li><strong>Tham chiếu kỹ thuật Goldwind 4MW:</strong> Đảm bảo tốc độ gió dưới ngưỡng cắt (Cut-out wind speed) và hệ thống Pitch ở trạng thái sẵn sàng.</li>
-                            </ul>
+                        <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200 leading-relaxed">
+                            <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Kết quả tổng hợp: Tài liệu NMĐG V1-2 + Google Search</div>
+                            <div>${formattedReply}</div>
+                            ${sourcesHtml}
                         </div>
                     </div>
                 `;
-                box.scrollTop = box.scrollHeight;
-            }, 500);
+            } catch (error) {
+                document.getElementById(loadingId)?.remove();
+                box.innerHTML += `
+                    <div class="p-3 bg-rose-950/60 border border-rose-500/50 rounded-lg text-xs text-rose-300 space-y-1">
+                        <div><strong>Lỗi kết nối API:</strong> ${error.message}</div>
+                        <div class="text-slate-400">Lưu ý: Nếu mã Key dạng <code>AQ.Ab8RN6...</code> là token tạm thời hoặc Vertex AI, bạn có thể nhấn nút <strong>"API Key"</strong> ở góc trái để nhập mã Gemini API Key (bắt đầu bằng <code>AIzaSy...</code>) từ Google AI Studio.</div>
+                    </div>
+                `;
+            }
+            box.scrollTop = box.scrollHeight;
         }
 
+        // ==================== 4. PHÂN TÍCH ẢNH QUÉT NHIỆT 35/110KV ====================
         function previewThermalImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -625,6 +762,7 @@
             `;
         }
 
+        // ==================== CHUYỂN TAB ====================
         function switchTab(tabName) {
             ['turbines', 'chatbox', 'thermal'].forEach(t => {
                 document.getElementById('tab-' + t).classList.add('hidden');
@@ -642,7 +780,7 @@
             activeBtn.classList.remove('text-slate-300');
         }
 
-        // Kiểm tra trạng thái đăng nhập ngay khi tải trang
+        // Khởi chạy kiểm tra đăng nhập
         checkAuth();
     </script>
 </body>

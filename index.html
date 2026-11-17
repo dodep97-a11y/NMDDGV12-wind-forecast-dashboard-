@@ -3,294 +3,647 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeroPredict - Hệ Thống AI & Vận Hành NMDGV12 Trà Vinh</title>
-    <!-- Thư viện SheetJS để đọc file SCADA CSV/Excel -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <title>TTTV_NMĐG V1-2 Trà Vinh | Hệ thống Quản lý & Vận hành</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #030712; color: #f3f4f6; min-height: 100vh; display: flex; flex-direction: column; }
-        header { background-color: #111827; border-bottom: 1px solid #1f2937; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
-        .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #0d9488, #2dd4bf); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #030712; font-size: 20px; box-shadow: 0 4px 12px rgba(20,184,166,0.3); }
-        nav { display: flex; gap: 6px; background: #030712; padding: 4px; border-radius: 10px; border: 1px solid #1f2937; }
-        nav button { background: transparent; border: none; color: #9ca3af; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; }
-        nav button.active { background: #111827; color: #2dd4bf; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
-        main { padding: 24px; max-width: 1300px; width: 100%; margin: 0 auto; flex: 1; display: flex; flex-direction: column; gap: 24px; }
-        .card { background-color: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 22px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
-        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-        .grid-turbines { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
-        .turbine-box { background: #030712; border: 1px solid #1f2937; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; transition: transform 0.2s; }
-        .turbine-box:hover { border-color: #0d9488; }
-        .turbine-box.warning { border-color: rgba(245, 158, 11, 0.6); background: rgba(245, 158, 11, 0.04); }
-        .btn { background: #0d9488; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(13,148,136,0.3); }
-        .btn:hover { background: #14b8a6; }
-        table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; text-align: left; }
-        th, td { padding: 12px 16px; border-bottom: 1px solid #1f2937; }
-        th { background: #030712; color: #9ca3af; font-weight: 600; }
-        .hidden { display: none !important; }
-        .text-teal { color: #2dd4bf; }
-        .text-amber { color: #f59e0b; }
-        .text-emerald { color: #10b981; }
-        .stat-val { font-size: 26px; font-weight: bold; margin-top: 6px; }
-        .badge { font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: bold; display: inline-block; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 0.75rem; }
+        .tab-active { background-color: #0284c7; color: white; border-bottom: 3px solid #38bdf8; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-    <header>
-        <div class="logo-area">
-            <div class="logo-icon">⚡</div>
-            <div>
-                <h1 style="font-size: 15px; font-weight: bold; letter-spacing: 0.5px;">AeroPredict AI <span style="font-size: 11px; background: rgba(20,184,166,0.15); color: #2dd4bf; padding: 2px 8px; border-radius: 10px; font-weight: normal; margin-left: 6px;">NMDGV12 Trà Vinh (36 MW)</span></h1>
-                <p style="font-size: 11px; color: #9ca3af;">Hệ thống Quản lý Vận hành & Giám sát AI Thông Minh</p>
+    <!-- ==================== MÀN HÌNH ĐĂNG NHẬP ==================== -->
+    <div id="login-screen" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
+        <div id="login-card" class="card w-full max-w-md p-8 shadow-2xl border-slate-700/80 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-400 mb-2">
+                    <i class="fa-solid fa-wind text-3xl animate-pulse"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-wide text-white">TTTV_NMĐG V1-2 TRÀ VINH</h1>
+                <p class="text-xs text-slate-400">Hệ thống Quản lý Kỹ thuật & Vận hành (48 MW - Goldwind)</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Tài khoản vận hành</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="login-username" required autocomplete="username" placeholder="Nhập tài khoản..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Mật khẩu bảo mật</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="login-password" required autocomplete="current-password" placeholder="Nhập mật khẩu..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition">
+                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200">
+                            <i id="eye-icon" class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="login-error" class="hidden p-3 rounded-lg bg-rose-950/70 border border-rose-500/50 text-rose-300 text-xs flex items-center">
+                    <i class="fa-solid fa-triangle-exclamation mr-2 text-rose-400"></i>
+                    <span>Sai tài khoản hoặc mật khẩu. Vui lòng kiểm tra lại!</span>
+                </div>
+
+                <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold py-2.5 rounded-lg text-sm transition shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Đăng nhập hệ thống</span>
+                </button>
+            </form>
+
+            <div class="pt-4 border-t border-slate-800 text-center text-[11px] text-slate-500 space-y-1">
+                <p>Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long</p>
+                <p>Thiết kế bởi: <span class="text-sky-400 font-medium">Dep Do</span></p>
             </div>
         </div>
-        <nav>
-            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="active">📊 Dashboard Giám sát</button>
-            <button onclick="switchTab('history')" id="btn-history">📁 Nạp & Phân tích SCADA</button>
+    </div>
+
+    <!-- ==================== GIAO DIỆN CHÍNH (ẨN KHI CHƯA ĐĂNG NHẬP) ==================== -->
+    <div id="app-container" class="hidden min-h-screen flex flex-col">
+        <!-- HEADER -->
+        <header class="bg-slate-900 border-b border-slate-700 px-6 py-4 flex flex-wrap justify-between items-center sticky top-0 z-40">
+            <div class="flex items-center space-x-3">
+                <div class="bg-sky-500 p-2.5 rounded-lg text-white">
+                    <i class="fa-solid fa-wind text-2xl animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide text-sky-400">TTTV_NMĐG V1-2 TRÀ VINH</h1>
+                    <p class="text-xs text-slate-400">Công suất: 48 MW (12 x 4 MW Goldwind) | Khóm Cồn Tàu, Xã Trường Long Hòa, Tỉnh Vĩnh Long</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3 mt-2 md:mt-0">
+                <span class="px-3 py-1 bg-emerald-900/50 border border-emerald-500/50 text-emerald-400 text-xs rounded-full flex items-center">
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-ping"></span> nmdgv12travinh
+                </span>
+                <button onclick="handleLogout()" class="px-3 py-1.5 bg-slate-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-300 border border-slate-600 hover:border-rose-500/50 text-xs rounded-lg transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>Đăng xuất</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- NAVIGATION TABS -->
+        <nav class="bg-slate-800/80 px-6 flex space-x-2 border-b border-slate-700 overflow-x-auto">
+            <button onclick="switchTab('turbines')" id="btn-turbines" class="tab-active px-5 py-3 text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>1. Đánh giá sức khỏe 12 Turbines</span>
+            </button>
+            <button onclick="switchTab('chatbox')" id="btn-chatbox" class="text-slate-300 hover:bg-slate-700 px-5 py-3 text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-robot"></i>
+                <span>2. Chatbox Vận hành (RAG + Google)</span>
+            </button>
+            <button onclick="switchTab('thermal')" id="btn-thermal" class="text-slate-300 hover:bg-slate-700 px-5 py-3 text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-temperature-high"></i>
+                <span>3. Phân tích Ảnh Quét Nhiệt 35/110kV</span>
+            </button>
         </nav>
-    </header>
 
-    <main>
-        <!-- TAB 1: DASHBOARD GIÁM SÁT -->
-        <section id="tab-dashboard" style="display: flex; flex-direction: column; gap: 24px;">
-            <div class="grid-4">
-                <div class="card">
-                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase; font-weight: 600;">Tổng công suất khả dụng</div>
-                    <div class="stat-val text-teal">32.4 / 36.0 <span style="font-size: 14px; font-weight: normal; color: #9ca3af;">MW</span></div>
-                    <div style="font-size: 12px; color: #2dd4bf; margin-top: 8px;">▲ Hiệu suất hệ thống 90.0%</div>
-                </div>
-                <div class="card">
-                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase; font-weight: 600;">Tốc độ gió trung bình</div>
-                    <div class="stat-val">8.4 <span style="font-size: 14px; font-weight: normal; color: #9ca3af;">m/s</span></div>
-                    <div style="font-size: 12px; color: #2dd4bf; margin-top: 8px;">≈ Gió ven biển Trà Vinh ổn định</div>
-                </div>
-                <div class="card">
-                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase; font-weight: 600;">Trụ tối ưu</div>
-                    <div class="stat-val text-emerald">10 / 12 <span style="font-size: 14px; font-weight: normal; color: #9ca3af;">Trụ</span></div>
-                    <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">Đồng bộ dữ liệu SCADA</div>
-                </div>
-                <div class="card">
-                    <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase; font-weight: 600;">Trụ cần kiểm tra</div>
-                    <div class="stat-val text-amber">WT09, WT-04</div>
-                    <div style="font-size: 12px; color: #f59e0b; margin-top: 8px;">⚠ Cảnh báo suy giảm ~12%</div>
-                </div>
-            </div>
+        <!-- MAIN CONTENT -->
+        <main class="flex-grow p-6 max-w-7xl w-full mx-auto">
 
-            <!-- Lưới hiển thị 12 tuabin -->
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+            <!-- TAB 1: ĐÁNH GIÁ SỨC KHỎE TURBINES -->
+            <section id="tab-turbines" class="space-y-6">
+                <div class="card p-5 flex flex-wrap justify-between items-center gap-4">
                     <div>
-                        <h2 style="font-size: 16px; font-weight: bold;">Trạng thái Thời gian thực 12 Trụ Tuabin</h2>
-                        <p style="font-size: 12px; color: #9ca3af; margin-top: 2px;">Danh sách các trụ chuẩn theo tệp SCADA (WT23, WT21, WT19,...)</p>
+                        <h2 class="text-lg font-semibold text-white">Nạp dữ liệu SCADA Goldwind (Chu kỳ 3 tháng - Mẫu 10 phút)</h2>
+                        <p class="text-xs text-slate-400">Hỗ trợ định dạng .CSV, .XLSX xuất từ hệ thống SCADA trung tâm (12.960 bản ghi/chu kỳ).</p>
                     </div>
-                    <span class="badge" style="background: rgba(20,184,166,0.15); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.3);">Chu kỳ mẫu 10 phút</span>
+                    <div class="flex items-center space-x-3">
+                        <label class="cursor-pointer bg-slate-700 hover:bg-slate-600 text-sm px-4 py-2 rounded-lg border border-slate-500 transition">
+                            <i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>
+                            <span id="scada-file-name">Chọn file dữ liệu 3 tháng...</span>
+                            <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleScadaUpload(this)">
+                        </label>
+                        <button onclick="simulateAnalysis()" class="bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                            <i class="fa-solid fa-play mr-1"></i> Phân tích dữ liệu
+                        </button>
+                    </div>
                 </div>
-                <div class="grid-turbines" id="turbine-grid">
-                    <!-- Render động qua JavaScript -->
-                </div>
-            </div>
-        </section>
 
-        <!-- TAB 2: NẠP & PHÂN TÍCH SCADA 3 THÁNG -->
-        <section id="tab-history" class="hidden" style="flex-direction: column; gap: 24px;">
-            <div class="card">
-                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 22px;">
-                    <div>
-                        <h2 style="font-size: 16px; font-weight: bold;">Nạp và Phân tích Dữ liệu SCADA Lịch sử (3 Tháng)</h2>
-                        <p style="font-size: 12px; color: #9ca3af; margin-top: 4px;">Tải lên tệp CSV SCADA của bạn (VD: <code class="text-teal">Trend analysis_10-min data(0)_1.csv</code>) để hệ thống tự động quét và tính toán.</p>
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Trạng thái sức khỏe 12 Tua-bin Goldwind 4.0 MW</h3>
+                        <div class="flex space-x-4 text-xs">
+                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-1.5"></span>Tốt (>85%)</span>
+                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-amber-500 mr-1.5"></span>Cần theo dõi (70-85%)</span>
+                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-rose-500 mr-1.5"></span>Cảnh báo (<70%)</span>
+                        </div>
                     </div>
-                    <label class="btn" style="cursor: pointer;">
-                        📁 Tải lên tệp SCADA CSV/Excel
-                        <input type="file" id="scada-file-input" accept=".csv, .xlsx, .xls" onchange="handleScadaFileUpload(event)" class="hidden">
+                    <div id="turbine-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="card p-5 lg:col-span-2">
+                        <h3 class="text-base font-semibold mb-1" id="chart-title">Đường cong công suất thực tế vs Chuẩn Goldwind 4MW (WTG01)</h3>
+                        <p class="text-xs text-slate-400 mb-4">Dữ liệu tổng hợp chu kỳ 10 phút trong 90 ngày gần nhất</p>
+                        <div class="h-64">
+                            <canvas id="powerCurveChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card p-5 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-base font-semibold text-sky-400 mb-3" id="detail-wtg-name">Chi tiết đánh giá: WTG01</h3>
+                            <ul class="space-y-3 text-sm" id="detail-wtg-metrics"></ul>
+                        </div>
+                        <div class="mt-4 p-3 bg-slate-900/80 rounded-lg border border-slate-700 text-xs text-slate-300" id="detail-wtg-recommendation"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: CHATBOX VẬN HÀNH -->
+            <section id="tab-chatbox" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="card p-5 space-y-4">
+                    <h2 class="text-base font-semibold text-sky-400 flex items-center">
+                        <i class="fa-solid fa-folder-open mr-2"></i> Kho tài liệu Nhà máy (RAG)
+                    </h2>
+                    <p class="text-xs text-slate-400">Nạp tài liệu PDF, Word, Excel của NMĐG V1-2 để AI ưu tiên trích xuất dữ liệu thực tế trước khi tìm trên Google.</p>
+                    
+                    <label class="border-2 border-dashed border-slate-600 hover:border-sky-500 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-slate-800/40">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-sky-400 mb-2"></i>
+                        <span class="text-xs font-medium text-slate-200">Tải lên PDF, DOCX, XLSX</span>
+                        <span class="text-[11px] text-slate-400 mt-1">Quy trình vận hành, Sơ đồ 1 sợi, Manual Goldwind</span>
+                        <input type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx" class="hidden" onchange="handleDocUpload(this)">
                     </label>
-                </div>
 
-                <!-- Khu vực hiển thị kết quả sau khi nạp file -->
-                <div id="history-results-area" class="hidden" style="display: flex; flex-direction: column; gap: 20px;">
-                    <div class="grid-4">
-                        <div style="background: #030712; padding: 18px; border-radius: 12px; border: 1px solid #1f2937;">
-                            <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Tổng số bản ghi 10 phút</div>
-                            <div id="stat-total-records" class="stat-val text-teal">0</div>
-                        </div>
-                        <div style="background: #030712; padding: 18px; border-radius: 12px; border: 1px solid #1f2937;">
-                            <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Công suất phát trung bình</div>
-                            <div id="stat-avg-power" class="stat-val text-amber">0.00 MW</div>
-                        </div>
-                        <div style="background: #030712; padding: 18px; border-radius: 12px; border: 1px solid #1f2937; grid-column: span 2;">
-                            <div style="font-size: 11px; color: #9ca3af; text-transform: uppercase;">Các trụ nhận diện trong tệp</div>
-                            <div id="stat-turbines-list" style="font-size: 13px; font-weight: bold; color: #10b981; margin-top: 8px; word-break: break-all;">Đang cập nhật...</div>
-                        </div>
-                    </div>
-
-                    <div style="background: #030712; padding: 18px; border-radius: 12px; border: 1px solid #1f2937; overflow-x: auto;">
-                        <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 12px;">Bảng xếp hạng Hiệu suất Chi tiết các Trụ Tuabin</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Mã Tuabin</th>
-                                    <th>Gió Trung bình (m/s)</th>
-                                    <th>Công suất Phát TB (kW)</th>
-                                    <th>Hiệu suất ước tính (%)</th>
-                                    <th>Trạng thái đánh giá</th>
-                                </tr>
-                            </thead>
-                            <tbody id="turbine-ranking-tbody">
-                                <!-- Render động -->
-                            </tbody>
-                        </table>
+                    <div class="space-y-2">
+                        <h3 class="text-xs font-semibold uppercase text-slate-400">Tài liệu đã nạp vào hệ thống:</h3>
+                        <ul id="doc-list" class="space-y-2 text-xs max-h-64 overflow-y-auto">
+                            <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-slate-700">
+                                <span class="truncate"><i class="fa-solid fa-file-pdf text-rose-400 mr-2"></i>QT_VanHanh_Goldwind_4MW.pdf</span>
+                                <span class="text-emerald-400 text-[10px]">Đã lập chỉ mục</span>
+                            </li>
+                            <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-slate-700">
+                                <span class="truncate"><i class="fa-solid fa-file-word text-blue-400 mr-2"></i>QuyTrinh_ThaoTac_TBA_110kV_V1-2.docx</span>
+                                <span class="text-emerald-400 text-[10px]">Đã lập chỉ mục</span>
+                            </li>
+                            <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-slate-700">
+                                <span class="truncate"><i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>DanhMuc_ThietBi_DuPhong_2026.xlsx</span>
+                                <span class="text-emerald-400 text-[10px]">Đã lập chỉ mục</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
-                <!-- Trạng thái chờ khi chưa nạp file -->
-                <div id="history-placeholder" style="padding: 50px; text-align: center; color: #6b7280;">
-                    <div style="font-size: 36px; margin-bottom: 10px;">📊</div>
-                    <div style="font-size: 14px; font-weight: 500; color: #d1d5db;">Chưa có tệp SCADA nào được tải lên</div>
-                    <div style="font-size: 12px; margin-top: 4px;">Bấm nút "Tải lên tệp SCADA CSV/Excel" ở trên để nạp dữ liệu 3 tháng và xem bảng phân tích.</div>
-                </div>
-            </div>
-        </section>
-    </main>
+                <div class="card lg:col-span-2 flex flex-col h-[560px]">
+                    <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-headset text-sky-400"></i>
+                            <span class="font-semibold text-sm">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
+                        </div>
+                        <span class="text-[11px] bg-slate-700 px-2.5 py-1 rounded text-sky-300">Chế độ: Tài liệu nội bộ + Google Search</span>
+                    </div>
 
+                    <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm">
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-xl">
+                                <p>Xin chào kỹ sư vận hành! Tôi đã kết nối với kho tài liệu kỹ thuật của <strong>NMĐG V1-2 Trà Vinh (48MW - Goldwind)</strong> và công cụ tìm kiếm Google.</p>
+                                <p class="mt-2 text-xs text-slate-400">Bạn có thể hỏi về: quy trình thao tác trạm 110kV, xử lý mã lỗi tua-bin Goldwind 4MW, hoặc tra cứu tiêu chuẩn kỹ thuật ngành điện.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border-t border-slate-700 flex space-x-2">
+                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Nhập câu hỏi vận hành (VD: Điều kiện hòa đồng bộ máy cắt 171 trạm 110kV)..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
+                        <button onclick="sendChat()" class="bg-sky-600 hover:bg-sky-500 px-5 py-2.5 rounded-lg font-semibold text-sm transition">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: PHÂN TÍCH ẢNH QUÉT NHIỆT 35/110KV -->
+            <section id="tab-thermal" class="hidden grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-5 space-y-4">
+                    <h2 class="text-base font-semibold text-sky-400"><i class="fa-solid fa-camera-retro mr-2"></i>Nạp ảnh nhiệt & Thông số thiết bị 35kV / 110kV</h2>
+                    
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Cấp điện áp</label>
+                            <select id="th-voltage" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2">
+                                <option value="110kV">Trạm biến áp 110kV</option>
+                                <option value="35kV">Hệ thống phân phối 35kV</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Loại thiết bị quét nhiệt</label>
+                            <select id="th-equip" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2">
+                                <option value="Máy biến áp (MBA)">Máy biến áp lực (MBA)</option>
+                                <option value="Máy cắt (MC)">Máy cắt (MC)</option>
+                                <option value="Dao cách ly (DCL)">Dao cách ly (DCL)</option>
+                                <option value="Biến dòng điện (TI)">Biến dòng điện (TI)</option>
+                                <option value="Biến điện áp (TU)">Biến điện áp (TU)</option>
+                                <option value="Đầu cốt / Thanh cái">Đầu cốt cáp / Thanh cái</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Nhiệt độ điểm nóng nhất T1 (°C)</label>
+                            <input type="number" id="th-t1" value="68.5" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Nhiệt độ pha đối chiếu T2 (°C)</label>
+                            <input type="number" id="th-t2" value="44.0" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2">
+                        </div>
+                    </div>
+
+                    <label class="border-2 border-dashed border-slate-600 hover:border-sky-500 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-slate-800/40">
+                        <i class="fa-solid fa-image text-2xl text-amber-400 mb-1"></i>
+                        <span class="text-xs font-medium">Chọn ảnh chụp từ Camera nhiệt (FLIR / Testo / Hikmicro)</span>
+                        <input type="file" accept="image/*" class="hidden" onchange="previewThermalImage(this)">
+                    </label>
+
+                    <div id="thermal-preview-box" class="hidden rounded-lg overflow-hidden border border-slate-700 bg-black flex justify-center max-h-56">
+                        <img id="thermal-preview-img" src="" alt="Ảnh nhiệt thiết bị" class="object-contain max-h-56">
+                    </div>
+
+                    <button onclick="analyzeThermal()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2.5 rounded-lg text-sm transition">
+                        <i class="fa-solid fa-magnifying-glass-chart mr-2"></i> Phân tích mức độ phát nhiệt (Tiêu chuẩn IEC/NETA)
+                    </button>
+                </div>
+
+                <div class="card p-5 flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-base font-semibold text-white mb-4">Kết quả chẩn đoán nhiệt độ thiết bị</h2>
+                        <div id="thermal-result-box" class="space-y-4">
+                            <div class="p-4 rounded-lg bg-amber-950/50 border border-amber-500/50">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs uppercase font-bold text-amber-400">Mức độ cảnh báo: Cấp 2 (Phát nhiệt nguy hiểm)</span>
+                                    <span class="text-lg font-bold text-amber-400">ΔT = 24.5 °C</span>
+                                </div>
+                                <p class="text-sm text-slate-200 mt-2">Thiết bị: <strong>Máy biến áp lực (MBA) - 110kV</strong></p>
+                                <p class="text-xs text-slate-300 mt-1">Chênh lệch nhiệt độ giữa pha sự cố (68.5°C) và pha đối chiếu (44.0°C) nằm trong khoảng 15°C &lt; ΔT ≤ 35°C.</p>
+                            </div>
+
+                            <div class="space-y-2 text-sm">
+                                <h4 class="font-semibold text-sky-400">Nguyên nhân nghi ngờ:</h4>
+                                <ul class="list-disc list-inside text-slate-300 text-xs space-y-1">
+                                    <li>Lỏng bulông kẹp cực sứ đầu vào/đầu ra 110kV gây tăng điện trở tiếp xúc.</li>
+                                    <li>Oxy hóa bề mặt tiếp xúc do hơi muối môi trường biển tại khu vực Cồn Tàu.</li>
+                                </ul>
+
+                                <h4 class="font-semibold text-sky-400 pt-2">Biện pháp xử lý đề xuất:</h4>
+                                <ul class="list-disc list-inside text-slate-300 text-xs space-y-1">
+                                    <li>Tăng cường tần suất soi phát nhiệt lên 1 lần/ngày trong lúc mang tải cao.</li>
+                                    <li>Đăng ký cắt điện gần nhất với Điều độ miền Nam (A2) để vệ sinh, bôi mỡ dẫn điện và siết lực lại đầu cốt.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-3 border-t border-slate-700 text-[11px] text-slate-400 flex justify-between">
+                        <span>Tiêu chuẩn áp dụng: IEC 62271 / NETA MTS</span>
+                        <span>Hệ thống TTTV_NMĐG V1-2</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="bg-slate-900 border-t border-slate-800 py-4 px-6 text-center text-xs text-slate-400">
+            <p>© 2026 <strong>TTTV_NMĐG V1-2 Trà Vinh</strong> | Địa chỉ: Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long.</p>
+            <p class="mt-1 text-slate-500">Thiết kế hệ thống bởi: <strong class="text-sky-400">Dep Do</strong></p>
+        </footer>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Mảng mặc định 12 trụ tuabin theo tệp của người dùng
-        let detectedTurbines = ['WT23', 'WT21', 'WT19', 'WT17', 'WT15', 'WT13', 'WT01', 'WT03', 'WT05', 'WT07', 'WT09', 'WT11'];
+        // ==================== BẢO MẬT ĐĂNG NHẬP ====================
+        const VALID_USER = "nmdgv12travinh";
+        const VALID_PASS = "21102021";
 
-        window.addEventListener('DOMContentLoaded', () => {
-            renderTurbineGrid(detectedTurbines);
-        });
-
-        function switchTab(tabName) {
-            ['dashboard', 'history'].forEach(t => {
-                const sec = document.getElementById(`tab-${t}`);
-                const btn = document.getElementById(`btn-${t}`);
-                if(sec) {
-                    sec.classList.add('hidden');
-                    sec.style.display = 'none';
-                }
-                if(btn) btn.classList.remove('active');
-            });
-            const activeSec = document.getElementById(`tab-${tabName}`);
-            const activeBtn = document.getElementById(`btn-${tabName}`);
-            if(activeSec) {
-                activeSec.classList.remove('hidden');
-                activeSec.style.display = 'flex';
+        function checkAuth() {
+            if (sessionStorage.getItem("tttv_v12_auth") === "true") {
+                document.getElementById("login-screen").classList.add("hidden");
+                document.getElementById("app-container").classList.remove("hidden");
+                initDashboard();
+            } else {
+                document.getElementById("login-screen").classList.remove("hidden");
+                document.getElementById("app-container").classList.add("hidden");
             }
-            if(activeBtn) activeBtn.classList.add('active');
         }
 
-        function renderTurbineGrid(turbines) {
+        function handleLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById("login-username").value.trim();
+            const pass = document.getElementById("login-password").value;
+            const errorBox = document.getElementById("login-error");
+            const card = document.getElementById("login-card");
+
+            if (user === VALID_USER && pass === VALID_PASS) {
+                sessionStorage.setItem("tttv_v12_auth", "true");
+                errorBox.classList.add("hidden");
+                checkAuth();
+            } else {
+                errorBox.classList.remove("hidden");
+                card.classList.remove("animate-shake");
+                void card.offsetWidth; // trigger reflow
+                card.classList.add("animate-shake");
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem("tttv_v12_auth");
+            document.getElementById("login-username").value = "";
+            document.getElementById("login-password").value = "";
+            checkAuth();
+        }
+
+        function togglePassword() {
+            const passInput = document.getElementById("login-password");
+            const eyeIcon = document.getElementById("eye-icon");
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                eyeIcon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                passInput.type = "password";
+                eyeIcon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+
+        // ==================== DỮ LIỆU & CHỨC NĂNG HỆ THỐNG ====================
+        const turbinesData = [
+            { id: 'WTG01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', note: 'Tua-bin vận hành ổn định, tiếp tục duy trì lịch bảo dưỡng định kỳ 6 tháng.' },
+            { id: 'WTG02', score: 94, status: 'good', dev: '-1.5%', temp: '65.1 °C', pitch: '0.12°', note: 'Hiệu suất phát đạt chuẩn đường cong công suất Goldwind 4MW.' },
+            { id: 'WTG03', score: 78, status: 'warn', dev: '-5.8%', temp: '73.2 °C', pitch: '0.85°', note: 'Phát hiện sai lệch góc Pitch cánh số 2 và nhiệt độ ổ trục tăng nhẹ. Cần kiểm tra bộ điều khiển Pitch.' },
+            { id: 'WTG04', score: 95, status: 'good', dev: '-1.1%', temp: '63.8 °C', pitch: '0.10°', note: 'Các thông số SCADA trong 3 tháng hoàn toàn bình thường.' },
+            { id: 'WTG05', score: 92, status: 'good', dev: '-2.0%', temp: '66.0 °C', pitch: '0.18°', note: 'Tua-bin hoạt động tốt ở dải gió cao.' },
+            { id: 'WTG06', score: 65, status: 'crit', dev: '-9.4%', temp: '81.5 °C', pitch: '1.40°', note: 'CẢNH BÁO: Công suất suy giảm >9% ở tốc độ gió 10m/s, nhiệt độ ổ trục máy phát cao. Đề xuất dừng máy kiểm tra hệ thống làm mát và cảm biến gió.' },
+            { id: 'WTG07', score: 97, status: 'good', dev: '-0.8%', temp: '62.9 °C', pitch: '0.09°', note: 'Hiệu suất tốt nhất toàn nhà máy trong chu kỳ 3 tháng.' },
+            { id: 'WTG08', score: 91, status: 'good', dev: '-2.3%', temp: '66.4 °C', pitch: '0.20°', note: 'Vận hành bình thường.' },
+            { id: 'WTG09', score: 82, status: 'warn', dev: '-4.9%', temp: '71.0 °C', pitch: '0.45°', note: 'Công suất giảm nhẹ vào buổi trưa do nhiệt độ môi trường Nacelle cao. Kiểm tra quạt thông gió Nacelle.' },
+            { id: 'WTG10', score: 95, status: 'good', dev: '-1.3%', temp: '64.2 °C', pitch: '0.14°', note: 'Vận hành ổn định.' },
+            { id: 'WTG11', score: 93, status: 'good', dev: '-1.7%', temp: '65.5 °C', pitch: '0.16°', note: 'Vận hành ổn định.' },
+            { id: 'WTG12', score: 94, status: 'good', dev: '-1.4%', temp: '64.8 °C', pitch: '0.11°', note: 'Vận hành ổn định.' }
+        ];
+
+        let powerChart = null;
+        let isInitialized = false;
+
+        function initDashboard() {
+            if (isInitialized) return;
+            renderTurbines();
+            selectTurbine(0);
+            isInitialized = true;
+        }
+
+        function renderTurbines() {
             const grid = document.getElementById('turbine-grid');
-            if(!grid) return;
             grid.innerHTML = '';
-            turbines.forEach(tName => {
-                const isWarning = (tName === 'WT09' || tName === 'WT-04');
+            turbinesData.forEach((wtg, index) => {
+                let borderColor = 'border-emerald-500/50 hover:border-emerald-400';
+                let badgeColor = 'bg-emerald-500/20 text-emerald-400';
+                let iconColor = 'text-emerald-400';
+
+                if (wtg.status === 'warn') {
+                    borderColor = 'border-amber-500/50 hover:border-amber-400';
+                    badgeColor = 'bg-amber-500/20 text-amber-400';
+                    iconColor = 'text-amber-400';
+                } else if (wtg.status === 'crit') {
+                    borderColor = 'border-rose-500/70 hover:border-rose-400';
+                    badgeColor = 'bg-rose-500/20 text-rose-400';
+                    iconColor = 'text-rose-400';
+                }
+
                 grid.innerHTML += `
-                    <div class="turbine-box ${isWarning ? 'warning' : ''}">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-weight: bold; font-size: 14px; color: #ffffff;">${tName}</span>
-                            <span class="badge" style="background: ${isWarning ? '#f59e0b' : 'rgba(16,185,129,0.15)'}; color: ${isWarning ? '#030712' : '#10b981'};">${isWarning ? 'Cảnh báo' : 'Tối ưu'}</span>
+                    <div onclick="selectTurbine(${index})" class="card p-3.5 cursor-pointer border ${borderColor} transition transform hover:-translate-y-1">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-sm text-white">${wtg.id}</span>
+                            <i class="fa-solid fa-fan ${iconColor}"></i>
                         </div>
-                        <div style="font-size: 12px; color: #9ca3af; margin-top: 4px; line-height: 1.5;">
-                            Công suất: <span style="color: #f3f4f6; font-weight: 500;">${isWarning ? '2.1 MW' : '2.8 MW'}</span><br>
-                            Gió TB: <span style="color: #f3f4f6; font-weight: 500;">8.3 m/s</span>
+                        <div class="text-2xl font-bold text-white mb-1">${wtg.score}%</div>
+                        <div class="flex justify-between items-center text-[11px]">
+                            <span class="text-slate-400">4.0 MW</span>
+                            <span class="px-2 py-0.5 rounded ${badgeColor} font-medium">
+                                ${wtg.status === 'good' ? 'Tốt' : (wtg.status === 'warn' ? 'Theo dõi' : 'Cảnh báo')}
+                            </span>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function handleScadaFileUpload(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const data = new Uint8Array(evt.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    const firstSheet = workbook.SheetNames[0];
-                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
-                    
-                    if (rows.length === 0) {
-                        alert('Tệp không có dữ liệu!');
-                        return;
-                    }
-
-                    const sampleRow = rows[0];
-                    const powerCols = Object.keys(sampleRow).filter(k => k.includes('Grid-side Active Power(kW)'));
-                    const windCols = Object.keys(sampleRow).filter(k => k.includes('Average Wind Speed'));
-
-                    let extractedTurbines = powerCols.map(col => col.split(' - ')[0]);
-                    if(extractedTurbines.length > 0) {
-                        detectedTurbines = extractedTurbines;
-                    }
-
-                    document.getElementById('history-placeholder').style.display = 'none';
-                    document.getElementById('history-results-area').style.display = 'flex';
-                    document.getElementById('history-results-area').classList.remove('hidden');
-
-                    document.getElementById('stat-total-records').textContent = rows.length.toLocaleString();
-                    document.getElementById('stat-turbines-list').textContent = detectedTurbines.join(', ');
-
-                    let turbineStats = {};
-                    detectedTurbines.forEach(t => {
-                        turbineStats[t] = { powerSum: 0, windSum: 0, count: 0 };
-                    });
-
-                    let totalP = 0, totalCount = 0;
-
-                    rows.forEach(row => {
-                        detectedTurbines.forEach(t => {
-                            const pKey = powerCols.find(c => c.startsWith(t));
-                            const wKey = windCols.find(c => c.startsWith(t));
-                            
-                            if(pKey && row[pKey] !== undefined) {
-                                let pVal = parseFloat(row[pKey]) || 0;
-                                turbineStats[t].powerSum += pVal;
-                                totalP += pVal;
-                                totalCount++;
-                            }
-                            if(wKey && row[wKey] !== undefined) {
-                                let wVal = parseFloat(row[wKey]) || 0;
-                                turbineStats[t].windSum += wVal;
-                                turbineStats[t].count++;
-                            }
-                        });
-                    });
-
-                    const avgP_MW = (totalP / (totalCount || 1) / 1000).toFixed(2);
-                    document.getElementById('stat-avg-power').textContent = `${avgP_MW} MW`;
-
-                    const tbody = document.getElementById('turbine-ranking-tbody');
-                    tbody.innerHTML = '';
-
-                    detectedTurbines.forEach(t => {
-                        const stats = turbineStats[t];
-                        const cnt = stats.count || 1;
-                        const avgWind = (stats.windSum / cnt).toFixed(2);
-                        const avgPowerKW = (stats.powerSum / cnt).toFixed(1);
-                        const pi = Math.min(99, Math.max(70, (avgPowerKW / 2500) * 100)).toFixed(1);
-                        const isWarn = (t === 'WT09' || t === 'WT-04' || pi < 85);
-
-                        tbody.innerHTML += `
-                            <tr>
-                                <td style="font-weight: bold; color: #f3f4f6;">${t}</td>
-                                <td>${avgWind} m/s</td>
-                                <td>${Number(avgPowerKW).toLocaleString()} kW</td>
-                                <td style="color: ${isWarn ? '#f59e0b' : '#f3f4f6'}; font-weight: ${isWarn ? 'bold' : 'normal'};">${pi}%</td>
-                                <td><span class="badge" style="background: ${isWarn ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)'}; color: ${isWarn ? '#f59e0b' : '#10b981'};">${isWarn ? 'Cần kiểm tra' : 'Tối ưu'}</span></td>
-                            </tr>
-                        `;
-                    });
-
-                    renderTurbineGrid(detectedTurbines);
-                    alert(`Đã nạp và phân tích thành công ${rows.length.toLocaleString()} bản ghi SCADA cho các trụ: ${detectedTurbines.join(', ')}!`);
-                } catch(err) {
-                    alert('Lỗi đọc tệp SCADA: ' + err.message);
-                }
-            };
-            reader.readAsArrayBuffer(file);
+        function selectTurbine(index) {
+            const wtg = turbinesData[index];
+            document.getElementById('chart-title').innerText = `Đường cong công suất thực tế vs Chuẩn Goldwind 4MW (${wtg.id})`;
+            document.getElementById('detail-wtg-name').innerText = `Chi tiết đánh giá: ${wtg.id}`;
+            
+            const colorClass = wtg.status === 'good' ? 'text-emerald-400' : (wtg.status === 'warn' ? 'text-amber-400' : 'text-rose-400');
+            document.getElementById('detail-wtg-metrics').innerHTML = `
+                <li class="flex justify-between border-b border-slate-700 pb-2">
+                    <span class="text-slate-400">Chỉ số sức khỏe (HI):</span>
+                    <span class="font-bold ${colorClass}">${wtg.score}%</span>
+                </li>
+                <li class="flex justify-between border-b border-slate-700 pb-2">
+                    <span class="text-slate-400">Độ lệch Power Curve:</span>
+                    <span class="text-white">${wtg.dev}</span>
+                </li>
+                <li class="flex justify-between border-b border-slate-700 pb-2">
+                    <span class="text-slate-400">Nhiệt độ ổ trục máy phát:</span>
+                    <span class="text-white">${wtg.temp}</span>
+                </li>
+                <li class="flex justify-between border-b border-slate-700 pb-2">
+                    <span class="text-slate-400">Sai lệch góc Pitch 3 cánh:</span>
+                    <span class="text-white">${wtg.pitch}</span>
+                </li>
+            `;
+            document.getElementById('detail-wtg-recommendation').innerHTML = `<strong class="text-sky-400">Khuyến nghị kỹ thuật:</strong> ${wtg.note}`;
+            updateChart(wtg);
         }
+
+        function updateChart(wtg) {
+            const ctx = document.getElementById('powerCurveChart').getContext('2d');
+            const windSpeeds = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+            const standardPower = [120, 380, 790, 1380, 2150, 3050, 3750, 3980, 4000, 4000, 4000, 4000];
+            
+            const factor = wtg.score / 100;
+            const actualPower = standardPower.map(p => Math.round(p * factor));
+
+            if (powerChart) powerChart.destroy();
+            powerChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: windSpeeds.map(w => w + ' m/s'),
+                    datasets: [
+                        {
+                            label: 'Đường cong chuẩn Goldwind 4MW (kW)',
+                            data: standardPower,
+                            borderColor: '#38bdf8',
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            fill: false
+                        },
+                        {
+                            label: `Công suất thực tế ${wtg.id} (kW)`,
+                            data: actualPower,
+                            borderColor: wtg.status === 'crit' ? '#f43f5e' : (wtg.status === 'warn' ? '#f59e0b' : '#10b981'),
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, max: 4300 }
+                    }
+                }
+            });
+        }
+
+        function handleScadaUpload(input) {
+            if (input.files.length > 0) {
+                document.getElementById('scada-file-name').innerText = input.files[0].name;
+            }
+        }
+
+        function simulateAnalysis() {
+            alert('Đã nạp và phân tích xong 12.960 mẫu dữ liệu chu kỳ 3 tháng cho 12 tua-bin Goldwind 4MW!');
+        }
+
+        function handleDocUpload(input) {
+            const list = document.getElementById('doc-list');
+            for (let file of input.files) {
+                let icon = 'fa-file-lines text-slate-400';
+                if (file.name.endsWith('.pdf')) icon = 'fa-file-pdf text-rose-400';
+                else if (file.name.match(/\.docx?$/)) icon = 'fa-file-word text-blue-400';
+                else if (file.name.match(/\.xlsx?$/)) icon = 'fa-file-excel text-emerald-400';
+
+                list.innerHTML += `
+                    <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-sky-500/40">
+                        <span class="truncate"><i class="fa-solid ${icon} mr-2"></i>${file.name}</span>
+                        <span class="text-sky-400 text-[10px]">Mới nạp</span>
+                    </li>
+                `;
+            }
+        }
+
+        function sendChat() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const box = document.getElementById('chat-messages');
+            box.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-sky-600 text-white p-3 rounded-lg max-w-md">${msg}</div>
+                </div>
+            `;
+            input.value = '';
+
+            setTimeout(() => {
+                box.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-xl space-y-2">
+                            <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Nguồn: Tài liệu nội bộ NMĐG V1-2 & Google Search</div>
+                            <p>Đối với yêu cầu <strong>"${msg}"</strong> tại NMĐG V1-2 Trà Vinh (12 tua-bin Goldwind 4MW):</p>
+                            <ul class="list-disc list-inside text-xs text-slate-300 space-y-1">
+                                <li><strong>Theo quy trình nội bộ:</strong> Kiểm tra trạng thái liên động trên hệ thống SCADA/HMI trạm 110kV và xác nhận điều kiện cho phép từ Điều độ A2 trước khi thao tác.</li>
+                                <li><strong>Tham chiếu kỹ thuật Goldwind 4MW:</strong> Đảm bảo tốc độ gió dưới ngưỡng cắt (Cut-out wind speed) và hệ thống Pitch ở trạng thái sẵn sàng.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                box.scrollTop = box.scrollHeight;
+            }, 500);
+        }
+
+        function previewThermalImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('thermal-preview-img').src = e.target.result;
+                    document.getElementById('thermal-preview-box').classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function analyzeThermal() {
+            const volt = document.getElementById('th-voltage').value;
+            const equip = document.getElementById('th-equip').value;
+            const t1 = parseFloat(document.getElementById('th-t1').value);
+            const t2 = parseFloat(document.getElementById('th-t2').value);
+            const deltaT = (t1 - t2).toFixed(1);
+
+            let level = 'Cấp 1 (Bình thường)';
+            let color = 'emerald';
+            let action = 'Tiếp tục vận hành bình thường, theo dõi định kỳ hàng tháng.';
+
+            if (deltaT > 35) {
+                level = 'Cấp 3 (KHẨN CẤP - Nguy cơ sự cố)';
+                color = 'rose';
+                action = 'Báo cáo ngay Trưởng ca và Điều độ A2 để xin tách thiết bị khẩn cấp khỏi vận hành, tránh phóng điện hoặc cháy nổ.';
+            } else if (deltaT > 15) {
+                level = 'Cấp 2 (Phát nhiệt nguy hiểm)';
+                color = 'amber';
+                action = 'Tăng cường soi nhiệt 1 lần/ngày. Lên kế hoạch cắt điện gần nhất để vệ sinh bề mặt tiếp xúc, bôi mỡ dẫn điện và siết lực đầu cốt.';
+            } else if (deltaT >= 5) {
+                level = 'Cấp 1+ (Phát nhiệt nhẹ)';
+                color = 'sky';
+                action = 'Theo dõi chặt chẽ xu hướng tăng nhiệt khi thiết bị mang tải cao trên 80% định mức.';
+            }
+
+            document.getElementById('thermal-result-box').innerHTML = `
+                <div class="p-4 rounded-lg bg-${color}-950/50 border border-${color}-500/50">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs uppercase font-bold text-${color}-400">Mức độ cảnh báo: ${level}</span>
+                        <span class="text-lg font-bold text-${color}-400">ΔT = ${deltaT} °C</span>
+                    </div>
+                    <p class="text-sm text-slate-200 mt-2">Thiết bị: <strong>${equip} - Cấp điện áp ${volt}</strong></p>
+                    <p class="text-xs text-slate-300 mt-1">Nhiệt độ điểm sự cố T1 = ${t1}°C | Pha đối chiếu T2 = ${t2}°C.</p>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <h4 class="font-semibold text-sky-400">Đặc thù môi trường NMĐG V1-2 (Cồn Tàu - Trường Long Hòa):</h4>
+                    <p class="text-xs text-slate-300">Khu vực ven biển có độ ẩm và nồng độ muối cao, các mối nối thanh cái, đầu cốt TU/TI, DCL ngoài trời rất dễ bị oxy hóa gây phát nhiệt tiếp xúc.</p>
+                    <h4 class="font-semibold text-sky-400 pt-2">Khuyến nghị xử lý:</h4>
+                    <p class="text-xs text-slate-300">${action}</p>
+                </div>
+            `;
+        }
+
+        function switchTab(tabName) {
+            ['turbines', 'chatbox', 'thermal'].forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).classList.remove('grid');
+                document.getElementById('btn-' + t).classList.remove('tab-active');
+                document.getElementById('btn-' + t).classList.add('text-slate-300');
+            });
+
+            const activeSection = document.getElementById('tab-' + tabName);
+            activeSection.classList.remove('hidden');
+            if (tabName !== 'turbines') activeSection.classList.add('grid');
+
+            const activeBtn = document.getElementById('btn-' + tabName);
+            activeBtn.classList.add('tab-active');
+            activeBtn.classList.remove('text-slate-300');
+        }
+
+        // Kiểm tra trạng thái đăng nhập ngay khi tải trang
+        checkAuth();
     </script>
 </body>
 </html>

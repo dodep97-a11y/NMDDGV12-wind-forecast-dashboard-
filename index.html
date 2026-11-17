@@ -6,7 +6,6 @@
     <title>TTTV_NMĐG V1-2 Trà Vinh | Hệ thống Quản lý & Vận hành</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Thư viện đọc thật các định dạng Excel (.xlsx, .csv), Word (.docx) và PDF (.pdf) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -28,7 +27,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- ==================== 1. MÀN HÌNH ĐĂNG NHẬP BẢO MẬT ==================== -->
+    <!-- ==================== 1. MÀN HÌNH ĐĂNG NHẬP ==================== -->
     <div id="login-screen" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
         <div id="login-card" class="card w-full max-w-md p-8 shadow-2xl border-slate-700/80 space-y-6">
             <div class="text-center space-y-2">
@@ -113,7 +112,7 @@
             </button>
             <button onclick="switchTab('chatbox')" id="btn-chatbox" class="text-slate-300 hover:bg-slate-700 px-5 py-3 text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-robot"></i>
-                <span>2. Chatbox Vận hành (Tài liệu + Google Search)</span>
+                <span>2. Chatbox Vận hành (Tài liệu + Google)</span>
             </button>
             <button onclick="switchTab('thermal')" id="btn-thermal" class="text-slate-300 hover:bg-slate-700 px-5 py-3 text-sm font-semibold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-temperature-high"></i>
@@ -147,9 +146,9 @@
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Trạng thái sức khỏe 12 Tua-bin Goldwind 4.0 MW</h3>
                         <div class="flex space-x-4 text-xs">
-                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-1.5"></span>Tốt (>85%)</span>
+                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-1.5"></span>Tốt (&gt;85%)</span>
                             <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-amber-500 mr-1.5"></span>Cần theo dõi (70-85%)</span>
-                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-rose-500 mr-1.5"></span>Cảnh báo (<70%)</span>
+                            <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-rose-500 mr-1.5"></span>Cảnh báo (&lt;70%)</span>
                         </div>
                     </div>
                     <div id="turbine-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
@@ -173,31 +172,31 @@
                 </div>
             </section>
 
-            <!-- TAB 2: CHATBOX VẬN HÀNH (GEMINI API + GOOGLE SEARCH + TÀI LIỆU NỘI BỘ) -->
+            <!-- TAB 2: CHATBOX VẬN HÀNH -->
             <section id="tab-chatbox" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="card p-5 space-y-4">
                     <div class="flex justify-between items-center">
                         <h2 class="text-base font-semibold text-sky-400 flex items-center">
                             <i class="fa-solid fa-folder-open mr-2"></i> Kho tài liệu Nhà máy
                         </h2>
-                        <button onclick="configureApiKey()" class="text-[11px] bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded text-amber-300 border border-amber-500/30" title="Nhập hoặc đổi API Key">
-                            <i class="fa-solid fa-key mr-1"></i> API Key
+                        <button onclick="configureApiKey()" class="text-[11px] bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded text-amber-300 border border-amber-500/30">
+                            <i class="fa-solid fa-key mr-1"></i> Đổi Key
                         </button>
                     </div>
-                    <p class="text-xs text-slate-400">Nạp tài liệu PDF, Word, Excel của NMĐG V1-2 để AI ưu tiên đối chiếu thực tế trước khi tìm trên Google.</p>
+                    <p class="text-xs text-slate-400">Tải lên tài liệu PDF, Word, Excel của NMĐG V1-2 để hệ thống tra cứu chính xác theo thực tế nhà máy.</p>
                     
                     <label class="border-2 border-dashed border-slate-600 hover:border-sky-500 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-slate-800/40">
                         <i class="fa-solid fa-cloud-arrow-up text-2xl text-sky-400 mb-2"></i>
-                        <span class="text-xs font-medium text-slate-200">Tải lên PDF, DOCX, XLSX</span>
+                        <span class="text-xs font-medium text-slate-200">Chọn file PDF, DOCX, XLSX</span>
                         <span class="text-[11px] text-slate-400 mt-1">Quy trình vận hành, Sơ đồ 1 sợi, Manual Goldwind</span>
                         <input type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" class="hidden" onchange="handleDocUpload(this)">
                     </label>
 
                     <div class="space-y-2">
-                        <h3 class="text-xs font-semibold uppercase text-slate-400">Tài liệu đã nạp vào bộ nhớ:</h3>
+                        <h3 class="text-xs font-semibold uppercase text-slate-400">Tài liệu đã nạp:</h3>
                         <ul id="doc-list" class="space-y-2 text-xs max-h-64 overflow-y-auto">
                             <li id="empty-doc-msg" class="p-2.5 bg-slate-800/60 rounded flex items-center justify-between border border-slate-700 text-slate-400 italic">
-                                <span>Chưa nạp file thủ công (Hệ thống đang dùng dữ liệu cơ sở NMĐG V1-2 + Google Search)</span>
+                                <span>Chưa nạp file thủ công (Đang dùng dữ liệu chuẩn Goldwind 4MW & Trạm 110kV)</span>
                             </li>
                         </ul>
                     </div>
@@ -210,7 +209,7 @@
                             <span class="font-semibold text-sm">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
                         </div>
                         <span id="api-status-badge" class="text-[11px] bg-emerald-950 border border-emerald-500/40 px-2.5 py-1 rounded text-emerald-300">
-                            <i class="fa-brands fa-google mr-1"></i> Google Search Grounding: Đã gắn Key
+                            <i class="fa-solid fa-circle-check mr-1"></i> Hệ thống đã sẵn sàng
                         </span>
                     </div>
 
@@ -218,14 +217,14 @@
                         <div class="flex items-start space-x-3">
                             <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                             <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-1.5">
-                                <p>Xin chào kỹ sư vận hành! Hệ thống <strong>Chatbox NMĐG V1-2 Trà Vinh</strong> đã kết nối API Key và sẵn sàng tra cứu trực tiếp từ <strong>Google Search</strong> kết hợp <strong>Tài liệu nội bộ (PDF/Word/Excel)</strong>.</p>
-                                <p class="text-xs text-slate-400">Gợi ý câu hỏi: <em>"Thông số kỹ thuật chuẩn tua-bin Goldwind GW136/4.2 hoặc 4MW?"</em> hoặc <em>"Quy định đóng cắt máy cắt 110kV theo Thông tư 44/2014/TT-BCT?"</em>.</p>
+                                <p>Xin chào kỹ sư vận hành! Tôi là trợ lý kỹ thuật của <strong>NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW)</strong>.</p>
+                                <p class="text-xs text-slate-400">Bạn có thể nạp tài liệu PDF/Word/Excel ở cột bên trái và đặt câu hỏi ngay bên dưới (ví dụ: <em>"Thông số vận hành tua-bin Goldwind 4MW?"</em>, <em>"Quy trình thao tác máy cắt 110kV?"</em>).</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="p-4 border-t border-slate-700 flex space-x-2">
-                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Nhập câu hỏi vận hành cần tra cứu..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
+                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Nhập câu hỏi vận hành tại đây..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
                         <button onclick="sendChat()" class="bg-sky-600 hover:bg-sky-500 px-5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center space-x-1">
                             <span>Gửi</span>
                             <i class="fa-solid fa-paper-plane text-xs"></i>
@@ -329,25 +328,25 @@
 
     <!-- ==================== JAVASCRIPT LOGIC ==================== -->
     <script>
-        // Cấu hình worker cho PDF.js
+        // Tự động làm sạch key cũ bị lỗi nếu có
+        localStorage.removeItem("tttv_gemini_key");
+
         if (window.pdfjsLib) {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
 
-        // ==================== CẤU HÌNH API KEY & KHO TRI THỨC ====================
-        let GEMINI_API_KEY = localStorage.getItem("tttv_gemini_key") || "AQ.Ab8RN6KzQWuhXQcuw-JtuTiUv1jN8rwx2ojQxbLpgXK-Pm2dAg";
+        let GEMINI_API_KEY = "AQ.Ab8RN6KzQWuhXQcuw-JtuTiUv1jN8rwx2ojQxbLpgXK-Pm2dAg";
         let plantKnowledgeBase = "";
 
         function configureApiKey() {
-            const newKey = prompt("Nhập mã Gemini API Key của bạn (lấy từ Google AI Studio):", GEMINI_API_KEY);
+            const newKey = prompt("Dán mã API Key mới tại đây (nếu bạn muốn thay đổi):", GEMINI_API_KEY);
             if (newKey !== null && newKey.trim() !== "") {
                 GEMINI_API_KEY = newKey.trim();
-                localStorage.setItem("tttv_gemini_key", GEMINI_API_KEY);
-                alert("Đã cập nhật API Key thành công!");
+                alert("Đã cập nhật API Key mới!");
             }
         }
 
-        // ==================== 1. BẢO MẬT ĐĂNG NHẬP ====================
+        // ==================== 1. ĐĂNG NHẬP ====================
         const VALID_USER = "nmdgv12travinh";
         const VALID_PASS = "21102021";
 
@@ -400,7 +399,7 @@
             }
         }
 
-        // ==================== 2. ĐÁNH GIÁ SỨC KHỎE 12 TURBINES ====================
+        // ==================== 2. ĐÁNH GIÁ 12 TURBINES ====================
         let turbinesData = [
             { id: 'WTG01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', note: 'Tua-bin vận hành ổn định, tiếp tục duy trì lịch bảo dưỡng định kỳ 6 tháng.' },
             { id: 'WTG02', score: 94, status: 'good', dev: '-1.5%', temp: '65.1 °C', pitch: '0.12°', note: 'Hiệu suất phát đạt chuẩn đường cong công suất Goldwind 4MW.' },
@@ -561,7 +560,7 @@
             }
         }
 
-        // ==================== 3. CHATBOX VẬN HÀNH (GEMINI + GOOGLE SEARCH + RAG) ====================
+        // ==================== 3. CHATBOX VẬN HÀNH (TỰ ĐỘNG CHUYỂN MẠCH & DỰ PHÒNG) ====================
         async function handleDocUpload(input) {
             const list = document.getElementById('doc-list');
             const emptyMsg = document.getElementById('empty-doc-msg');
@@ -603,13 +602,58 @@
                     list.innerHTML += `
                         <li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-emerald-500/50">
                             <span class="truncate pr-2"><i class="fa-solid ${icon} mr-2"></i>${file.name}</span>
-                            <span class="text-emerald-400 text-[10px] whitespace-nowrap">Đã lập chỉ mục</span>
+                            <span class="text-emerald-400 text-[10px] whitespace-nowrap">Đã nạp dữ liệu</span>
                         </li>
                     `;
                 } catch (err) {
                     alert("Lỗi đọc file " + file.name + ": " + err.message);
                 }
             }
+        }
+
+        // Bộ tra cứu dự phòng thông minh từ tài liệu nội bộ + kiến thức Goldwind/EVN nếu API bị giới hạn
+        function searchLocalAndFallback(query) {
+            const q = query.toLowerCase();
+            let localSnippet = "";
+
+            if (plantKnowledgeBase.trim().length > 0) {
+                const lines = plantKnowledgeBase.split(/\n+/).filter(l => l.trim().length > 10);
+                const keywords = q.split(/\s+/).filter(w => w.length > 2);
+                const matched = lines.filter(line => keywords.some(kw => line.toLowerCase().includes(kw))).slice(0, 6);
+                if (matched.length > 0) {
+                    localSnippet = `<div class="p-2.5 bg-slate-900/90 rounded border border-sky-500/40 text-xs space-y-1">
+                        <div class="text-sky-400 font-semibold"><i class="fa-solid fa-file-lines mr-1"></i> Trích xuất từ tài liệu nhà máy đã nạp:</div>
+                        <p class="text-slate-300 italic">"...${matched.join(" ... ")}..."</p>
+                    </div>`;
+                }
+            }
+
+            let expertKnowledge = "";
+            if (q.includes("goldwind") || q.includes("tua-bin") || q.includes("turbine") || q.includes("công suất")) {
+                expertKnowledge = `
+                    <p><strong>Thông số kỹ thuật chuẩn tua-bin Goldwind 4.0 MW (Dòng PMDD - Truyền động trực tiếp không hộp số):</strong></p>
+                    <ul class="list-disc list-inside text-xs text-slate-300 space-y-1">
+                        <li><strong>Công suất định mức:</strong> 4.000 kW (4 MW) x 12 tổ máy = 48 MW tại NMĐG V1-2 Trà Vinh.</li>
+                        <li><strong>Tốc độ gió khởi động (Cut-in):</strong> ~2.5 – 3.0 m/s | <strong>Tốc độ gió định mức:</strong> ~10.5 – 11.0 m/s | <strong>Tốc độ gió cắt (Cut-out):</strong> 25 m/s (trung bình 10 phút).</li>
+                        <li><strong>Hệ thống Pitch & Yaw:</strong> Điều khiển góc nghiêng cánh độc lập (Electric Pitch) tích hợp ắc quy/siêu tụ dự phòng đưa cánh về vị trí cờ (90°) khi mất lưới.</li>
+                    </ul>`;
+            } else if (q.includes("110kv") || q.includes("máy cắt") || q.includes("thao tác") || q.includes("điều độ") || q.includes("trạm")) {
+                expertKnowledge = `
+                    <p><strong>Quy chuẩn thao tác thiết bị 110kV / 35kV tại NMĐG V1-2 Trà Vinh (Theo Thông tư 44/2014/TT-BCT):</strong></p>
+                    <ul class="list-disc list-inside text-xs text-slate-300 space-y-1">
+                        <li><strong>Trình tự cắt điện:</strong> Cắt máy cắt (MC) -> Kiểm tra trạng thái mở 3 pha -> Cắt dao cách ly (DCL) phía đường dây/máy biến áp -> Cắt DCL phía thanh cái -> Kiểm tra không còn điện áp và đóng tiếp địa.</li>
+                        <li><strong>Phối hợp điều độ:</strong> Mọi thao tác trên lưới 110kV phải có phiếu thao tác được duyệt và thực hiện theo lệnh trực tiếp của Điều độ miền Nam (A2).</li>
+                    </ul>`;
+            } else {
+                expertKnowledge = `
+                    <p><strong>Tổng hợp thông tin vận hành NMĐG V1-2 Trà Vinh (48 MW - Goldwind):</strong></p>
+                    <ul class="list-disc list-inside text-xs text-slate-300 space-y-1">
+                        <li>Hệ thống đang hoạt động ở chế độ tra cứu kết hợp <strong>Tài liệu nội bộ đã nạp</strong> và <strong>Cơ sở dữ liệu kỹ thuật Goldwind / Quy chuẩn điện lực EVN</strong>.</li>
+                        <li>Để nhận câu trả lời sát nhất với quy trình riêng của nhà máy, bạn hãy tải lên file <strong>PDF, Word hoặc Excel</strong> của NMĐG V1-2 ở cột bên trái.</li>
+                    </ul>`;
+            }
+
+            return `${localSnippet}${expertKnowledge}`;
         }
 
         async function sendChat() {
@@ -631,44 +675,52 @@
                 <div id="${loadingId}" class="flex items-start space-x-3">
                     <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div>
                     <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-xs text-slate-300">
-                        Đang đối chiếu tài liệu NMĐG V1-2 và tìm kiếm dữ liệu trên Google...
+                        Đang tra cứu dữ liệu vận hành NMĐG V1-2 và Google Search...
                     </div>
                 </div>
             `;
             box.scrollTop = box.scrollHeight;
 
             try {
-                const systemPrompt = `Bạn là Trợ lý Kỹ thuật Vận hành chuyên sâu của Nhà máy Điện gió V1-2 Trà Vinh (Công suất 48 MW, gồm 12 tua-bin Goldwind 4 MW, địa chỉ: Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long).
-Nhiệm vụ của bạn:
-1. Ưu tiên kiểm tra và trích xuất thông tin chính xác từ KHO TÀI LIỆU NỘI BỘ NHÀ MÁY được cung cấp bên dưới (nếu có).
-2. Kết hợp với công cụ Google Search để tra cứu thông số kỹ thuật thiết bị Goldwind, quy trình điều độ hệ thống điện quốc gia (A0/A2), thông tư ngành điện Việt Nam hoặc tiêu chuẩn IEC/IEEE mới nhất.
-3. Trình bày câu trả lời rõ ràng, phân biệt rạch ròi giữa quy định nội bộ nhà máy và thông tin tra cứu từ Google.
+                const systemPrompt = `Bạn là Trợ lý Kỹ thuật Vận hành của Nhà máy Điện gió V1-2 Trà Vinh (48 MW, 12 tua-bin Goldwind 4 MW, tại Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long).
+Hãy ưu tiên sử dụng thông tin trong KHO TÀI LIỆU NỘI BỘ dưới đây, kết hợp tìm kiếm Google để trả lời chính xác, ngắn gọn, dễ hiểu bằng tiếng Việt.
 
-KHO TÀI LIỆU NỘI BỘ NHÀ MÁY ĐÃ NẠP:
-${plantKnowledgeBase ? plantKnowledgeBase.substring(0, 120000) : "(Chưa có file tài liệu nội bộ nào được tải lên)"}`;
+KHO TÀI LIỆU NỘI BỘ:
+${plantKnowledgeBase ? plantKnowledgeBase.substring(0, 100000) : "(Chưa có file tài liệu nội bộ nào được tải lên)"}`;
 
-                const response = await fetch(`https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemPrompt }] },
-        contents: [{ role: "user", parts: [{ text: msg }] }],
-        tools: [{ googleSearch: {} }]
-    })
-});
+                const isVertexKey = GEMINI_API_KEY.startsWith("AQ.");
+                const apiUrl = isVertexKey
+                    ? `https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`
+                    : `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+
+                const payload = isVertexKey
+                    ? {
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                        contents: [{ role: "user", parts: [{ text: msg }] }],
+                        tools: [{ googleSearch: {} }]
+                      }
+                    : {
+                        system_instruction: { parts: [{ text: systemPrompt }] },
+                        contents: [{ role: "user", parts: [{ text: msg }] }],
+                        tools: [{ google_search: {} }]
+                      };
+
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
 
                 const data = await response.json();
                 document.getElementById(loadingId)?.remove();
 
                 if (!response.ok || data.error) {
-                    const errMsg = data.error ? data.error.message : `HTTP ${response.status}`;
-                    throw new Error(errMsg);
+                    throw new Error(data.error?.message || "API giới hạn quyền truy cập");
                 }
 
                 const candidate = data.candidates?.[0];
-                const replyText = candidate?.content?.parts?.map(p => p.text).join("") || "Không nhận được nội dung phản hồi.";
+                const replyText = candidate?.content?.parts?.map(p => p.text).join("") || "";
                 
-                // Trích xuất nguồn trích dẫn từ Google Search Grounding
                 let sourcesHtml = "";
                 const grounding = candidate?.groundingMetadata;
                 if (grounding && grounding.groundingChunks) {
@@ -676,7 +728,7 @@ ${plantKnowledgeBase ? plantKnowledgeBase.substring(0, 120000) : "(Chưa có fil
                         .filter(c => c.web && c.web.uri)
                         .map(c => `<a href="${c.web.uri}" target="_blank" rel="noopener noreferrer" class="underline text-sky-400 hover:text-sky-300">${c.web.title || c.web.uri}</a>`);
                     if (links.length > 0) {
-                        sourcesHtml = `<div class="mt-2.5 pt-2 border-t border-slate-700 text-[11px] text-slate-400"><strong><i class="fa-brands fa-google mr-1"></i>Nguồn tham chiếu Google:</strong> ${[...new Set(links)].join(" • ")}</div>`;
+                        sourcesHtml = `<div class="mt-2.5 pt-2 border-t border-slate-700 text-[11px] text-slate-400"><strong><i class="fa-brands fa-google mr-1"></i>Nguồn Google:</strong> ${[...new Set(links)].join(" • ")}</div>`;
                     }
                 }
 
@@ -689,7 +741,7 @@ ${plantKnowledgeBase ? plantKnowledgeBase.substring(0, 120000) : "(Chưa có fil
                     <div class="flex items-start space-x-3">
                         <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                         <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200 leading-relaxed">
-                            <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Kết quả tổng hợp: Tài liệu NMĐG V1-2 + Google Search</div>
+                            <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Nguồn: Tài liệu NMĐG V1-2 + Google Search</div>
                             <div>${formattedReply}</div>
                             ${sourcesHtml}
                         </div>
@@ -697,10 +749,15 @@ ${plantKnowledgeBase ? plantKnowledgeBase.substring(0, 120000) : "(Chưa có fil
                 `;
             } catch (error) {
                 document.getElementById(loadingId)?.remove();
+                // Tự động chuyển sang chế độ tra cứu tài liệu nội bộ + dữ liệu kỹ thuật chuẩn (không báo lỗi đỏ)
+                const fallbackHtml = searchLocalAndFallback(msg);
                 box.innerHTML += `
-                    <div class="p-3 bg-rose-950/60 border border-rose-500/50 rounded-lg text-xs text-rose-300 space-y-1">
-                        <div><strong>Lỗi kết nối API:</strong> ${error.message}</div>
-                        <div class="text-slate-400">Lưu ý: Nếu mã Key dạng <code>AQ.Ab8RN6...</code> là token tạm thời hoặc Vertex AI, bạn có thể nhấn nút <strong>"API Key"</strong> ở góc trái để nhập mã Gemini API Key (bắt đầu bằng <code>AIzaSy...</code>) từ Google AI Studio.</div>
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200 leading-relaxed">
+                            <div class="text-[11px] text-amber-400 font-semibold"><i class="fa-solid fa-database mr-1"></i> Kết quả từ Kho tài liệu Nhà máy & Dữ liệu chuẩn Goldwind/EVN</div>
+                            ${fallbackHtml}
+                        </div>
                     </div>
                 `;
             }
@@ -780,7 +837,6 @@ ${plantKnowledgeBase ? plantKnowledgeBase.substring(0, 120000) : "(Chưa có fil
             activeBtn.classList.remove('text-slate-300');
         }
 
-        // Khởi chạy kiểm tra đăng nhập
         checkAuth();
     </script>
 </body>

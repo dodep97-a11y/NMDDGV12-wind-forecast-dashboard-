@@ -9,7 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <!-- Thư viện nhận diện chữ trực tiếp trên trình duyệt (OCR Offline không cần API Key) -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -212,7 +211,7 @@
                             <span class="font-semibold text-sm">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
                         </div>
                         <span id="api-status-badge" class="text-[11px] bg-emerald-950 border border-emerald-500/40 px-2.5 py-1 rounded text-emerald-300">
-                            <i class="fa-solid fa-circle-check mr-1"></i> Sẵn sàng tra cứu
+                            <i class="fa-solid fa-globe mr-1"></i> Tra cứu trực tuyến & Tài liệu nội bộ
                         </span>
                     </div>
 
@@ -221,7 +220,7 @@
                             <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                             <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-1.5">
                                 <p>Xin chào kỹ sư vận hành! Tôi là trợ lý kỹ thuật của <strong>NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW)</strong>.</p>
-                                <p class="text-xs text-slate-400">Hãy nạp tài liệu nhà máy ở cột bên trái và đặt câu hỏi vận hành ngay bên dưới.</p>
+                                <p class="text-xs text-slate-400">Bạn có thể nạp tài liệu nhà máy ở cột bên trái hoặc đặt câu hỏi trực tiếp bên dưới (ví dụ: <em>"Máy biến áp là gì?"</em>, <em>"Thông số tua-bin Goldwind 4MW?"</em>).</p>
                             </div>
                         </div>
                     </div>
@@ -236,7 +235,7 @@
                 </div>
             </section>
 
-            <!-- ==================== TAB 3: PHÂN TÍCH ẢNH QUÉT NHIỆT 35/110KV (TESSERACT.JS OCR) ==================== -->
+            <!-- ==================== TAB 3: PHÂN TÍCH ẢNH QUÉT NHIỆT 35/110KV ==================== -->
             <section id="tab-thermal" class="hidden grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="card p-5 space-y-4">
                     <div class="flex justify-between items-center">
@@ -253,7 +252,6 @@
                         <input type="file" accept="image/*" class="hidden" onchange="handleThermalImageUpload(this)">
                     </label>
 
-                    <!-- Thanh tiến trình quét OCR Tesseract.js -->
                     <div id="thermal-ocr-status" class="hidden p-3 rounded-lg bg-sky-950/70 border border-sky-500/40 text-xs text-sky-300 space-y-1.5">
                         <div class="flex items-center justify-between">
                             <span id="ocr-status-text"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Đang khởi tạo bộ nhận diện chữ...</span>
@@ -268,7 +266,6 @@
                         <img id="thermal-preview-img" src="" alt="Ảnh nhiệt thiết bị" class="object-contain max-h-56">
                     </div>
 
-                    <!-- Hiển thị các giá trị nhiệt độ đọc được để kỹ sư chọn nhanh nếu có nhiều điểm -->
                     <div id="ocr-detected-chips" class="hidden flex flex-wrap items-center gap-1.5 text-xs">
                         <span class="text-slate-400 mr-1">Các mức nhiệt đọc được trên ảnh:</span>
                     </div>
@@ -361,7 +358,7 @@
         let plantKnowledgeBase = "";
 
         function configureApiKey() {
-            const newKey = prompt("Dán mã Gemini API Key (bắt đầu bằng AIzaSy...) từ Google AI Studio để dùng Google Search trong Chatbox:", GEMINI_API_KEY);
+            const newKey = prompt("Dán mã Gemini API Key (bắt đầu bằng AIzaSy...) từ Google AI Studio để dùng AI tổng hợp Google Search (không bắt buộc):", GEMINI_API_KEY);
             if (newKey !== null) {
                 GEMINI_API_KEY = newKey.trim();
                 localStorage.setItem("tttv_ai_studio_key", GEMINI_API_KEY);
@@ -742,7 +739,7 @@
             }
         }
 
-        // ==================== 3. CHATBOX VẬN HÀNH ====================
+        // ==================== 3. CHATBOX VẬN HÀNH (TÀI LIỆU + TRA CỨU TRỰC TUYẾN + GOOGLE) ====================
         async function handleDocUpload(input) {
             const list = document.getElementById('doc-list');
             const emptyMsg = document.getElementById('empty-doc-msg');
@@ -793,6 +790,23 @@
             }
         }
 
+        async function fetchLiveWebSummary(query) {
+            try {
+                const searchUrl = `https://vi.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`;
+                const res = await fetch(searchUrl);
+                const data = await res.json();
+                if (data.query && data.query.search && data.query.search.length > 0) {
+                    const topResult = data.query.search[0];
+                    const snippet = topResult.snippet.replace(/<\/?[^>]+(>|$)/g, "");
+                    return `<div class="p-3 bg-slate-900/90 rounded-lg border border-emerald-500/40 text-xs space-y-1.5">
+                        <div class="text-emerald-400 font-semibold"><i class="fa-solid fa-globe mr-1"></i> Kết quả tra cứu trực tuyến (${topResult.title}):</div>
+                        <p class="text-slate-200 leading-relaxed">${snippet}...</p>
+                    </div>`;
+                }
+            } catch (e) {}
+            return "";
+        }
+
         function searchLocalAndFallback(query) {
             const q = query.toLowerCase();
             let localSnippet = "";
@@ -803,20 +817,21 @@
                 const matched = lines.filter(line => keywords.some(kw => line.toLowerCase().includes(kw))).slice(0, 6);
                 if (matched.length > 0) {
                     localSnippet = `<div class="p-2.5 bg-slate-900/90 rounded border border-sky-500/40 text-xs space-y-1">
-                        <div class="text-sky-400 font-semibold"><i class="fa-solid fa-file-lines mr-1"></i> Trích xuất từ tài liệu nhà máy đã nạp:</div>
+                        <div class="text-sky-400 font-semibold"><i class="fa-solid fa-file-lines mr-1"></i> Trích xuất từ tài liệu nội bộ NMĐG V1-2:</div>
                         <p class="text-slate-300 italic">"...${matched.join(" ... ")}..."</p>
                     </div>`;
                 }
             }
 
-            let expertKnowledge = `
-                <p><strong>Tổng hợp thông tin vận hành NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW):</strong></p>
-                <ul class="list-disc list-inside text-xs text-slate-300 space-y-1">
-                    <li>Để kết nối trực tiếp Google Search, hãy nhấn nút <strong>API Key (Chatbox)</strong> ở góc trên bên phải và dán mã khóa Google AI Studio (bắt đầu bằng <code>AIzaSy...</code>).</li>
-                    <li>Hệ thống vẫn tự động đối chiếu toàn bộ nội dung trong các file PDF, Word, Excel bạn đã tải lên ở cột bên trái.</li>
-                </ul>`;
-
-            return `${localSnippet}${expertKnowledge}`;
+            const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query + " kỹ thuật điện")}`;
+            return `${localSnippet}
+                <div id="live-web-box-${Date.now()}" class="text-xs text-slate-300">Đang tổng hợp dữ liệu trực tuyến...</div>
+                <div class="pt-2">
+                    <a href="${googleSearchUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition">
+                        <i class="fa-brands fa-google"></i>
+                        <span>Mở kết quả tìm kiếm "${query}" trực tiếp trên Google</span>
+                    </a>
+                </div>`;
         }
 
         async function sendChat() {
@@ -840,7 +855,7 @@
 
             try {
                 if (!GEMINI_API_KEY || !GEMINI_API_KEY.startsWith("AIza")) {
-                    throw new Error("Chưa cấu hình API Key Google AI Studio (AIzaSy...)");
+                    throw new Error("Chế độ tra cứu trực tiếp & tài liệu nội bộ");
                 }
 
                 const systemPrompt = `Bạn là Trợ lý Kỹ thuật Vận hành của Nhà máy Điện gió V1-2 Trà Vinh (48 MW, 12 tua-bin Goldwind 4 MW, tại Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long). Ưu tiên thông tin từ TÀI LIỆU NỘI BỘ dưới đây, kết hợp tìm kiếm Google để trả lời chính xác bằng tiếng Việt.\n\nTÀI LIỆU NỘI BỘ:\n${plantKnowledgeBase.substring(0, 100000)}`;
@@ -886,23 +901,25 @@
                     <div class="flex items-start space-x-3">
                         <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                         <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200">
-                            <div class="text-[11px] text-amber-400 font-semibold"><i class="fa-solid fa-database mr-1"></i> Kết quả từ Kho tài liệu Nhà máy</div>
+                            <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-globe mr-1"></i> Kết quả từ Kho tài liệu Nhà máy & Tra cứu trực tuyến</div>
                             ${searchLocalAndFallback(msg)}
                         </div>
                     </div>
                 `;
+                const liveBoxes = box.querySelectorAll('[id^="live-web-box-"]');
+                const lastLiveBox = liveBoxes[liveBoxes.length - 1];
+                if (lastLiveBox) lastLiveBox.innerHTML = await fetchLiveWebSummary(msg);
             }
             box.scrollTop = box.scrollHeight;
         }
 
         // ==================== 4. TỰ ĐỘNG ĐỌC NHIỆT ĐỘ BẰNG TESSERACT.JS OCR OFFLINE ====================
-        // Tiền xử lý ảnh (phóng to + tăng tương phản) giúp Tesseract đọc số trên ảnh nhiệt chính xác hơn
         function preprocessThermalImageForOCR(dataUrl) {
             return new Promise((resolve) => {
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const scale = 2; // Phóng to gấp đôi để nhận diện chữ nhỏ góc ảnh
+                    const scale = 2;
                     canvas.width = img.width * scale;
                     canvas.height = img.height * scale;
                     const ctx = canvas.getContext('2d');
@@ -911,7 +928,6 @@
                     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     const data = imgData.data;
                     for (let i = 0; i < data.length; i += 4) {
-                        // Chuyển sang thang xám và tăng độ tương phản chữ số
                         const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
                         const contrasted = gray > 140 ? 255 : (gray < 80 ? 0 : gray);
                         data[i] = data[i + 1] = data[i + 2] = contrasted;
@@ -959,7 +975,6 @@
 
                     const rawText = result.data.text || "";
                     
-                    // Tìm tất cả các giá trị nhiệt độ trên ảnh (ưu tiên số đứng trước °C/C hoặc đứng sau Max/Min/Sp/Spot)
                     let temps = [];
                     const regexWithUnit = /(-?\d{1,3}(?:[.,]\d{1,2})?)\s*(?:°|º|o)?\s*[Cc]\b/g;
                     let match;
@@ -968,7 +983,6 @@
                         if (!isNaN(val) && val >= 10 && val <= 350) temps.push(val);
                     }
 
-                    // Nếu chưa bắt được đơn vị °C (do ký hiệu ° bị mờ), tìm số thập phân hợp lý trên ảnh nhiệt
                     if (temps.length < 2) {
                         const regexDecimal = /(?:max|min|sp\d|spot|bx\d|t\d)?\s*[:=]?\s*(\d{2,3}\.\d{1,2})/gi;
                         while ((match = regexDecimal.exec(rawText)) !== null) {
@@ -977,7 +991,6 @@
                         }
                     }
 
-                    // Loại bỏ trùng lặp và sắp xếp từ cao xuống thấp
                     const uniqueTemps = [...new Set(temps)].sort((a, b) => b - a);
 
                     if (uniqueTemps.length >= 2) {
@@ -989,7 +1002,6 @@
                         statusBox.className = "p-3 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-xs text-emerald-300";
                         statusBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i><strong>OCR hoàn tất!</strong> Tự động nhận diện từ ảnh: <strong>T1 (Max) = ${t1Val}°C</strong>, <strong>T2 (Min/Đối chiếu) = ${t2Val}°C</strong>.`;
 
-                        // Hiển thị các mức nhiệt đọc được để kỹ sư có thể bấm chọn lại T1/T2 nếu muốn
                         chipsBox.innerHTML = '<span class="text-slate-400 mr-1">Các số nhiệt đọc được:</span>' +
                             uniqueTemps.map(t => `<button type="button" onclick="applyDetectedTemp(${t})" class="px-2 py-0.5 bg-slate-800 hover:bg-sky-700 border border-slate-600 rounded text-amber-300 font-semibold">${t}°C</button>`).join('');
                         chipsBox.classList.remove('hidden');
@@ -1012,7 +1024,6 @@
             reader.readAsDataURL(file);
         }
 
-        // Cho phép bấm vào các thẻ nhiệt độ đọc được để gán nhanh vào T1 hoặc T2
         let toggleAssignT1 = true;
         function applyDetectedTemp(val) {
             if (toggleAssignT1) {

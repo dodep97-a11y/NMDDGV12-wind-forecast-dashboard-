@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTTV_NMĐG V1-2 Trà Vinh | Hệ thống Quản lý & Vận hành V2.1</title>
+    <title>TTTV_NMĐG V1-2 Trà Vinh | Hệ thống Quản lý & Vận hành</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -127,7 +127,6 @@
 
             <!-- ==================== MỤC 1: TURBINES ==================== -->
             <section id="main-turbines" class="space-y-6">
-                <!-- Sub-navigation for Turbines -->
                 <div class="flex flex-wrap gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 w-fit">
                     <button onclick="switchSubTab('turbines', 'forecast')" id="subbtn-turbines-forecast" class="subtab-active px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-chart-line text-sky-300"></i>
@@ -135,32 +134,30 @@
                     </button>
                     <button onclick="switchSubTab('turbines', 'health')" id="subbtn-turbines-health" class="text-slate-300 hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-heart-pulse text-emerald-400"></i>
-                        <span>1.2 Đánh giá chất lượng 12 Turbines (Goldwind 4MW)</span>
+                        <span>1.2 Đánh giá chất lượng 12 Turbines (Dynamic PC 4MW)</span>
                     </button>
                 </div>
 
                 <!-- SUB-TAB 1.1: DỰ BÁO CÔNG SUẤT TỪ WINDY (D, D+1, D+2, W+1 - CHU KỲ 30 PHÚT) -->
                 <div id="sub-turbines-forecast" class="space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Bản đồ gió Windy trực tiếp tại tọa độ NMĐG V1-2 Trà Vinh -->
                         <div class="card p-4 flex flex-col justify-between space-y-3">
                             <div class="flex justify-between items-center">
                                 <h3 class="text-sm font-bold text-sky-400"><i class="fa-solid fa-wind mr-1.5"></i>Bản đồ gió Windy trực tiếp (Cồn Tàu)</h3>
                                 <a href="https://www.windy.com/9.660/106.560?9.660,106.560,11" target="_blank" class="text-[11px] text-sky-300 underline hover:text-white">Mở web Windy <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
                             </div>
-                            <div class="rounded-lg overflow-hidden border border-slate-700 h-72 bg-slate-950">
+                            <div class="rounded-lg overflow-hidden border border-slate-700 h-64 bg-slate-950">
                                 <iframe width="100%" height="100%" src="https://embed.windy.com/embed2.html?lat=9.660&lon=106.560&detailLat=9.660&detailLon=106.560&width=650&height=450&zoom=10&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=m%2Fs&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
                             </div>
                             <p class="text-[11px] text-slate-400">Tọa độ NMĐG V1-2: 9.660°N, 106.560°E | Độ cao Hub Goldwind 4MW: ~100–120m.</p>
                         </div>
 
-                        <!-- Bộ cấu hình & Nạp file Đường cong công suất Excel + Dữ liệu Windy -->
                         <div class="card p-5 lg:col-span-2 flex flex-col justify-between space-y-4">
                             <div class="space-y-4">
                                 <div class="flex flex-wrap justify-between items-center gap-2">
                                     <div>
                                         <h2 class="text-base font-bold text-white">Mô hình Dự báo Công suất Phát điện (Chu kỳ 30 phút)</h2>
-                                        <p class="text-xs text-slate-400">Tính toán theo tốc độ gió Windy/ECMWF kết hợp Đường cong công suất chuẩn Goldwind 4 MW.</p>
+                                        <p class="text-xs text-slate-400">Tính toán theo tốc độ gió Windy/ECMWF kết hợp bảng đặc tính <strong class="text-emerald-400">Dynamic PC (Air density 1.15 kg/m³, TI 10%)</strong>.</p>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
                                         <button onclick="fetchLiveWindForecast()" id="btn-fetch-wind" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
@@ -172,29 +169,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Khu vực upload file Đường cong công suất Excel (MỚI) -->
-                                <div class="p-3.5 rounded-lg bg-amber-950/25 border border-amber-500/40 flex flex-wrap justify-between items-center gap-3">
-                                    <div class="space-y-0.5">
-                                        <div class="text-xs font-bold text-amber-300 flex items-center">
-                                            <i class="fa-solid fa-wave-square mr-1.5"></i> Đường cong công suất (Power Curve Excel)
-                                        </div>
-                                        <div class="text-[11px] text-slate-300" id="power-curve-status-text">
-                                            Đang dùng đường cong tiêu chuẩn Goldwind 4.0 MW mặc định (3–25 m/s).
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <button onclick="downloadSamplePowerCurve()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-[11px] text-slate-300 transition" title="Tải file Excel mẫu để xem định dạng cột">
-                                            <i class="fa-solid fa-download mr-1"></i> File mẫu
-                                        </button>
-                                        <label class="cursor-pointer bg-amber-600 hover:bg-amber-500 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center">
-                                            <i class="fa-solid fa-file-excel mr-1.5"></i>
-                                            <span id="power-curve-file-label">Upload Power Curve (.xlsx)</span>
-                                            <input type="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="handlePowerCurveUpload(this)">
-                                        </label>
-                                    </div>
+                                <div class="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/30 flex flex-wrap justify-between items-center gap-2 text-xs">
+                                    <span class="text-emerald-300 font-semibold"><i class="fa-solid fa-circle-check mr-1.5"></i>Đã tích hợp Đường cong công suất chuẩn NMĐG V1-2 (Table 1 Dynamic PC: 2.5 – 24.0 m/s, Pmax = 4000 kW)</span>
+                                    <span class="text-[11px] text-slate-400">Mật độ không khí: 1.15 kg/m³ | TI: 10%</span>
                                 </div>
 
-                                <!-- Thanh chọn kỳ dự báo (D, D+1, D+2, W+1) & Nạp file gió Windy -->
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/80 p-3.5 rounded-lg border border-slate-700">
                                     <div>
                                         <label class="block text-[11px] text-slate-400 mb-1">Chọn kỳ dự báo (Chu kỳ 30 phút)</label>
@@ -220,12 +199,10 @@
                                 </div>
                             </div>
 
-                            <!-- Chỉ số tổng hợp kỳ dự báo -->
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="forecast-kpi-cards"></div>
                         </div>
                     </div>
 
-                    <!-- Biểu đồ & Bảng chi tiết từng chu kỳ 30 phút -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="card p-5 lg:col-span-2">
                             <h3 class="text-sm font-bold text-white mb-1" id="forecast-chart-title">Biểu đồ Dự báo Công suất (MW) & Tốc độ gió (m/s) - Chu kỳ 30 phút</h3>
@@ -259,7 +236,7 @@
                     <div class="card p-5 flex flex-wrap justify-between items-center gap-4">
                         <div>
                             <h2 class="text-base font-bold text-white">Đánh giá chất lượng 12 Turbines (Dữ liệu SCADA 3 tháng - Chu kỳ 10 phút)</h2>
-                            <p class="text-xs text-slate-400">Căn cứ tốc độ gió, sản lượng phát thực tế và đường cong công suất tiêu chuẩn Goldwind 4.0 MW (hoặc file Power Curve bạn đã upload).</p>
+                            <p class="text-xs text-slate-400">Đối chiếu trực tiếp tốc độ gió và sản lượng phát thực tế với đường cong chuẩn <strong>Table 1 Dynamic PC (1.15 kg/m³, TI 10%)</strong>.</p>
                         </div>
                         <div class="flex items-center space-x-3">
                             <label class="cursor-pointer bg-slate-700 hover:bg-slate-600 text-xs px-4 py-2 rounded-lg border border-slate-500 transition">
@@ -279,7 +256,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="card p-5 lg:col-span-2">
-                            <h3 class="text-sm font-bold mb-1" id="chart-title">Đường cong công suất thực tế vs Chuẩn Goldwind 4MW (WTG01)</h3>
+                            <h3 class="text-sm font-bold mb-1" id="chart-title">Đường cong công suất thực tế vs Dynamic PC 4MW (WTG01)</h3>
                             <p class="text-xs text-slate-400 mb-4" id="chart-subtitle">Dữ liệu tổng hợp chu kỳ 10 phút trong 90 ngày gần nhất</p>
                             <div class="h-64">
                                 <canvas id="powerCurveChart"></canvas>
@@ -296,7 +273,7 @@
                 </div>
             </section>
 
-            <!-- ==================== MỤC 2: CHATBOT VẬN HÀNH (TRẢ LỜI TRỰC TIẾP) ==================== -->
+            <!-- ==================== MỤC 2: CHATBOT VẬN HÀNH ==================== -->
             <section id="main-chatbot" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="card p-5 space-y-4">
                     <h2 class="text-base font-bold text-sky-400 flex items-center">
@@ -598,18 +575,60 @@
             }
         }
 
-        // ==================== 2. ĐƯỜNG CONG CÔNG SUẤT & DỰ BÁO WINDY (D, D+1, D+2, W+1) ====================
-        let activePowerCurveTable = [
-            { ws: 0, kw: 0 }, { ws: 2.5, kw: 0 }, { ws: 3, kw: 120 }, { ws: 4, kw: 380 },
-            { ws: 5, kw: 790 }, { ws: 6, kw: 1380 }, { ws: 7, kw: 2150 }, { ws: 8, kw: 3050 },
-            { ws: 9, kw: 3750 }, { ws: 10, kw: 3980 }, { ws: 11, kw: 4000 }, { ws: 12, kw: 4000 },
-            { ws: 15, kw: 4000 }, { ws: 20, kw: 4000 }, { ws: 25, kw: 4000 }, { ws: 25.1, kw: 0 }
+        // ==================== 2. ĐƯỜNG CONG CÔNG SUẤT DYNAMIC PC (CỐ ĐỊNH THEO BẢNG NHÀ MÁY) ====================
+        // Table 1 Dynamic PC (Air density 1.15 kg/m³, Turbulence intensity 10%)
+        const PLANT_POWER_CURVE = [
+            { ws: 0.0, kw: 0.0 },
+            { ws: 2.5, kw: 0.3 },
+            { ws: 3.0, kw: 65.3 },
+            { ws: 3.5, kw: 156.5 },
+            { ws: 4.0, kw: 272.0 },
+            { ws: 4.5, kw: 409.3 },
+            { ws: 5.0, kw: 573.1 },
+            { ws: 5.5, kw: 773.7 },
+            { ws: 6.0, kw: 1013 },
+            { ws: 6.5, kw: 1293 },
+            { ws: 7.0, kw: 1619 },
+            { ws: 7.5, kw: 1989 },
+            { ws: 8.0, kw: 2401 },
+            { ws: 8.5, kw: 2836 },
+            { ws: 9.0, kw: 3280 },
+            { ws: 9.5, kw: 3608 },
+            { ws: 10.0, kw: 3867 },
+            { ws: 10.5, kw: 3993 },
+            { ws: 11.0, kw: 4000 },
+            { ws: 11.5, kw: 4000 },
+            { ws: 12.0, kw: 4000 },
+            { ws: 12.5, kw: 4000 },
+            { ws: 13.0, kw: 4000 },
+            { ws: 13.5, kw: 4000 },
+            { ws: 14.0, kw: 4000 },
+            { ws: 14.5, kw: 4000 },
+            { ws: 15.0, kw: 4000 },
+            { ws: 15.5, kw: 4000 },
+            { ws: 16.0, kw: 4000 },
+            { ws: 16.5, kw: 4000 },
+            { ws: 17.0, kw: 4000 },
+            { ws: 17.5, kw: 4000 },
+            { ws: 18.0, kw: 4000 },
+            { ws: 18.5, kw: 4000 },
+            { ws: 19.0, kw: 3987 },
+            { ws: 19.5, kw: 3931 },
+            { ws: 20.0, kw: 3789 },
+            { ws: 20.5, kw: 3641 },
+            { ws: 21.0, kw: 3472 },
+            { ws: 21.5, kw: 3245 },
+            { ws: 22.0, kw: 3008 },
+            { ws: 22.5, kw: 2696 },
+            { ws: 23.0, kw: 2342 },
+            { ws: 23.5, kw: 2051 },
+            { ws: 24.0, kw: 1866 },
+            { ws: 24.1, kw: 0.0 }
         ];
 
         function getExpectedGoldwindPower(ws) {
-            const table = activePowerCurveTable;
-            if (!table || table.length === 0) return 0;
-            if (ws < table[0].ws || ws > table[table.length - 1].ws) return 0;
+            const table = PLANT_POWER_CURVE;
+            if (ws < 2.5 || ws > 24.0) return 0;
             for (let i = 0; i < table.length - 1; i++) {
                 const p1 = table[i];
                 const p2 = table[i + 1];
@@ -622,80 +641,14 @@
             return 0;
         }
 
-        // Tải file Excel mẫu đường cong công suất chuẩn Goldwind 4MW
-        function downloadSamplePowerCurve() {
-            const sampleRows = [
-                { "Wind_Speed_ms": 0.0, "Power_kW": 0 },
-                { "Wind_Speed_ms": 2.5, "Power_kW": 0 },
-                { "Wind_Speed_ms": 3.0, "Power_kW": 120 },
-                { "Wind_Speed_ms": 4.0, "Power_kW": 380 },
-                { "Wind_Speed_ms": 5.0, "Power_kW": 790 },
-                { "Wind_Speed_ms": 6.0, "Power_kW": 1380 },
-                { "Wind_Speed_ms": 7.0, "Power_kW": 2150 },
-                { "Wind_Speed_ms": 8.0, "Power_kW": 3050 },
-                { "Wind_Speed_ms": 9.0, "Power_kW": 3750 },
-                { "Wind_Speed_ms": 10.0, "Power_kW": 3980 },
-                { "Wind_Speed_ms": 11.0, "Power_kW": 4000 },
-                { "Wind_Speed_ms": 12.0, "Power_kW": 4000 },
-                { "Wind_Speed_ms": 15.0, "Power_kW": 4000 },
-                { "Wind_Speed_ms": 20.0, "Power_kW": 4000 },
-                { "Wind_Speed_ms": 25.0, "Power_kW": 4000 },
-                { "Wind_Speed_ms": 25.5, "Power_kW": 0 }
-            ];
-            const ws = XLSX.utils.json_to_sheet(sampleRows);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "PowerCurve_Goldwind4MW");
-            XLSX.writeFile(wb, "Mau_DuongCongCongSuat_Goldwind4MW.xlsx");
-        }
-
-        // Upload file Excel đường cong công suất thật của nhà máy
-        async function handlePowerCurveUpload(input) {
-            if (!input.files || !input.files[0]) return;
-            const file = input.files[0];
-            try {
-                const buffer = await file.arrayBuffer();
-                const wb = XLSX.read(buffer, { type: 'array' });
-                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-                if (!rows || rows.length === 0) throw new Error("File Excel trống.");
-
-                const parsedPoints = [];
-                rows.forEach(r => {
-                    const keys = Object.keys(r);
-                    const wKey = keys.find(k => /wind|gio|ws|toc/i.test(k)) || keys[0];
-                    const pKey = keys.find(k => /power|kw|mw|cong/i.test(k)) || keys[1];
-                    const ws = parseFloat(r[wKey]);
-                    let kw = parseFloat(r[pKey]);
-                    if (!isNaN(ws) && !isNaN(kw)) {
-                        // Nếu cột công suất đơn vị là MW (<= 10) thì đổi sang kW
-                        if (kw > 0 && kw <= 10 && /mw/i.test(pKey)) kw = kw * 1000;
-                        parsedPoints.push({ ws, kw });
-                    }
-                });
-
-                if (parsedPoints.length < 3) throw new Error("Không tìm thấy đủ cặp cột Tốc độ gió và Công suất.");
-                parsedPoints.sort((a, b) => a.ws - b.ws);
-                activePowerCurveTable = parsedPoints;
-
-                document.getElementById('power-curve-file-label').innerText = file.name;
-                document.getElementById('power-curve-status-text').innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i>Đã nạp ${parsedPoints.length} điểm từ file "${file.name}"</span>`;
-                
-                renderForecastView();
-                renderTurbines();
-                selectTurbine(selectedTurbineIndex);
-            } catch (err) {
-                alert("Lỗi đọc file Đường cong công suất: " + err.message);
-            }
-        }
-
-        let forecastSeries30Min = []; // Lưu 384 chu kỳ 30 phút (8 ngày: Ngày D hôm nay + 7 ngày tới)
+        let forecastSeries30Min = [];
         let forecastChartInstance = null;
 
-        // Khởi tạo dữ liệu gió mặc định bắt đầu từ 00:00 Ngày D (Hôm nay)
         function generateDefaultWindSeries() {
             const now = new Date();
             const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
             const series = [];
-            for (let i = 0; i < 384; i++) { // 8 ngày * 48 chu kỳ 30 phút
+            for (let i = 0; i < 384; i++) {
                 const t = new Date(startToday.getTime() + i * 30 * 60000);
                 const hour = t.getHours() + t.getMinutes() / 60;
                 const diurnal = Math.sin((hour - 8) * Math.PI / 12) * 1.8;
@@ -707,7 +660,6 @@
             forecastSeries30Min = series;
         }
 
-        // Lấy dữ liệu gió thực tế trực tuyến bắt đầu từ 00:00 Ngày D (Hôm nay)
         async function fetchLiveWindForecast() {
             const btn = document.getElementById('btn-fetch-wind');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang tải gió...';
@@ -929,9 +881,9 @@
         }
 
         // ==================== 2.2 ĐÁNH GIÁ CHẤT LƯỢNG 12 TURBINES ====================
-        const STANDARD_WIND = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+        const CHART_WIND_AXIS = [2.5, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24];
         let turbinesData = [
-            { id: 'WTG01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', samples: 12960, actualCurve: null, note: 'Tua-bin vận hành ổn định, bám sát đường cong công suất Goldwind 4MW.' },
+            { id: 'WTG01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', samples: 12960, actualCurve: null, note: 'Tua-bin vận hành ổn định, bám sát đường cong Dynamic PC 4MW.' },
             { id: 'WTG02', score: 94, status: 'good', dev: '-1.5%', temp: '65.1 °C', pitch: '0.12°', samples: 12960, actualCurve: null, note: 'Hiệu suất phát đạt chuẩn.' },
             { id: 'WTG03', score: 78, status: 'warn', dev: '-5.8%', temp: '73.2 °C', pitch: '0.85°', samples: 12960, actualCurve: null, note: 'Sai lệch góc Pitch cánh số 2 và nhiệt độ ổ trục tăng nhẹ. Cần kiểm tra bộ điều khiển Pitch.' },
             { id: 'WTG04', score: 95, status: 'good', dev: '-1.1%', temp: '63.8 °C', pitch: '0.10°', samples: 12960, actualCurve: null, note: 'Vận hành bình thường.' },
@@ -999,7 +951,7 @@
         function selectTurbine(index) {
             selectedTurbineIndex = index;
             const wtg = turbinesData[index];
-            document.getElementById('chart-title').innerText = `Đường cong công suất thực tế vs Chuẩn Goldwind 4MW (${wtg.id})`;
+            document.getElementById('chart-title').innerText = `Đường cong công suất thực tế vs Dynamic PC 4MW (${wtg.id})`;
             document.getElementById('chart-subtitle').innerText = `Tổng hợp từ ${wtg.samples.toLocaleString()} bản ghi SCADA (chu kỳ 10 phút)`;
             document.getElementById('detail-wtg-name').innerText = `Chi tiết đánh giá: ${wtg.id}`;
             
@@ -1017,16 +969,16 @@
         function updateChart(wtg) {
             const ctx = document.getElementById('powerCurveChart').getContext('2d');
             const factor = wtg.score / 100;
-            const stdCurve = STANDARD_WIND.map(w => Math.round(getExpectedGoldwindPower(w)));
+            const stdCurve = CHART_WIND_AXIS.map(w => Math.round(getExpectedGoldwindPower(w)));
             const actualPower = wtg.actualCurve || stdCurve.map(p => Math.round(p * factor));
 
             if (powerChart) powerChart.destroy();
             powerChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: STANDARD_WIND.map(w => w + ' m/s'),
+                    labels: CHART_WIND_AXIS.map(w => w + ' m/s'),
                     datasets: [
-                        { label: 'Đường cong chuẩn Goldwind 4MW (kW)', data: stdCurve, borderColor: '#38bdf8', borderDash: [5, 5], tension: 0.3, fill: false },
+                        { label: 'Đường cong chuẩn Dynamic PC 4MW (kW)', data: stdCurve, borderColor: '#38bdf8', borderDash: [5, 5], tension: 0.3, fill: false },
                         { label: `Công suất thực tế ${wtg.id} (kW)`, data: actualPower, borderColor: wtg.status === 'crit' ? '#f43f5e' : (wtg.status === 'warn' ? '#f59e0b' : '#10b981'), backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.3, fill: true, spanGaps: true }
                     ]
                 },
@@ -1046,6 +998,19 @@
             }
         }
 
+        function findNearestBinIndex(ws) {
+            let bestIdx = 0;
+            let minDiff = Infinity;
+            CHART_WIND_AXIS.forEach((val, idx) => {
+                const diff = Math.abs(ws - val);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestIdx = idx;
+                }
+            });
+            return bestIdx;
+        }
+
         async function processScadaData() {
             if (!uploadedScadaFile) {
                 alert('Vui lòng chọn file dữ liệu SCADA (.CSV hoặc .XLSX) trước khi bấm Phân tích!');
@@ -1060,7 +1025,7 @@
                 const stats = {};
                 for (let i = 1; i <= 12; i++) {
                     const id = 'WTG' + String(i).padStart(2, '0');
-                    stats[id] = { count: 0, ratioSum: 0, ratioCount: 0, tempMax: 0, tempSum: 0, tempCount: 0, pitchSum: 0, pitchCount: 0, bins: Array.from({length: 12}, () => ({sum: 0, cnt: 0})) };
+                    stats[id] = { count: 0, ratioSum: 0, ratioCount: 0, tempMax: 0, tempSum: 0, tempCount: 0, pitchSum: 0, pitchCount: 0, bins: Array.from({length: CHART_WIND_AXIS.length}, () => ({sum: 0, cnt: 0})) };
                 }
 
                 let totalRowsProcessed = 0;
@@ -1093,13 +1058,13 @@
                             const pitch = pitchKey ? parseFloat(row[pitchKey]) : NaN;
 
                             stats[targetWtg].count++;
-                            if (!isNaN(ws) && !isNaN(pw) && ws >= 3 && ws <= 20 && pw > 10) {
+                            if (!isNaN(ws) && !isNaN(pw) && ws >= 2.5 && ws <= 24 && pw > 5) {
                                 const expected = getExpectedGoldwindPower(ws);
                                 if (expected > 0) {
                                     stats[targetWtg].ratioSum += Math.min(1.05, pw / expected);
                                     stats[targetWtg].ratioCount++;
                                 }
-                                const binIdx = Math.min(11, Math.max(0, Math.round(ws) - 3));
+                                const binIdx = findNearestBinIndex(ws);
                                 stats[targetWtg].bins[binIdx].sum += pw;
                                 stats[targetWtg].bins[binIdx].cnt++;
                             }
@@ -1129,13 +1094,13 @@
 
                                 if (!isNaN(pw) || !isNaN(tmp)) {
                                     stats[id].count++;
-                                    if (!isNaN(ws) && !isNaN(pw) && ws >= 3 && ws <= 20 && pw > 10) {
+                                    if (!isNaN(ws) && !isNaN(pw) && ws >= 2.5 && ws <= 24 && pw > 5) {
                                         const expected = getExpectedGoldwindPower(ws);
                                         if (expected > 0) {
                                             stats[id].ratioSum += Math.min(1.05, pw / expected);
                                             stats[id].ratioCount++;
                                         }
-                                        const binIdx = Math.min(11, Math.max(0, Math.round(ws) - 3));
+                                        const binIdx = findNearestBinIndex(ws);
                                         stats[id].bins[binIdx].sum += pw;
                                         stats[id].bins[binIdx].cnt++;
                                     }
@@ -1161,9 +1126,9 @@
                     const tempPenalty = avgTemp > 75 ? (avgTemp - 75) * 1.5 : 0;
                     let healthScore = Math.round(Math.min(100, Math.max(40, perfRatio * 100 - tempPenalty)));
                     let status = healthScore > 85 ? 'good' : (healthScore >= 70 ? 'warn' : 'crit');
-                    const curve = s.bins.map((b, idx) => b.cnt > 0 ? Math.round(b.sum / b.cnt) : Math.round(getExpectedGoldwindPower(STANDARD_WIND[idx]) * perfRatio));
+                    const curve = s.bins.map((b, idx) => b.cnt > 0 ? Math.round(b.sum / b.cnt) : Math.round(getExpectedGoldwindPower(CHART_WIND_AXIS[idx]) * perfRatio));
                     const note = status === 'good'
-                        ? `Phân tích từ ${s.count.toLocaleString()} mẫu SCADA: Bám sát đường cong chuẩn Goldwind 4MW.`
+                        ? `Phân tích từ ${s.count.toLocaleString()} mẫu SCADA: Bám sát đường cong Dynamic PC 4MW.`
                         : (status === 'warn'
                             ? `Công suất lệch ${devPercent}%, nhiệt độ TB ${avgTemp.toFixed(1)}°C. Cần kiểm tra cảm biến gió và hệ thống Pitch.`
                             : `CẢNH BÁO (${s.count.toLocaleString()} mẫu): Suy giảm hiệu suất ${devPercent}%, nhiệt độ đỉnh ${s.tempMax.toFixed(1)}°C. Đề nghị bảo trì khẩn cấp.`);
@@ -1226,11 +1191,9 @@
             }
         }
 
-        // Truy vấn trực tiếp nội dung đầy đủ từ Bách khoa trực tuyến (Wikipedia VI & EN) và hiển thị ngay trong khung chat
         async function fetchDirectKnowledgeAnswer(query) {
             const cleanQuery = query.replace(/\?|là gì|như thế nào|cách|quy trình/gi, "").trim() || query;
             
-            // 1. Tìm kiếm trên Wikipedia Tiếng Việt trước
             try {
                 const searchUrlVi = `https://vi.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json&origin=*`;
                 const resVi = await fetch(searchUrlVi);
@@ -1254,7 +1217,6 @@
                 }
             } catch (e) {}
 
-            // 2. Nếu tiếng Việt không có, tìm trên Wikipedia Tiếng Anh (hữu ích cho thuật ngữ kỹ thuật Goldwind/IEC/Relay)
             try {
                 const searchUrlEn = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json&origin=*`;
                 const resEn = await fetch(searchUrlEn);
@@ -1311,7 +1273,6 @@
             box.scrollTop = box.scrollHeight;
 
             try {
-                // Nếu có API Key Google AI Studio chuẩn thì gọi Gemini + Google Search trực tiếp
                 if (GEMINI_API_KEY && GEMINI_API_KEY.startsWith("AIza")) {
                     const systemPrompt = `Bạn là Trợ lý Kỹ thuật Vận hành của Nhà máy Điện gió V1-2 Trà Vinh (48 MW, 12 tua-bin Goldwind 4 MW). Ưu tiên thông tin từ TÀI LIỆU NỘI BỘ dưới đây, kết hợp tìm kiếm Google để trả lời trực tiếp, đầy đủ, chính xác bằng tiếng Việt.\n\nTÀI LIỆU NỘI BỘ:\n${plantKnowledgeBase.substring(0, 100000)}`;
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
@@ -1328,7 +1289,6 @@
                     const formattedReply = replyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\*\*(.*?)\*\*/g, "<strong class='text-white'>$1</strong>").replace(/\n/g, "<br>");
                     box.innerHTML += `<div class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200"><div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-brands fa-google mr-1"></i> Nguồn: Tài liệu NMĐG V1-2 & Google Search</div><div>${formattedReply}</div></div></div>`;
                 } else {
-                    // Tra cứu trực tiếp từ Tài liệu nội bộ + Kho tri thức trực tuyến và hiển thị ngay kết quả (không mở link Google)
                     const localResultHtml = searchInternalDocs(msg);
                     const webResultHtml = await fetchDirectKnowledgeAnswer(msg);
                     document.getElementById(loadingId)?.remove();

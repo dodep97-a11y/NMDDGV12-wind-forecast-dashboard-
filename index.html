@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTTV_NMĐG V1-2 Trà Vinh | Hệ thống Quản lý & Vận hành</title>
+    <title>TTTV_NMĐG V1-2 Trà Vinh | Wind Farm Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -16,6 +16,7 @@
         .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 0.75rem; }
         .tab-active { background-color: #0284c7; color: white; border-bottom: 3px solid #38bdf8; }
         .subtab-active { background-color: #0369a1; color: white; border: 1px solid #38bdf8; }
+        .lang-active { background-color: #0284c7; color: white; border-color: #38bdf8; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
@@ -32,28 +33,33 @@
     <!-- ==================== 1. MÀN HÌNH ĐĂNG NHẬP ==================== -->
     <div id="login-screen" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
         <div id="login-card" class="card w-full max-w-md p-8 shadow-2xl border-slate-700/80 space-y-6">
+            <div class="flex justify-end space-x-1">
+                <button type="button" onclick="setLanguage('vi')" class="lang-btn-vi px-2.5 py-1 text-[11px] font-bold rounded border border-slate-600 bg-slate-800 text-slate-300 transition">VI</button>
+                <button type="button" onclick="setLanguage('en')" class="lang-btn-en px-2.5 py-1 text-[11px] font-bold rounded border border-slate-600 bg-slate-800 text-slate-300 transition">EN</button>
+                <button type="button" onclick="setLanguage('th')" class="lang-btn-th px-2.5 py-1 text-[11px] font-bold rounded border border-slate-600 bg-slate-800 text-slate-300 transition">TH</button>
+            </div>
+
             <div class="text-center space-y-2">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-400 mb-2">
                     <i class="fa-solid fa-wind text-3xl animate-pulse"></i>
                 </div>
                 <h1 class="text-2xl font-bold tracking-wide text-white">TTTV_NMĐG V1-2 TRÀ VINH</h1>
-                <p class="text-xs text-slate-400">Hệ thống Quản lý Kỹ thuật, Dự báo & Phân tích Sự cố (48 MW - Goldwind)</p>
             </div>
 
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Tài khoản vận hành</label>
+                    <label data-i18n="login_user_label" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Tài khoản vận hành</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-user"></i></span>
-                        <input type="text" id="login-username" required autocomplete="username" placeholder="Nhập tài khoản..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition">
+                        <input type="text" id="login-username" required autocomplete="username" data-i18n-ph="login_user_ph" placeholder="Nhập tài khoản..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Mật khẩu bảo mật</label>
+                    <label data-i18n="login_pass_label" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Mật khẩu bảo mật</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="login-password" required autocomplete="current-password" placeholder="Nhập mật khẩu..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition">
+                        <input type="password" id="login-password" required autocomplete="current-password" data-i18n-ph="login_pass_ph" placeholder="Nhập mật khẩu..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition">
                         <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200">
                             <i id="eye-icon" class="fa-solid fa-eye text-xs"></i>
                         </button>
@@ -62,18 +68,17 @@
 
                 <div id="login-error" class="hidden p-3 rounded-lg bg-rose-950/70 border border-rose-500/50 text-rose-300 text-xs flex items-center">
                     <i class="fa-solid fa-triangle-exclamation mr-2 text-rose-400"></i>
-                    <span>Sai tài khoản hoặc mật khẩu. Vui lòng kiểm tra lại!</span>
+                    <span data-i18n="login_err">Sai tài khoản hoặc mật khẩu. Vui lòng kiểm tra lại!</span>
                 </div>
 
                 <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold py-2.5 rounded-lg text-sm transition shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-right-to-bracket"></i>
-                    <span>Đăng nhập hệ thống</span>
+                    <span data-i18n="login_btn">Đăng nhập hệ thống</span>
                 </button>
             </form>
 
-            <div class="pt-4 border-t border-slate-800 text-center text-[11px] text-slate-500 space-y-1">
-                <p>Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long</p>
-                <p>Thiết kế bởi: <span class="text-sky-400 font-medium">Dep Do</span></p>
+            <div class="pt-4 border-t border-slate-800 text-center text-[11px] text-slate-500">
+                <p><span data-i18n="designed_by">Thiết kế bởi:</span> <span class="text-sky-400 font-medium">Dep Do</span></p>
             </div>
         </div>
     </div>
@@ -81,23 +86,29 @@
     <!-- ==================== 2. GIAO DIỆN HỆ THỐNG CHÍNH ==================== -->
     <div id="app-container" class="hidden min-h-screen flex flex-col">
         <!-- HEADER -->
-        <header class="bg-slate-900 border-b border-slate-700 px-6 py-4 flex flex-wrap justify-between items-center sticky top-0 z-40">
+        <header class="bg-slate-900 border-b border-slate-700 px-6 py-3.5 flex flex-wrap justify-between items-center sticky top-0 z-40">
             <div class="flex items-center space-x-3">
                 <div class="bg-sky-500 p-2.5 rounded-lg text-white">
                     <i class="fa-solid fa-wind text-2xl animate-pulse"></i>
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wide text-sky-400">TTTV_NMĐG V1-2 TRÀ VINH</h1>
-                    <p class="text-xs text-slate-400">Công suất: 48 MW (12 x 4 MW Goldwind) | Khóm Cồn Tàu, Xã Trường Long Hòa, Tỉnh Vĩnh Long</p>
                 </div>
             </div>
             <div class="flex items-center space-x-3 mt-2 md:mt-0">
+                <!-- Bộ chuyển đổi 3 ngôn ngữ -->
+                <div class="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700 space-x-1">
+                    <button type="button" onclick="setLanguage('vi')" class="lang-btn-vi px-2.5 py-1 text-xs font-bold rounded transition">VI</button>
+                    <button type="button" onclick="setLanguage('en')" class="lang-btn-en px-2.5 py-1 text-xs font-bold rounded transition">EN</button>
+                    <button type="button" onclick="setLanguage('th')" class="lang-btn-th px-2.5 py-1 text-xs font-bold rounded transition">TH</button>
+                </div>
+
                 <span class="px-3 py-1 bg-emerald-900/50 border border-emerald-500/50 text-emerald-400 text-xs rounded-full flex items-center">
                     <span class="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-ping"></span> nmdgv12travinh
                 </span>
                 <button onclick="handleLogout()" class="px-3 py-1.5 bg-slate-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-300 border border-slate-600 hover:border-rose-500/50 text-xs rounded-lg transition flex items-center space-x-1.5">
                     <i class="fa-solid fa-power-off"></i>
-                    <span>Đăng xuất</span>
+                    <span data-i18n="logout_btn">Đăng xuất</span>
                 </button>
             </div>
         </header>
@@ -106,15 +117,15 @@
         <nav class="bg-slate-800/80 px-6 flex space-x-2 border-b border-slate-700 overflow-x-auto">
             <button onclick="switchMainTab('turbines')" id="btn-main-turbines" class="tab-active px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-fan"></i>
-                <span>1. Turbines (Dự báo & Đánh giá chất lượng)</span>
+                <span data-i18n="tab_turbines">1. Turbines (Dự báo & Đánh giá chất lượng)</span>
             </button>
             <button onclick="switchMainTab('chatbot')" id="btn-main-chatbot" class="text-slate-300 hover:bg-slate-700 px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-robot"></i>
-                <span>2. Chatbot Vận hành (Tài liệu + Tra cứu mở)</span>
+                <span data-i18n="tab_chatbot">2. Chatbot Vận hành (Tài liệu + Tra cứu mở)</span>
             </button>
             <button onclick="switchMainTab('faults')" id="btn-main-faults" class="text-slate-300 hover:bg-slate-700 px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-bolt-lightning"></i>
-                <span>3. Phân tích sự cố (Ảnh nhiệt & Relay 27/59)</span>
+                <span data-i18n="tab_faults">3. Phân tích sự cố (Ảnh nhiệt & Relay 27/59)</span>
             </button>
         </nav>
 
@@ -126,71 +137,69 @@
                 <div class="flex flex-wrap gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 w-fit">
                     <button onclick="switchSubTab('turbines', 'forecast')" id="subbtn-turbines-forecast" class="subtab-active px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-chart-line text-sky-300"></i>
-                        <span>1.1 Dự báo công suất (12 Tọa độ, 15p/30p & Hiệu chỉnh ngắn hạn)</span>
+                        <span data-i18n="subtab_forecast">1.1 Dự báo công suất (12 Tọa độ, 15p/30p & Hiệu chỉnh ngắn hạn)</span>
                     </button>
                     <button onclick="switchSubTab('turbines', 'health')" id="subbtn-turbines-health" class="text-slate-300 hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-heart-pulse text-emerald-400"></i>
-                        <span>1.2 Đánh giá chất lượng 12 Turbines (Dynamic PC 4MW)</span>
+                        <span data-i18n="subtab_health">1.2 Đánh giá chất lượng 12 Turbines (Dynamic PC 4MW)</span>
                     </button>
                 </div>
 
-                <!-- SUB-TAB 1.1: DỰ BÁO CÔNG SUẤT TỪ WINDY (12 TỌA ĐỘ, 15P/30P & NOWCASTING) -->
+                <!-- SUB-TAB 1.1: DỰ BÁO CÔNG SUẤT -->
                 <div id="sub-turbines-forecast" class="space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="card p-4 flex flex-col justify-between space-y-3">
                             <div class="flex justify-between items-center">
-                                <h3 class="text-sm font-bold text-sky-400"><i class="fa-solid fa-wind mr-1.5"></i>Bản đồ gió Windy trực tiếp (Cồn Tàu)</h3>
-                                <a href="https://www.windy.com/9.628/106.580?9.628,106.580,12" target="_blank" class="text-[11px] text-sky-300 underline hover:text-white">Mở web Windy <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
+                                <h3 class="text-sm font-bold text-sky-400"><i class="fa-solid fa-wind mr-1.5"></i><span data-i18n="windy_map_title">Bản đồ gió Windy trực tiếp</span></h3>
+                                <a href="https://www.windy.com/9.628/106.580?9.628,106.580,12" target="_blank" class="text-[11px] text-sky-300 underline hover:text-white"><span data-i18n="open_windy">Mở web Windy</span> <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
                             </div>
                             <div class="rounded-lg overflow-hidden border border-slate-700 h-72 bg-slate-950">
                                 <iframe width="100%" height="100%" src="https://embed.windy.com/embed2.html?lat=9.628&lon=106.580&detailLat=9.628&detailLon=106.580&width=650&height=450&zoom=11&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=m%2Fs&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
                             </div>
-                            <p class="text-[11px] text-slate-400">Tọa độ tuyến WTG01–WTG12 (VN-2000 Trà Vinh -> WGS84) | Hub Goldwind 4MW (~110m).</p>
                         </div>
 
                         <div class="card p-5 lg:col-span-2 flex flex-col justify-between space-y-4">
                             <div class="space-y-3.5">
                                 <div class="flex flex-wrap justify-between items-center gap-2">
                                     <div>
-                                        <h2 class="text-base font-bold text-white">Mô hình Dự báo Công suất theo 12 Tọa độ (15 phút / 30 phút)</h2>
-                                        <p class="text-xs text-slate-400">Đặc tính <strong class="text-emerald-400">Dynamic PC (1.15 kg/m³, TI 10%)</strong> - Pmax = 48.00 MW (Bỏ qua tổn thất).</p>
+                                        <h2 data-i18n="forecast_model_title" class="text-base font-bold text-white">Mô hình Dự báo Công suất theo 12 Tọa độ (15 phút / 30 phút)</h2>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
                                         <button onclick="fetchLiveWindForecast()" id="btn-fetch-wind" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
-                                            <i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> Cập nhật gió 12 tọa độ
+                                            <i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> <span data-i18n="btn_update_wind">Cập nhật gió 12 tọa độ</span>
                                         </button>
                                         <button onclick="exportForecastExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
-                                            <i class="fa-solid fa-file-excel mr-1.5"></i> Xuất Excel dự báo
+                                            <i class="fa-solid fa-file-excel mr-1.5"></i> <span data-i18n="btn_export_excel">Xuất Excel dự báo</span>
                                         </button>
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 bg-slate-900/80 p-3 rounded-lg border border-slate-700">
                                     <div>
-                                        <label class="block text-[11px] text-slate-400 mb-1">Kỳ dự báo</label>
+                                        <label data-i18n="lbl_horizon" class="block text-[11px] text-slate-400 mb-1">Kỳ dự báo</label>
                                         <select id="forecast-horizon" onchange="renderForecastView()" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold">
-                                            <option value="D0" selected>Ngày D (Hôm nay)</option>
-                                            <option value="D1">Ngày D+1 (Ngày mai)</option>
-                                            <option value="D2">Ngày D+2 (Ngày mốt)</option>
-                                            <option value="W1">Tuần W+1 (7 ngày tới)</option>
+                                            <option value="D0" selected data-i18n="opt_d0">Ngày D (Hôm nay)</option>
+                                            <option value="D1" data-i18n="opt_d1">Ngày D+1 (Ngày mai)</option>
+                                            <option value="D2" data-i18n="opt_d2">Ngày D+2 (Ngày mốt)</option>
+                                            <option value="W1" data-i18n="opt_w1">Tuần W+1 (7 ngày tới)</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-[11px] text-slate-400 mb-1">Bước chu kỳ thời gian</label>
+                                        <label data-i18n="lbl_step" class="block text-[11px] text-slate-400 mb-1">Bước chu kỳ thời gian</label>
                                         <select id="forecast-step" onchange="renderForecastView()" class="w-full bg-slate-800 border border-sky-500/60 rounded-lg px-2.5 py-1.5 text-xs text-sky-300 font-bold">
-                                            <option value="15" selected>Chu kỳ 15 phút (96 điểm/ngày)</option>
-                                            <option value="30">Chu kỳ 30 phút (48 điểm/ngày)</option>
+                                            <option value="15" selected data-i18n="opt_15m">Chu kỳ 15 phút (96 điểm/ngày)</option>
+                                            <option value="30" data-i18n="opt_30m">Chu kỳ 30 phút (48 điểm/ngày)</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-[11px] text-slate-400 mb-1">Số tua-bin khả dụng</label>
+                                        <label data-i18n="lbl_avail_wtg" class="block text-[11px] text-slate-400 mb-1">Số tua-bin khả dụng</label>
                                         <input type="number" id="forecast-avail-wtg" value="12" min="1" max="12" onchange="renderForecastView()" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-emerald-400 font-bold">
                                     </div>
                                     <div>
-                                        <label class="block text-[11px] text-slate-400 mb-1">Nạp file gió Windy</label>
+                                        <label data-i18n="lbl_windy_file" class="block text-[11px] text-slate-400 mb-1">Nạp file gió Windy</label>
                                         <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-amber-300 flex items-center justify-center truncate">
                                             <i class="fa-solid fa-upload mr-1.5"></i>
-                                            <span id="windy-file-label">Chọn file...</span>
+                                            <span id="windy-file-label" data-i18n="choose_file">Chọn file...</span>
                                             <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleWindyFileUpload(this)">
                                         </label>
                                     </div>
@@ -199,32 +208,32 @@
                                 <div class="p-3.5 rounded-lg bg-amber-950/25 border border-amber-500/40 space-y-2.5">
                                     <div class="flex flex-wrap justify-between items-center gap-2">
                                         <div class="text-xs font-bold text-amber-300 flex items-center">
-                                            <i class="fa-solid fa-sliders mr-1.5"></i> Hiệu chỉnh ngắn hạn (Nowcasting từ số liệu SCADA thực tế Ngày D)
+                                            <i class="fa-solid fa-sliders mr-1.5"></i> <span data-i18n="nowcast_title">Hiệu chỉnh ngắn hạn (Nowcasting từ số liệu SCADA thực tế Ngày D)</span>
                                         </div>
-                                        <span id="nowcast-badge" class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-600">Chưa hiệu chỉnh</span>
+                                        <span id="nowcast-badge" class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-600" data-i18n="nowcast_inactive">Chưa hiệu chỉnh</span>
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 items-end">
                                         <div>
-                                            <label class="block text-[11px] text-slate-300 mb-1">Gió Hub thực tế hiện tại (m/s)</label>
-                                            <input type="number" id="nowcast-wind" step="0.1" min="0" max="30" placeholder="VD: 8.5" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-amber-300 font-bold">
+                                            <label data-i18n="lbl_nowcast_wind" class="block text-[11px] text-slate-300 mb-1">Gió Hub thực tế hiện tại (m/s)</label>
+                                            <input type="number" id="nowcast-wind" step="0.1" min="0" max="30" placeholder="8.5" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-amber-300 font-bold">
                                         </div>
                                         <div>
-                                            <label class="block text-[11px] text-slate-300 mb-1">Hoặc CS phát thực tế (MW)</label>
-                                            <input type="number" id="nowcast-power" step="0.1" min="0" max="48" placeholder="VD: 34.0" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-sky-300 font-bold">
+                                            <label data-i18n="lbl_nowcast_power" class="block text-[11px] text-slate-300 mb-1">Hoặc CS phát thực tế (MW)</label>
+                                            <input type="number" id="nowcast-power" step="0.1" min="0" max="48" placeholder="34.0" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-sky-300 font-bold">
                                         </div>
                                         <div>
-                                            <label class="block text-[11px] text-slate-300 mb-1">Thời gian hiệu chỉnh</label>
+                                            <label data-i18n="lbl_nowcast_hours" class="block text-[11px] text-slate-300 mb-1">Thời gian hiệu chỉnh</label>
                                             <select id="nowcast-hours" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-white">
-                                                <option value="2">2 giờ tới</option>
-                                                <option value="4" selected>4 giờ tới</option>
-                                                <option value="6">6 giờ tới</option>
+                                                <option value="2" data-i18n="opt_2h">2 giờ tới</option>
+                                                <option value="4" selected data-i18n="opt_4h">4 giờ tới</option>
+                                                <option value="6" data-i18n="opt_6h">6 giờ tới</option>
                                             </select>
                                         </div>
                                         <div class="flex space-x-1.5">
-                                            <button onclick="applyShortTermNowcast()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold py-1.5 px-2.5 rounded-lg text-xs transition">
+                                            <button onclick="applyShortTermNowcast()" data-i18n="btn_apply_nowcast" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold py-1.5 px-2.5 rounded-lg text-xs transition">
                                                 Hiệu chỉnh
                                             </button>
-                                            <button onclick="resetShortTermNowcast()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 py-1.5 px-2.5 rounded-lg text-xs transition" title="Xóa hiệu chỉnh">
+                                            <button onclick="resetShortTermNowcast()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 py-1.5 px-2.5 rounded-lg text-xs transition">
                                                 <i class="fa-solid fa-rotate-left"></i>
                                             </button>
                                         </div>
@@ -236,17 +245,16 @@
                         </div>
                     </div>
 
-                    <!-- DANH SÁCH GỌN 3 CỘT: WTG, TỐC ĐỘ GIÓ (KÈM GIÓ TRUNG BÌNH) VÀ CÔNG SUẤT DỰ BÁO -->
+                    <!-- DANH SÁCH 3 CỘT: WTG, TỐC ĐỘ GIÓ (KÈM GIÓ TRUNG BÌNH) VÀ CÔNG SUẤT DỰ BÁO -->
                     <div class="card p-5 space-y-3">
                         <div class="flex flex-wrap justify-between items-center gap-3">
                             <div>
                                 <h3 class="text-sm font-bold text-sky-400 flex items-center">
-                                    <i class="fa-solid fa-wind mr-1.5 text-amber-400"></i> Danh sách Tốc độ gió & Công suất dự báo từng Tua-bin (WTG01 – WTG12)
+                                    <i class="fa-solid fa-wind mr-1.5 text-amber-400"></i> <span data-i18n="wtg_list_title">Danh sách Tốc độ gió & Công suất dự báo từng Tua-bin (WTG01 – WTG12)</span>
                                 </h3>
-                                <p class="text-xs text-slate-400">Tính toán theo 12 tọa độ thực tế và đường cong công suất Dynamic PC 4 MW.</p>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <label class="text-xs text-slate-300">Mốc thời gian hiển thị:</label>
+                                <label data-i18n="lbl_timeslot" class="text-xs text-slate-300">Mốc thời gian hiển thị:</label>
                                 <select id="wtg-list-timeslot" onchange="render12WtgWindList()" class="bg-slate-900 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-amber-300 font-semibold"></select>
                             </div>
                         </div>
@@ -256,8 +264,8 @@
                                 <thead class="bg-slate-900 text-slate-400">
                                     <tr>
                                         <th class="p-2.5">WTG</th>
-                                        <th class="p-2.5 text-amber-300">Tốc độ gió (m/s)</th>
-                                        <th class="p-2.5 text-sky-400">Công suất dự báo (kW)</th>
+                                        <th data-i18n="th_wind_speed" class="p-2.5 text-amber-300">Tốc độ gió (m/s)</th>
+                                        <th data-i18n="th_forecast_power_kw" class="p-2.5 text-sky-400">Công suất dự báo (kW)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="wtg-12-wind-tbody" class="divide-y divide-slate-800 text-slate-200"></tbody>
@@ -268,8 +276,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="card p-5 lg:col-span-2">
-                            <h3 class="text-sm font-bold text-white mb-1" id="forecast-chart-title">Biểu đồ Dự báo Công suất (MW) & Tốc độ gió (m/s)</h3>
-                            <p class="text-xs text-slate-400 mb-3" id="forecast-source-note">Nguồn dữ liệu: Mô hình thời tiết ECMWF/Open-Meteo theo 12 tọa độ WTG01–WTG12</p>
+                            <h3 class="text-sm font-bold text-white mb-3" id="forecast-chart-title">Biểu đồ Dự báo Công suất (MW) & Tốc độ gió (m/s)</h3>
                             <div class="h-72">
                                 <canvas id="forecastChart"></canvas>
                             </div>
@@ -281,10 +288,10 @@
                                 <table class="w-full text-left text-xs">
                                     <thead class="bg-slate-900 text-slate-400 sticky top-0">
                                         <tr>
-                                            <th class="p-2">Thời điểm</th>
-                                            <th class="p-2">Gió TB (m/s)</th>
-                                            <th class="p-2">CS Tổng (MW)</th>
-                                            <th class="p-2">Sản lượng (MWh)</th>
+                                            <th data-i18n="th_time" class="p-2">Thời điểm</th>
+                                            <th data-i18n="th_avg_wind" class="p-2">Gió TB (m/s)</th>
+                                            <th data-i18n="th_total_power" class="p-2">CS Tổng (MW)</th>
+                                            <th data-i18n="th_energy" class="p-2">Sản lượng (MWh)</th>
                                         </tr>
                                     </thead>
                                     <tbody id="forecast-table-body" class="divide-y divide-slate-800 text-slate-200"></tbody>
@@ -298,17 +305,16 @@
                 <div id="sub-turbines-health" class="hidden space-y-6">
                     <div class="card p-5 flex flex-wrap justify-between items-center gap-4">
                         <div>
-                            <h2 class="text-base font-bold text-white">Đánh giá chất lượng 12 Turbines (Dữ liệu SCADA 3 tháng - Chu kỳ 10 phút)</h2>
-                            <p class="text-xs text-slate-400">Đối chiếu trực tiếp tốc độ gió và sản lượng phát thực tế với đường cong chuẩn <strong>Table 1 Dynamic PC (1.15 kg/m³, TI 10%)</strong>.</p>
+                            <h2 data-i18n="health_title" class="text-base font-bold text-white">Đánh giá chất lượng 12 Turbines (Dữ liệu SCADA 3 tháng - Chu kỳ 10 phút)</h2>
                         </div>
                         <div class="flex items-center space-x-3">
                             <label class="cursor-pointer bg-slate-700 hover:bg-slate-600 text-xs px-4 py-2 rounded-lg border border-slate-500 transition">
                                 <i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>
-                                <span id="scada-file-name">Chọn file dữ liệu SCADA (.CSV/.XLSX)...</span>
+                                <span id="scada-file-name" data-i18n="choose_scada_file">Chọn file dữ liệu SCADA (.CSV/.XLSX)...</span>
                                 <input type="file" id="scada-input" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleScadaUpload(this)">
                             </label>
                             <button onclick="processScadaData()" id="btn-analyze-scada" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                                <i class="fa-solid fa-play mr-1"></i> Phân tích dữ liệu
+                                <i class="fa-solid fa-play mr-1"></i> <span data-i18n="btn_analyze">Phân tích dữ liệu</span>
                             </button>
                         </div>
                     </div>
@@ -319,8 +325,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="card p-5 lg:col-span-2">
-                            <h3 class="text-sm font-bold mb-1" id="chart-title">Đường cong công suất thực tế vs Dynamic PC 4MW (WTG01)</h3>
-                            <p class="text-xs text-slate-400 mb-4" id="chart-subtitle">Dữ liệu tổng hợp chu kỳ 10 phút trong 90 ngày gần nhất</p>
+                            <h3 class="text-sm font-bold mb-4" id="chart-title">Đường cong công suất thực tế vs Dynamic PC 4MW (WTG01)</h3>
                             <div class="h-64">
                                 <canvas id="powerCurveChart"></canvas>
                             </div>
@@ -336,38 +341,31 @@
                 </div>
             </section>
 
-            <!-- ==================== MỤC 2: CHATBOT VẬN HÀNH (100% KHÔNG CẦN API KEY) ==================== -->
+            <!-- ==================== MỤC 2: CHATBOT VẬN HÀNH ==================== -->
             <section id="main-chatbot" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="card p-5 flex flex-col justify-between space-y-4">
                     <div class="space-y-4">
                         <h2 class="text-base font-bold text-sky-400 flex items-center">
-                            <i class="fa-solid fa-folder-open mr-2"></i> Kho tài liệu Nhà máy
+                            <i class="fa-solid fa-folder-open mr-2"></i> <span data-i18n="doc_repo_title">Kho tài liệu Nhà máy</span>
                         </h2>
-                        <p class="text-xs text-slate-400">Nạp tài liệu PDF, Word, Excel của NMĐG V1-2. Hệ thống tự động chia đoạn thông minh (Smart Chunking) để trích xuất chính xác thông số kỹ thuật.</p>
                         
-                        <label class="border-2 border-dashed border-slate-600 hover:border-sky-500 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-slate-800/40">
+                        <label class="border-2 border-dashed border-slate-600 hover:border-sky-500 rounded-lg p-5 flex flex-col items-center justify-center cursor-pointer transition bg-slate-800/40">
                             <i class="fa-solid fa-cloud-arrow-up text-2xl text-sky-400 mb-2"></i>
-                            <span class="text-xs font-medium text-slate-200">Chọn file PDF, DOCX, XLSX, TXT</span>
-                            <span class="text-[11px] text-slate-400 mt-1">Quy trình vận hành, Phiếu chỉnh định Relay, Manual Goldwind</span>
+                            <span data-i18n="upload_doc_lbl" class="text-xs font-medium text-slate-200">Chọn file PDF, DOCX, XLSX, TXT</span>
                             <input type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" class="hidden" onchange="handleDocUpload(this)">
                         </label>
 
                         <div class="space-y-2">
                             <div class="flex justify-between items-center">
-                                <h3 class="text-xs font-semibold uppercase text-slate-400">Tài liệu đã nạp:</h3>
-                                <span id="doc-chunk-count" class="text-[11px] text-sky-400">0 đoạn dữ liệu</span>
+                                <h3 data-i18n="uploaded_docs_lbl" class="text-xs font-semibold uppercase text-slate-400">Tài liệu đã nạp:</h3>
+                                <span id="doc-chunk-count" class="text-[11px] text-sky-400">0</span>
                             </div>
-                            <ul id="doc-list" class="space-y-2 text-xs max-h-56 overflow-y-auto">
+                            <ul id="doc-list" class="space-y-2 text-xs max-h-64 overflow-y-auto">
                                 <li id="empty-doc-msg" class="p-2.5 bg-slate-800/60 rounded flex items-center justify-between border border-slate-700 text-slate-400 italic">
-                                    <span>Chưa nạp file thủ công (Đang dùng dữ liệu chuẩn NMĐG V1-2)</span>
+                                    <span data-i18n="no_manual_file">Chưa nạp file thủ công</span>
                                 </li>
                             </ul>
                         </div>
-                    </div>
-
-                    <div class="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/30 text-[11px] text-emerald-200 space-y-1">
-                        <div class="font-bold text-emerald-300"><i class="fa-solid fa-shield-check mr-1"></i> Chế độ hoạt động độc lập</div>
-                        <p class="text-slate-300 leading-relaxed">Tìm kiếm trực tiếp trong tài liệu nhà máy và nguồn tri thức mở (Wikipedia / DuckDuckGo) mà không cần API Key.</p>
                     </div>
                 </div>
 
@@ -375,14 +373,11 @@
                     <div class="p-4 border-b border-slate-700 flex flex-wrap justify-between items-center gap-2">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-headset text-sky-400"></i>
-                            <span class="font-bold text-sm">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
+                            <span data-i18n="chatbot_header" class="font-bold text-sm">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span class="text-[11px] bg-emerald-950 border border-emerald-500/40 px-2.5 py-1 rounded text-emerald-300">
-                                <i class="fa-solid fa-bolt mr-1"></i> Tài liệu Nhà máy + Tri thức mở
-                            </span>
-                            <button onclick="clearChatHistory()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-[11px] text-slate-300 transition" title="Làm mới khung chat">
-                                <i class="fa-solid fa-trash-can mr-1"></i> Làm mới chat
+                            <button onclick="clearChatHistory()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-[11px] text-slate-300 transition">
+                                <i class="fa-solid fa-trash-can mr-1"></i> <span data-i18n="clear_chat">Làm mới chat</span>
                             </button>
                         </div>
                     </div>
@@ -391,21 +386,20 @@
                         <div class="flex items-start space-x-3">
                             <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                             <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2">
-                                <p>Xin chào kỹ sư vận hành! Tôi là trợ lý kỹ thuật của <strong>NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW)</strong>.</p>
-                                <p class="text-xs text-slate-300">Hãy nạp tài liệu nhà máy ở cột bên trái hoặc chọn nhanh một chủ đề bên dưới để tra cứu ngay:</p>
+                                <p data-i18n="chat_welcome">Xin chào kỹ sư vận hành! Tôi là trợ lý kỹ thuật của NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW).</p>
                                 <div class="flex flex-wrap gap-1.5 pt-1">
-                                    <button onclick="askQuickQuestion('Nguyên nhân và cách xử lý khi Relay 27-2 tác động tại NMĐG V1-2?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Xử lý Relay 27-2 tác động?</button>
-                                    <button onclick="askQuickQuestion('Thông số đường cong công suất Dynamic PC của tua-bin Goldwind 4MW tại nhà máy?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Đường cong công suất Goldwind 4MW?</button>
-                                    <button onclick="askQuickQuestion('Xử lý quá áp Relay 59 và chạm đất 59N trên lưới 35kV?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Xử lý Relay 59 / 59N?</button>
+                                    <button onclick="askQuickQuestion('Nguyên nhân và cách xử lý khi Relay 27-2 tác động tại NMĐG V1-2?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Relay 27-2?</button>
+                                    <button onclick="askQuickQuestion('Thông số đường cong công suất Dynamic PC của tua-bin Goldwind 4MW tại nhà máy?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Dynamic PC 4MW?</button>
+                                    <button onclick="askQuickQuestion('Xử lý quá áp Relay 59 và chạm đất 59N trên lưới 35kV?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Relay 59 / 59N?</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="p-4 border-t border-slate-700 flex space-x-2">
-                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Nhập câu hỏi kỹ thuật hoặc nội dung cần tìm trong tài liệu..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
+                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" data-i18n-ph="chat_ph" placeholder="Nhập câu hỏi kỹ thuật hoặc nội dung cần tìm..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
                         <button onclick="sendChat()" class="bg-sky-600 hover:bg-sky-500 px-5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center space-x-1">
-                            <span>Gửi</span>
+                            <span data-i18n="send_btn">Gửi</span>
                             <i class="fa-solid fa-paper-plane text-xs"></i>
                         </button>
                     </div>
@@ -417,11 +411,11 @@
                 <div class="flex flex-wrap gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 w-fit">
                     <button onclick="switchSubTab('faults', 'thermal')" id="subbtn-faults-thermal" class="subtab-active px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-temperature-high text-amber-400"></i>
-                        <span>3.1 Phân tích ảnh quét nhiệt (35kV / 110kV)</span>
+                        <span data-i18n="subtab_thermal">3.1 Phân tích ảnh quét nhiệt (35kV / 110kV)</span>
                     </button>
                     <button onclick="switchSubTab('faults', 'relay')" id="subbtn-faults-relay" class="text-slate-300 hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-microchip text-rose-400"></i>
-                        <span>3.2 Phân tích file sự cố (Relay 27/59 Siemens SIPROTEC, ABB...)</span>
+                        <span data-i18n="subtab_relay">3.2 Phân tích file sự cố (Relay 27/59 Siemens SIPROTEC, ABB...)</span>
                     </button>
                 </div>
 
@@ -429,22 +423,19 @@
                 <div id="sub-faults-thermal" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="card p-5 space-y-4">
                         <div class="flex justify-between items-center">
-                            <h2 class="text-base font-bold text-sky-400"><i class="fa-solid fa-camera-retro mr-2"></i>Quét nhiệt thiết bị 35kV / 110kV</h2>
-                            <span class="text-[11px] bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-2.5 py-0.5 rounded-full">
-                                <i class="fa-solid fa-microchip mr-1"></i> Tự động nhận diện OCR
-                            </span>
+                            <h2 class="text-base font-bold text-sky-400"><i class="fa-solid fa-camera-retro mr-2"></i><span data-i18n="thermal_title">Quét nhiệt thiết bị 35kV / 110kV</span></h2>
+                            <span class="text-[11px] bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-2.5 py-0.5 rounded-full">OCR</span>
                         </div>
                         
                         <label class="border-2 border-dashed border-amber-500/60 hover:border-amber-400 rounded-lg p-5 flex flex-col items-center justify-center cursor-pointer transition bg-amber-950/20">
                             <i class="fa-solid fa-wand-magic-sparkles text-2xl text-amber-400 mb-1.5"></i>
-                            <span class="text-xs font-semibold text-amber-200">Tải lên ảnh chụp Camera nhiệt (FLIR / Testo / Hikmicro)</span>
-                            <span class="text-[11px] text-slate-400 mt-1">Tự động đọc nhiệt độ (°C) và đánh giá rủi ro sự cố</span>
+                            <span data-i18n="upload_thermal_lbl" class="text-xs font-semibold text-amber-200">Tải lên ảnh chụp Camera nhiệt (FLIR / Testo / Hikmicro)</span>
                             <input type="file" accept="image/*" class="hidden" onchange="handleThermalImageUpload(this)">
                         </label>
 
                         <div id="thermal-ocr-status" class="hidden p-3 rounded-lg bg-sky-950/70 border border-sky-500/40 text-xs text-sky-300 space-y-1.5">
                             <div class="flex items-center justify-between">
-                                <span id="ocr-status-text"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Đang nhận diện chữ số...</span>
+                                <span id="ocr-status-text">OCR...</span>
                                 <span id="ocr-progress-pct" class="font-bold">0%</span>
                             </div>
                             <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
@@ -453,126 +444,123 @@
                         </div>
 
                         <div id="thermal-preview-box" class="hidden rounded-lg overflow-hidden border border-slate-700 bg-black flex justify-center max-h-56">
-                            <img id="thermal-preview-img" src="" alt="Ảnh nhiệt thiết bị" class="object-contain max-h-56">
+                            <img id="thermal-preview-img" src="" alt="Thermal" class="object-contain max-h-56">
                         </div>
 
                         <div id="ocr-detected-chips" class="hidden flex flex-wrap items-center gap-1.5 text-xs"></div>
 
                         <div class="grid grid-cols-2 gap-3 text-sm">
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Cấp điện áp</label>
+                                <label data-i18n="lbl_voltage" class="block text-xs text-slate-400 mb-1">Cấp điện áp</label>
                                 <select id="th-voltage" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2">
-                                    <option value="110kV">Trạm biến áp 110kV</option>
-                                    <option value="35kV">Hệ thống phân phối 35kV</option>
+                                    <option value="110kV">110kV</option>
+                                    <option value="35kV">35kV</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Loại thiết bị quét nhiệt</label>
+                                <label data-i18n="lbl_equip" class="block text-xs text-slate-400 mb-1">Loại thiết bị</label>
                                 <select id="th-equip" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2">
-                                    <option value="Máy biến áp (MBA)">Máy biến áp lực (MBA)</option>
-                                    <option value="Máy cắt (MC)">Máy cắt (MC)</option>
-                                    <option value="Dao cách ly (DCL)">Dao cách ly (DCL)</option>
-                                    <option value="Biến dòng điện (TI)">Biến dòng điện (TI)</option>
-                                    <option value="Biến điện áp (TU)">Biến điện áp (TU)</option>
-                                    <option value="Đầu cốt / Thanh cái">Đầu cốt cáp / Thanh cái</option>
+                                    <option value="MBA">MBA (Transformer)</option>
+                                    <option value="MC">MC (Circuit Breaker)</option>
+                                    <option value="DCL">DCL (Disconnector)</option>
+                                    <option value="TI">TI (CT)</option>
+                                    <option value="TU">TU (VT)</option>
+                                    <option value="Busbar">Cable / Busbar</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Nhiệt độ điểm nóng nhất T1 (°C)</label>
+                                <label data-i18n="lbl_t1" class="block text-xs text-slate-400 mb-1">Nhiệt độ điểm nóng T1 (°C)</label>
                                 <input type="number" id="th-t1" value="68.5" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 font-bold text-amber-400">
                             </div>
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Nhiệt độ pha đối chiếu T2 (°C)</label>
+                                <label data-i18n="lbl_t2" class="block text-xs text-slate-400 mb-1">Nhiệt độ đối chiếu T2 (°C)</label>
                                 <input type="number" id="th-t2" value="44.0" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 font-bold text-sky-400">
                             </div>
                         </div>
 
                         <button onclick="analyzeThermal()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2.5 rounded-lg text-sm transition">
-                            <i class="fa-solid fa-magnifying-glass-chart mr-2"></i> Đánh giá rủi ro sự cố & Phương án xử lý
+                            <i class="fa-solid fa-magnifying-glass-chart mr-2"></i> <span data-i18n="btn_eval_thermal">Đánh giá rủi ro sự cố & Phương án xử lý</span>
                         </button>
                     </div>
 
                     <div class="card p-5 flex flex-col justify-between">
                         <div>
-                            <h2 class="text-base font-bold text-white mb-4">Kết quả đánh giá rủi ro & Phương án xử lý</h2>
+                            <h2 data-i18n="thermal_result_title" class="text-base font-bold text-white mb-4">Kết quả đánh giá rủi ro & Phương án xử lý</h2>
                             <div id="thermal-result-box" class="space-y-4"></div>
                         </div>
                         <div class="mt-6 pt-3 border-t border-slate-700 text-[11px] text-slate-400 flex justify-between">
-                            <span>Tiêu chuẩn: IEC 62271 / NETA MTS</span>
+                            <span>IEC 62271 / NETA MTS</span>
                             <span>NMĐG V1-2 Trà Vinh</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- SUB-TAB 3.2: PHÂN TÍCH FILE SỰ CỐ RELAY 27 / 59 (SIEMENS / ABB) -->
+                <!-- SUB-TAB 3.2: PHÂN TÍCH FILE SỰ CỐ RELAY 27 / 59 -->
                 <div id="sub-faults-relay" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="card p-5 space-y-4">
                         <h2 class="text-base font-bold text-rose-400 flex items-center">
-                            <i class="fa-solid fa-file-waveform mr-2"></i> Nạp bản ghi sự cố Rơ-le 27 / 59
+                            <i class="fa-solid fa-file-waveform mr-2"></i> <span data-i18n="relay_title">Nạp bản ghi sự cố Rơ-le 27 / 59</span>
                         </h2>
-                        <p class="text-xs text-slate-400">Chuyên sâu chẩn đoán bảo vệ điện áp <strong>27 (Kém áp / LVRT)</strong>, <strong>59 (Quá áp / HVRT)</strong>, <strong>59N (Quá áp thứ tự không 3U0)</strong> xuất từ Siemens DIGSI 5 / SIGRA hoặc ABB PCM600.</p>
 
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">Hãng / Dòng Rơ-le bảo vệ</label>
+                            <label data-i18n="lbl_relay_vendor" class="block text-xs text-slate-400 mb-1">Hãng / Dòng Rơ-le bảo vệ</label>
                             <select id="relay-vendor" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-xs text-white">
                                 <option value="Siemens SIPROTEC (7SJ85 / 7UT85 / 7SA86)">Siemens SIPROTEC (DIGSI 5 / SIGRA)</option>
                                 <option value="ABB Relion (REF615 / RET670 / RED670)">ABB Relion (PCM600)</option>
-                                <option value="SEL / Schneider / Khác">SEL / Schneider MiCOM / Khác</option>
+                                <option value="SEL / Schneider">SEL / Schneider MiCOM</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">Ngăn lộ / Điểm đo điện áp (TU)</label>
+                            <label data-i18n="lbl_relay_bay" class="block text-xs text-slate-400 mb-1">Ngăn lộ / Điểm đo điện áp (TU)</label>
                             <select id="relay-bay" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-xs text-white">
-                                <option value="Ngăn đường dây 110kV / Thanh cái C11 (TU 110kV)">Ngăn đường dây 110kV / Thanh cái C11 (TU 110kV)</option>
-                                <option value="Thanh cái 35kV C31 / C32 (TU 35kV)">Thanh cái 35kV C31 / C32 (TU 35kV)</option>
-                                <option value="Xuất tuyến 35kV (371 / 372 / 373)">Xuất tuyến cáp ngầm 35kV (Nối tua-bin Goldwind)</option>
-                                <option value="Máy biến áp lực T1 / T2 (110/35kV)">Máy biến áp lực T1 / T2 (110/35kV)</option>
+                                <option value="110kV Busbar C11 / Feeder 171">110kV Busbar C11 / Feeder 171</option>
+                                <option value="35kV Busbar C31 / C32">35kV Busbar C31 / C32</option>
+                                <option value="35kV Feeder 371 / 372 / 373">35kV Feeder 371 / 372 / 373</option>
+                                <option value="110/35kV Transformer T1 / T2">110/35kV Transformer T1 / T2</option>
                             </select>
                         </div>
 
                         <label class="border-2 border-dashed border-rose-500/60 hover:border-rose-400 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-rose-950/20">
                             <i class="fa-solid fa-upload text-2xl text-rose-400 mb-1.5"></i>
-                            <span class="text-xs font-semibold text-rose-200" id="relay-file-name">Chọn file Fault Report / COMTRADE (.txt, .csv, .cfg)</span>
-                            <span class="text-[11px] text-slate-400 mt-1">Tự động nhận diện 27-1/27-2, 59-1/59-2, 59N & điện áp Ua/Ub/Uc</span>
+                            <span class="text-xs font-semibold text-rose-200" id="relay-file-name" data-i18n="choose_relay_file">Chọn file Fault Report / COMTRADE (.txt, .csv, .cfg)</span>
                             <input type="file" accept=".txt,.csv,.cfg,.xml,.log,.htm,.html" class="hidden" onchange="handleRelayFileUpload(this)">
                         </label>
 
                         <div class="flex space-x-2">
-                            <button onclick="loadSampleRelayLog('27')" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] text-sky-300 py-2 rounded-lg transition">
-                                Nạp mẫu Relay 27 (Kém áp)
+                            <button onclick="loadSampleRelayLog('27')" data-i18n="sample_27" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] text-sky-300 py-2 rounded-lg transition">
+                                Mẫu Relay 27 (Kém áp)
                             </button>
-                            <button onclick="loadSampleRelayLog('59')" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] text-amber-300 py-2 rounded-lg transition">
-                                Nạp mẫu Relay 59/59N (Quá áp)
+                            <button onclick="loadSampleRelayLog('59')" data-i18n="sample_59" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] text-amber-300 py-2 rounded-lg transition">
+                                Mẫu Relay 59/59N (Quá áp)
                             </button>
                         </div>
 
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">Nội dung bản ghi sự cố (Có thể dán trực tiếp):</label>
-                            <textarea id="relay-raw-text" rows="5" placeholder="Dán nội dung Fault Log từ DIGSI 5 / PCM600 hoặc tải file ở trên..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-[11px] font-mono text-emerald-300 focus:outline-none focus:border-rose-500"></textarea>
+                            <label data-i18n="lbl_relay_raw" class="block text-xs text-slate-400 mb-1">Nội dung bản ghi sự cố:</label>
+                            <textarea id="relay-raw-text" rows="5" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-[11px] font-mono text-emerald-300 focus:outline-none focus:border-rose-500"></textarea>
                         </div>
 
                         <button onclick="analyzeRelayFault()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2.5 rounded-lg text-xs transition flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-stethoscope"></i>
-                            <span>Phân tích sự cố Relay 27 / 59 & Đề xuất xử lý</span>
+                            <span data-i18n="btn_analyze_relay">Phân tích sự cố Relay 27 / 59 & Đề xuất xử lý</span>
                         </button>
                     </div>
 
                     <div class="card p-5 lg:col-span-2 flex flex-col justify-between space-y-4">
                         <div id="relay-analysis-output" class="space-y-4">
                             <div class="p-4 rounded-lg bg-slate-900/90 border border-slate-700 text-xs text-slate-300 space-y-2">
-                                <div class="text-sm font-bold text-sky-400"><i class="fa-solid fa-circle-info mr-1.5"></i> Chẩn đoán chuyên sâu Rơ-le 27 & 59 tại NMĐG V1-2</div>
-                                <p>Hệ thống tự động phân tích chi tiết các bản ghi tác động bảo vệ điện áp từ rơ-le Siemens SIPROTEC và ABB Relion:</p>
+                                <div class="text-sm font-bold text-sky-400"><i class="fa-solid fa-circle-info mr-1.5"></i> <span data-i18n="relay_guide_title">Chẩn đoán chuyên sâu Rơ-le 27 & 59 tại NMĐG V1-2</span></div>
                                 <ul class="list-disc list-inside space-y-1 text-slate-400">
-                                    <li><strong>Relay 27 (27-1 / 27-2 / PTUV - Bảo vệ Kém áp):</strong> Phân tích sụt áp lưới truyền tải 110kV khu vực Duyên Hải – Trà Vinh, kiểm tra điều kiện <strong>LVRT (Low Voltage Ride Through)</strong> theo Thông tư 39/2015/TT-BCT hoặc lỗi mất áp thứ cấp mạch TU (MCB TU / Fuse Failure 60FL).</li>
-                                    <li><strong>Relay 59 (59-1 / 59-2 / PTOV - Bảo vệ Quá áp):</strong> Phân tích hiện tượng quá áp thanh cái 35kV/110kV do dư thừa công suất phản kháng (Q) của tuyến cáp ngầm 35kV khi gió thấp hoặc sa thải phụ tải đột ngột trên lưới.</li>
-                                    <li><strong>Relay 59N / 64G (Quá áp thứ tự không 3U0):</strong> Chẩn đoán dịch chuyển điểm trung tính trên lưới 35kV trung tính cách ly/trở kháng cao khi chạm đất 1 pha tuyến cáp ngầm nối các tua-bin Goldwind.</li>
+                                    <li><strong>Relay 27 (27-1 / 27-2 / PTUV):</strong> LVRT / Undervoltage (TT 39/2015/TT-BCT).</li>
+                                    <li><strong>Relay 59 (59-1 / 59-2 / PTOV):</strong> HVRT / Overvoltage (35kV / 110kV).</li>
+                                    <li><strong>Relay 59N / 64G:</strong> Neutral Displacement ($3U_0$).</li>
                                 </ul>
                             </div>
                         </div>
 
                         <div class="pt-3 border-t border-slate-700 text-[11px] text-slate-400 flex justify-between">
-                            <span>Chuẩn mã bảo vệ: IEC 61850 / IEEE C37.2 (ANSI 27, 59, 59N) & TT 39/2015/TT-BCT</span>
+                            <span>IEC 61850 / IEEE C37.2 (ANSI 27, 59, 59N)</span>
                             <span>NMĐG V1-2 Trà Vinh</span>
                         </div>
                     </div>
@@ -582,8 +570,7 @@
 
         <!-- FOOTER -->
         <footer class="bg-slate-900 border-t border-slate-800 py-4 px-6 text-center text-xs text-slate-400">
-            <p>© 2026 <strong>TTTV_NMĐG V1-2 Trà Vinh</strong> | Địa chỉ: Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long.</p>
-            <p class="mt-1 text-slate-500">Thiết kế hệ thống bởi: <strong class="text-sky-400">Dep Do</strong></p>
+            <p>© 2026 <strong>TTTV_NMĐG V1-2 Trà Vinh</strong> | <span data-i18n="designed_by">Thiết kế bởi:</span> <strong class="text-sky-400">Dep Do</strong></p>
         </footer>
     </div>
 
@@ -593,11 +580,329 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
 
+        // ==================== HỆ THỐNG ĐA NGÔN NGỮ (VI / EN / TH) ====================
+        let currentLang = localStorage.getItem("tttv_lang") || "vi";
+
+        const I18N = {
+            vi: {
+                login_user_label: "Tài khoản vận hành",
+                login_user_ph: "Nhập tài khoản...",
+                login_pass_label: "Mật khẩu bảo mật",
+                login_pass_ph: "Nhập mật khẩu...",
+                login_err: "Sai tài khoản hoặc mật khẩu. Vui lòng kiểm tra lại!",
+                login_btn: "Đăng nhập hệ thống",
+                designed_by: "Thiết kế bởi:",
+                logout_btn: "Đăng xuất",
+                tab_turbines: "1. Turbines (Dự báo & Đánh giá chất lượng)",
+                tab_chatbot: "2. Chatbot Vận hành (Tài liệu + Tra cứu mở)",
+                tab_faults: "3. Phân tích sự cố (Ảnh nhiệt & Relay 27/59)",
+                subtab_forecast: "1.1 Dự báo công suất (12 Tọa độ, 15p/30p & Hiệu chỉnh ngắn hạn)",
+                subtab_health: "1.2 Đánh giá chất lượng 12 Turbines (Dynamic PC 4MW)",
+                windy_map_title: "Bản đồ gió Windy trực tiếp",
+                open_windy: "Mở web Windy",
+                forecast_model_title: "Mô hình Dự báo Công suất theo 12 Tọa độ (15 phút / 30 phút)",
+                btn_update_wind: "Cập nhật gió 12 tọa độ",
+                btn_export_excel: "Xuất Excel dự báo",
+                lbl_horizon: "Kỳ dự báo",
+                opt_d0: "Ngày D (Hôm nay)",
+                opt_d1: "Ngày D+1 (Ngày mai)",
+                opt_d2: "Ngày D+2 (Ngày mốt)",
+                opt_w1: "Tuần W+1 (7 ngày tới)",
+                lbl_step: "Bước chu kỳ thời gian",
+                opt_15m: "Chu kỳ 15 phút (96 điểm/ngày)",
+                opt_30m: "Chu kỳ 30 phút (48 điểm/ngày)",
+                lbl_avail_wtg: "Số tua-bin khả dụng",
+                lbl_windy_file: "Nạp file gió Windy",
+                choose_file: "Chọn file...",
+                nowcast_title: "Hiệu chỉnh ngắn hạn (Nowcasting từ số liệu SCADA thực tế Ngày D)",
+                nowcast_inactive: "Chưa hiệu chỉnh",
+                lbl_nowcast_wind: "Gió Hub thực tế hiện tại (m/s)",
+                lbl_nowcast_power: "Hoặc CS phát thực tế (MW)",
+                lbl_nowcast_hours: "Thời gian hiệu chỉnh",
+                opt_2h: "2 giờ tới",
+                opt_4h: "4 giờ tới",
+                opt_6h: "6 giờ tới",
+                btn_apply_nowcast: "Hiệu chỉnh",
+                wtg_list_title: "Danh sách Tốc độ gió & Công suất dự báo từng Tua-bin (WTG01 – WTG12)",
+                lbl_timeslot: "Mốc thời gian hiển thị:",
+                th_wind_speed: "Tốc độ gió (m/s)",
+                th_forecast_power_kw: "Công suất dự báo (kW)",
+                th_time: "Thời điểm",
+                th_avg_wind: "Gió TB (m/s)",
+                th_total_power: "CS Tổng (MW)",
+                th_energy: "Sản lượng (MWh)",
+                kpi_energy: "Tổng sản lượng dự báo",
+                kpi_pmax: "Công suất cực đại (Pmax)",
+                kpi_wind: "Tốc độ gió TB (12 WTG)",
+                kpi_cf: "Hệ số công suất (CF)",
+                row_avg_total: "Trung bình / Tổng 12 WTG",
+                avg_prefix: "TB:",
+                total_prefix: "Tổng:",
+                avg_period_opt: "Trung bình toàn kỳ",
+                health_title: "Đánh giá chất lượng 12 Turbines (Dữ liệu SCADA 3 tháng - Chu kỳ 10 phút)",
+                choose_scada_file: "Chọn file dữ liệu SCADA (.CSV/.XLSX)...",
+                btn_analyze: "Phân tích dữ liệu",
+                status_good: "Tốt",
+                status_warn: "Theo dõi",
+                status_crit: "Cảnh báo",
+                doc_repo_title: "Kho tài liệu Nhà máy",
+                upload_doc_lbl: "Chọn file PDF, DOCX, XLSX, TXT",
+                uploaded_docs_lbl: "Tài liệu đã nạp:",
+                no_manual_file: "Chưa nạp file thủ công",
+                chatbot_header: "Trợ lý Kỹ thuật Vận hành NMĐG V1-2",
+                clear_chat: "Làm mới chat",
+                chat_welcome: "Xin chào kỹ sư vận hành! Tôi là trợ lý kỹ thuật của NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW).",
+                chat_ph: "Nhập câu hỏi kỹ thuật hoặc nội dung cần tìm...",
+                send_btn: "Gửi",
+                subtab_thermal: "3.1 Phân tích ảnh quét nhiệt (35kV / 110kV)",
+                subtab_relay: "3.2 Phân tích file sự cố (Relay 27/59 Siemens SIPROTEC, ABB...)",
+                thermal_title: "Quét nhiệt thiết bị 35kV / 110kV",
+                upload_thermal_lbl: "Tải lên ảnh chụp Camera nhiệt (FLIR / Testo / Hikmicro)",
+                lbl_voltage: "Cấp điện áp",
+                lbl_equip: "Loại thiết bị",
+                lbl_t1: "Nhiệt độ điểm nóng T1 (°C)",
+                lbl_t2: "Nhiệt độ đối chiếu T2 (°C)",
+                btn_eval_thermal: "Đánh giá rủi ro sự cố & Phương án xử lý",
+                thermal_result_title: "Kết quả đánh giá rủi ro & Phương án xử lý",
+                relay_title: "Nạp bản ghi sự cố Rơ-le 27 / 59",
+                lbl_relay_vendor: "Hãng / Dòng Rơ-le bảo vệ",
+                lbl_relay_bay: "Ngăn lộ / Điểm đo điện áp (TU)",
+                choose_relay_file: "Chọn file Fault Report / COMTRADE (.txt, .csv, .cfg)",
+                sample_27: "Mẫu Relay 27 (Kém áp)",
+                sample_59: "Mẫu Relay 59/59N (Quá áp)",
+                lbl_relay_raw: "Nội dung bản ghi sự cố:",
+                btn_analyze_relay: "Phân tích sự cố Relay 27 / 59 & Đề xuất xử lý",
+                relay_guide_title: "Chẩn đoán chuyên sâu Rơ-le 27 & 59 tại NMĐG V1-2"
+            },
+            en: {
+                login_user_label: "Operator Username",
+                login_user_ph: "Enter username...",
+                login_pass_label: "Security Password",
+                login_pass_ph: "Enter password...",
+                login_err: "Invalid username or password. Please try again!",
+                login_btn: "Login to System",
+                designed_by: "Designed by:",
+                logout_btn: "Logout",
+                tab_turbines: "1. Turbines (Forecast & Health Assessment)",
+                tab_chatbot: "2. Operation Chatbot (Docs + Open Search)",
+                tab_faults: "3. Fault Analysis (Thermal & Relay 27/59)",
+                subtab_forecast: "1.1 Power Forecast (12 Coords, 15m/30m & Nowcasting)",
+                subtab_health: "1.2 12 Turbines Health Assessment (Dynamic PC 4MW)",
+                windy_map_title: "Live Windy Wind Map",
+                open_windy: "Open Windy Web",
+                forecast_model_title: "Power Forecast Model by 12 Coordinates (15-min / 30-min)",
+                btn_update_wind: "Update 12-Coord Wind",
+                btn_export_excel: "Export Forecast Excel",
+                lbl_horizon: "Forecast Horizon",
+                opt_d0: "Day D (Today)",
+                opt_d1: "Day D+1 (Tomorrow)",
+                opt_d2: "Day D+2 (Day After)",
+                opt_w1: "Week W+1 (Next 7 Days)",
+                lbl_step: "Time Resolution",
+                opt_15m: "15-min Interval (96 pts/day)",
+                opt_30m: "30-min Interval (48 pts/day)",
+                lbl_avail_wtg: "Available Turbines",
+                lbl_windy_file: "Upload Windy File",
+                choose_file: "Choose file...",
+                nowcast_title: "Short-Term Correction (Nowcasting from Live SCADA Day D)",
+                nowcast_inactive: "Not Adjusted",
+                lbl_nowcast_wind: "Actual Hub Wind Speed (m/s)",
+                lbl_nowcast_power: "Or Actual Active Power (MW)",
+                lbl_nowcast_hours: "Correction Horizon",
+                opt_2h: "Next 2 hours",
+                opt_4h: "Next 4 hours",
+                opt_6h: "Next 6 hours",
+                btn_apply_nowcast: "Apply",
+                wtg_list_title: "Wind Speed & Forecast Power List by Turbine (WTG01 – WTG12)",
+                lbl_timeslot: "Display Time Slot:",
+                th_wind_speed: "Wind Speed (m/s)",
+                th_forecast_power_kw: "Forecast Power (kW)",
+                th_time: "Timestamp",
+                th_avg_wind: "Avg Wind (m/s)",
+                th_total_power: "Total Power (MW)",
+                th_energy: "Energy (MWh)",
+                kpi_energy: "Total Forecast Energy",
+                kpi_pmax: "Peak Power (Pmax)",
+                kpi_wind: "Average Wind (12 WTG)",
+                kpi_cf: "Capacity Factor (CF)",
+                row_avg_total: "Average / Total (12 WTG)",
+                avg_prefix: "Avg:",
+                total_prefix: "Total:",
+                avg_period_opt: "Period Average",
+                health_title: "12 Turbines Health Assessment (3-Month 10-min SCADA Data)",
+                choose_scada_file: "Select SCADA Data File (.CSV/.XLSX)...",
+                btn_analyze: "Analyze Data",
+                status_good: "Healthy",
+                status_warn: "Monitor",
+                status_crit: "Warning",
+                doc_repo_title: "Plant Document Repository",
+                upload_doc_lbl: "Select PDF, DOCX, XLSX, TXT files",
+                uploaded_docs_lbl: "Loaded Documents:",
+                no_manual_file: "No manual files loaded",
+                chatbot_header: "NMĐG V1-2 Operation Technical Assistant",
+                clear_chat: "Clear Chat",
+                chat_welcome: "Hello Operator! I am the technical assistant for NMĐG V1-2 Tra Vinh Wind Farm (48 MW - 12 x 4 MW Goldwind).",
+                chat_ph: "Enter technical question or document search query...",
+                send_btn: "Send",
+                subtab_thermal: "3.1 Thermal Imaging Analysis (35kV / 110kV)",
+                subtab_relay: "3.2 Relay Fault Analysis (Relay 27/59 Siemens SIPROTEC, ABB...)",
+                thermal_title: "35kV / 110kV Equipment Thermography",
+                upload_thermal_lbl: "Upload Thermal Camera Image (FLIR / Testo / Hikmicro)",
+                lbl_voltage: "Voltage Level",
+                lbl_equip: "Equipment Type",
+                lbl_t1: "Hotspot Temp T1 (°C)",
+                lbl_t2: "Reference Temp T2 (°C)",
+                btn_eval_thermal: "Evaluate Fault Risk & Action Plan",
+                thermal_result_title: "Risk Assessment & Action Plan",
+                relay_title: "Upload Relay 27 / 59 Fault Record",
+                lbl_relay_vendor: "Protection Relay Brand / Series",
+                lbl_relay_bay: "Bay / Voltage Transformer (VT)",
+                choose_relay_file: "Select Fault Report / COMTRADE (.txt, .csv, .cfg)",
+                sample_27: "Sample Relay 27 (UV)",
+                sample_59: "Sample Relay 59/59N (OV)",
+                lbl_relay_raw: "Fault Record Content:",
+                btn_analyze_relay: "Analyze Relay 27 / 59 Fault & Action Plan",
+                relay_guide_title: "Relay 27 & 59 Protection Diagnostics at NMĐG V1-2"
+            },
+            th: {
+                login_user_label: "บัญชีผู้ปฏิบัติงาน",
+                login_user_ph: "กรอกชื่อผู้ใช้...",
+                login_pass_label: "รหัสผ่านความปลอดภัย",
+                login_pass_ph: "กรอกรหัสผ่าน...",
+                login_err: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง!",
+                login_btn: "เข้าสู่ระบบ",
+                designed_by: "ออกแบบโดย:",
+                logout_btn: "ออกจากระบบ",
+                tab_turbines: "1. กังหันลม (พยากรณ์กำลังผลิต & ประเมินคุณภาพ)",
+                tab_chatbot: "2. แชทบอทปฏิบัติการ (เอกสาร + ค้นหาข้อมูล)",
+                tab_faults: "3. วิเคราะห์เหตุขัดข้อง (ภาพถ่ายความร้อน & รีเลย์ 27/59)",
+                subtab_forecast: "1.1 พยากรณ์กำลังผลิต (12 พิกัด, 15/30 นาที & ปรับแก้ระยะสั้น)",
+                subtab_health: "1.2 ประเมินคุณภาพกังหันลม 12 ต้น (Dynamic PC 4MW)",
+                windy_map_title: "แผนที่ลม Windy แบบเรียลไทม์",
+                open_windy: "เปิดเว็บ Windy",
+                forecast_model_title: "แบบจำลองพยากรณ์กำลังผลิตตาม 12 พิกัด (15 / 30 นาที)",
+                btn_update_wind: "อัปเดตลม 12 พิกัด",
+                btn_export_excel: "ส่งออก Excel พยากรณ์",
+                lbl_horizon: "ช่วงเวลาพยากรณ์",
+                opt_d0: "วัน D (วันนี้)",
+                opt_d1: "วัน D+1 (พรุ่งนี้)",
+                opt_d2: "วัน D+2 (มะรืนนี้)",
+                opt_w1: "สัปดาห์ W+1 (7 วันข้างหน้า)",
+                lbl_step: "ความละเอียดช่วงเวลา",
+                opt_15m: "ทุก 15 นาที (96 ช่วง/วัน)",
+                opt_30m: "ทุก 30 นาที (48 ช่วง/วัน)",
+                lbl_avail_wtg: "จำนวนกังหันที่พร้อมใช้งาน",
+                lbl_windy_file: "นำเข้าไฟล์ลม Windy",
+                choose_file: "เลือกไฟล์...",
+                nowcast_title: "การปรับแก้ระยะสั้น (Nowcasting จากค่า SCADA จริง วัน D)",
+                nowcast_inactive: "ยังไม่ได้ปรับแก้",
+                lbl_nowcast_wind: "ความเร็วลมจริงที่ Hub ปัจจุบัน (m/s)",
+                lbl_nowcast_power: "หรือกำลังผลิตจริงปัจจุบัน (MW)",
+                lbl_nowcast_hours: "ระยะเวลาปรับแก้",
+                opt_2h: "2 ชั่วโมงข้างหน้า",
+                opt_4h: "4 ชั่วโมงข้างหน้า",
+                opt_6h: "6 ชั่วโมงข้างหน้า",
+                btn_apply_nowcast: "ปรับแก้",
+                wtg_list_title: "รายการความเร็วลมและกำลังผลิตพยากรณ์รายต้น (WTG01 – WTG12)",
+                lbl_timeslot: "เลือกช่วงเวลาที่แสดง:",
+                th_wind_speed: "ความเร็วลม (m/s)",
+                th_forecast_power_kw: "กำลังผลิตพยากรณ์ (kW)",
+                th_time: "เวลา",
+                th_avg_wind: "ลมเฉลี่ย (m/s)",
+                th_total_power: "กำลังผลิตรวม (MW)",
+                th_energy: "พลังงานไฟฟ้า (MWh)",
+                kpi_energy: "พลังงานไฟฟ้าพยากรณ์รวม",
+                kpi_pmax: "กำลังผลิตสูงสุด (Pmax)",
+                kpi_wind: "ความเร็วลมเฉลี่ย (12 WTG)",
+                kpi_cf: "ตัวประกอบกำลังผลิต (CF)",
+                row_avg_total: "เฉลี่ย / รวม 12 WTG",
+                avg_prefix: "เฉลี่ย:",
+                total_prefix: "รวม:",
+                avg_period_opt: "ค่าเฉลี่ยตลอดช่วงเวลา",
+                health_title: "ประเมินคุณภาพกังหันลม 12 ต้น (ข้อมูล SCADA 3 เดือน - ทุก 10 นาที)",
+                choose_scada_file: "เลือกไฟล์ข้อมูล SCADA (.CSV/.XLSX)...",
+                btn_analyze: "วิเคราะห์ข้อมูล",
+                status_good: "ปกติ",
+                status_warn: "เฝ้าระวัง",
+                status_crit: "แจ้งเตือน",
+                doc_repo_title: "คลังเอกสารโรงไฟฟ้า",
+                upload_doc_lbl: "เลือกไฟล์ PDF, DOCX, XLSX, TXT",
+                uploaded_docs_lbl: "เอกสารที่นำเข้าแล้ว:",
+                no_manual_file: "ยังไม่ได้นำเข้าไฟล์เอกสาร",
+                chatbot_header: "ผู้ช่วยเทคนิคปฏิบัติการโรงไฟฟ้า NMĐG V1-2",
+                clear_chat: "ล้างแชท",
+                chat_welcome: "สวัสดีวิศวกรปฏิบัติการ! ฉันคือผู้ช่วยด้านเทคนิคของโรงไฟฟ้าพลังงานลม NMĐG V1-2 ตร่าวิญ (48 MW - Goldwind 4 MW จำนวน 12 ต้น)",
+                chat_ph: "พิมพ์คำถามทางเทคนิคหรือค้นหาในเอกสาร...",
+                send_btn: "ส่ง",
+                subtab_thermal: "3.1 วิเคราะห์ภาพถ่ายความร้อน (35kV / 110kV)",
+                subtab_relay: "3.2 วิเคราะห์ไฟล์เหตุขัดข้อง (รีเลย์ 27/59 Siemens SIPROTEC, ABB...)",
+                thermal_title: "ตรวจสอบความร้อนอุปกรณ์ 35kV / 110kV",
+                upload_thermal_lbl: "อัปโหลดภาพจากกล้องถ่ายภาพความร้อน (FLIR / Testo / Hikmicro)",
+                lbl_voltage: "ระดับแรงดันไฟฟ้า",
+                lbl_equip: "ประเภทอุปกรณ์",
+                lbl_t1: "อุณหภูมิจุดร้อนสุด T1 (°C)",
+                lbl_t2: "อุณหภูมิอ้างอิง T2 (°C)",
+                btn_eval_thermal: "ประเมินความเสี่ยงและแนวทางแก้ไข",
+                thermal_result_title: "ผลการประเมินความเสี่ยงและแนวทางแก้ไข",
+                relay_title: "นำเข้าบันทึกเหตุการณ์รีเลย์ 27 / 59",
+                lbl_relay_vendor: "ยี่ห้อ / รุ่นรีเลย์ป้องกัน",
+                lbl_relay_bay: "ช่องสายส่ง / หม้อแปลงแรงดัน (VT)",
+                choose_relay_file: "เลือกไฟล์ Fault Report / COMTRADE (.txt, .csv, .cfg)",
+                sample_27: "ตัวอย่างรีเลย์ 27 (แรงดันต่ำ)",
+                sample_59: "ตัวอย่างรีเลย์ 59/59N (แรงดันเกิน)",
+                lbl_relay_raw: "เนื้อหาบันทึกเหตุขัดข้อง:",
+                btn_analyze_relay: "วิเคราะห์เหตุขัดข้องรีเลย์ 27 / 59 และแนวทางแก้ไข",
+                relay_guide_title: "การวินิจฉัยรีเลย์ป้องกัน 27 และ 59 ที่ NMĐG V1-2"
+            }
+        };
+
+        function t(key) {
+            return (I18N[currentLang] && I18N[currentLang][key]) || I18N.vi[key] || key;
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem("tttv_lang", lang);
+
+            // Cập nhật trạng thái nút VI / EN / TH
+            ['vi', 'en', 'th'].forEach(l => {
+                document.querySelectorAll(`.lang-btn-${l}`).forEach(btn => {
+                    if (l === lang) {
+                        btn.classList.add('lang-active');
+                        btn.classList.remove('text-slate-300', 'bg-slate-800');
+                    } else {
+                        btn.classList.remove('lang-active');
+                        btn.classList.add('text-slate-300', 'bg-slate-800');
+                    }
+                });
+            });
+
+            // Dịch các thẻ văn bản tĩnh
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (I18N[lang][key]) el.innerText = I18N[lang][key];
+            });
+
+            // Dịch các placeholder
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                const key = el.getAttribute('data-i18n-ph');
+                if (I18N[lang][key]) el.placeholder = I18N[lang][key];
+            });
+
+            // Cập nhật lại các thành phần động nếu đã khởi tạo
+            if (isInitialized) {
+                renderForecastView();
+                renderTurbines();
+                selectTurbine(selectedTurbineIndex);
+            }
+        }
+
         // ==================== 1. ĐĂNG NHẬP ====================
         const VALID_USER = "nmdgv12travinh";
         const VALID_PASS = "21102021";
 
         function checkAuth() {
+            setLanguage(currentLang);
             if (sessionStorage.getItem("tttv_v12_auth") === "true") {
                 document.getElementById("login-screen").classList.add("hidden");
                 document.getElementById("app-container").classList.remove("hidden");
@@ -734,7 +1039,7 @@
 
         async function fetchLiveWindForecast() {
             const btn = document.getElementById('btn-fetch-wind');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang tải gió 12 tọa độ...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> ...';
             try {
                 const lats = TURBINE_COORDS.map(c => c.lat).join(",");
                 const lons = TURBINE_COORDS.map(c => c.lon).join(",");
@@ -743,7 +1048,7 @@
                 const data = await res.json();
 
                 const locArray = Array.isArray(data) ? data : [data];
-                if (!locArray[0]?.hourly?.time) throw new Error("Không lấy được dữ liệu gió cho 12 tọa độ");
+                if (!locArray[0]?.hourly?.time) throw new Error("API Error");
 
                 const now = new Date();
                 const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -773,14 +1078,12 @@
 
                 if (newSeries.length > 0) {
                     baseForecast15Min = newSeries;
-                    document.getElementById('forecast-source-note').innerText = "Nguồn dữ liệu: Cập nhật trực tuyến ECMWF/GFS theo 12 tọa độ thực tế WTG01–WTG12 (100m Hub)";
                     renderForecastView();
-                    alert(`Đã cập nhật thành công danh sách tốc độ gió cho cả 12 tọa độ WTG01–WTG12 (${newSeries.length} chu kỳ 15 phút)!`);
                 }
             } catch (e) {
-                alert("Không thể kết nối máy chủ thời tiết trực tuyến (" + e.message + ").");
+                alert(e.message);
             } finally {
-                btn.innerHTML = '<i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> Cập nhật gió 12 tọa độ';
+                btn.innerHTML = `<i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> <span>${t('btn_update_wind')}</span>`;
             }
         }
 
@@ -810,12 +1113,11 @@
                     });
                     if (rawPoints.length > 0) {
                         baseForecast15Min = rawPoints;
-                        document.getElementById('forecast-source-note').innerText = `Nguồn dữ liệu: File Windy tải lên (${file.name} - ${rawPoints.length} điểm)`;
                         renderForecastView();
                     }
                 }
             } catch (err) {
-                alert("Lỗi đọc file Windy: " + err.message);
+                alert(err.message);
             }
         }
 
@@ -832,7 +1134,6 @@
                 targetWind = estimateWindFromPlantPower(powerInput, availWtg);
                 document.getElementById('nowcast-wind').value = targetWind;
             } else {
-                alert("Vui lòng nhập Tốc độ gió Hub thực tế (m/s) hoặc Công suất phát thực tế (MW) hiện tại!");
                 return;
             }
 
@@ -847,7 +1148,7 @@
             const mm = String(nowcastState.timestamp.getMinutes()).padStart(2, '0');
             const badge = document.getElementById('nowcast-badge');
             badge.className = "text-[11px] px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-semibold";
-            badge.innerHTML = `<i class="fa-solid fa-check mr-1"></i>Đang hiệu chỉnh từ ${hh}:${mm} (${targetWind} m/s trong ${hours}h tới)`;
+            badge.innerHTML = `<i class="fa-solid fa-check mr-1"></i>${hh}:${mm} (${targetWind} m/s | ${hours}h)`;
 
             document.getElementById('forecast-horizon').value = 'D0';
             renderForecastView();
@@ -859,7 +1160,7 @@
             document.getElementById('nowcast-power').value = "";
             const badge = document.getElementById('nowcast-badge');
             badge.className = "text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-600";
-            badge.innerText = "Chưa hiệu chỉnh";
+            badge.innerText = t('nowcast_inactive');
             renderForecastView();
         }
 
@@ -908,16 +1209,16 @@
             let horizonLabel = "";
             if (horizon === 'D0') {
                 sliceData = seriesByStep.slice(0, ptsPerDay);
-                horizonLabel = `Ngày D - Hôm nay (${ptsPerDay} chu kỳ ${stepMin} phút)`;
+                horizonLabel = `${t('opt_d0')} (${ptsPerDay} × ${stepMin}m)`;
             } else if (horizon === 'D1') {
                 sliceData = seriesByStep.slice(ptsPerDay, ptsPerDay * 2);
-                horizonLabel = `Ngày D+1 - Ngày mai (${ptsPerDay} chu kỳ ${stepMin} phút)`;
+                horizonLabel = `${t('opt_d1')} (${ptsPerDay} × ${stepMin}m)`;
             } else if (horizon === 'D2') {
                 sliceData = seriesByStep.slice(ptsPerDay * 2, ptsPerDay * 3);
-                horizonLabel = `Ngày D+2 - Ngày mốt (${ptsPerDay} chu kỳ ${stepMin} phút)`;
+                horizonLabel = `${t('opt_d2')} (${ptsPerDay} × ${stepMin}m)`;
             } else {
                 sliceData = seriesByStep.slice(ptsPerDay, ptsPerDay * 8);
-                horizonLabel = `Tuần W+1 - 7 ngày tới (${ptsPerDay * 7} chu kỳ ${stepMin} phút)`;
+                horizonLabel = `${t('opt_w1')} (${ptsPerDay * 7} × ${stepMin}m)`;
             }
 
             let totalEnergyMWh = 0;
@@ -958,8 +1259,8 @@
 
             const slotSelect = document.getElementById('wtg-list-timeslot');
             const prevSlot = slotSelect.value;
-            slotSelect.innerHTML = `<option value="AVG">Trung bình toàn kỳ (${horizonLabel})</option>` +
-                computed.map((c, idx) => `<option value="${idx}">${c.fullTime} (Gió TB: ${c.wind} m/s)</option>`).join('');
+            slotSelect.innerHTML = `<option value="AVG">${t('avg_period_opt')} (${horizonLabel})</option>` +
+                computed.map((c, idx) => `<option value="${idx}">${c.fullTime} (${c.wind} m/s)</option>`).join('');
             if (prevSlot && (prevSlot === 'AVG' || parseInt(prevSlot) < computed.length)) {
                 slotSelect.value = prevSlot;
             }
@@ -970,25 +1271,25 @@
 
             document.getElementById('forecast-kpi-cards').innerHTML = `
                 <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
-                    <div class="text-[11px] text-slate-400">Tổng sản lượng dự báo</div>
+                    <div class="text-[11px] text-slate-400">${t('kpi_energy')}</div>
                     <div class="text-lg font-bold text-emerald-400">${totalEnergyMWh.toFixed(1)} MWh</div>
                 </div>
                 <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
-                    <div class="text-[11px] text-slate-400">Công suất cực đại (Pmax)</div>
+                    <div class="text-[11px] text-slate-400">${t('kpi_pmax')}</div>
                     <div class="text-lg font-bold text-sky-400">${maxPowerMW.toFixed(2)} MW</div>
                 </div>
                 <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
-                    <div class="text-[11px] text-slate-400">Tốc độ gió TB (12 WTG)</div>
+                    <div class="text-[11px] text-slate-400">${t('kpi_wind')}</div>
                     <div class="text-lg font-bold text-amber-400">${avgWind} m/s</div>
                 </div>
                 <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
-                    <div class="text-[11px] text-slate-400">Hệ số công suất (CF)</div>
+                    <div class="text-[11px] text-slate-400">${t('kpi_cf')}</div>
                     <div class="text-lg font-bold text-white">${capacityFactor}%</div>
                 </div>
             `;
 
-            document.getElementById('forecast-chart-title').innerText = `Biểu đồ Dự báo Công suất (MW) & Tốc độ gió TB 12 WTG (m/s) - ${horizonLabel}`;
-            document.getElementById('forecast-table-heading').innerText = `Bảng số liệu từng chu kỳ ${stepMin} phút (${computed.length} chu kỳ)`;
+            document.getElementById('forecast-chart-title').innerText = `${horizonLabel}`;
+            document.getElementById('forecast-table-heading').innerText = `${stepMin}m (${computed.length})`;
 
             const tbody = document.getElementById('forecast-table-body');
             tbody.innerHTML = computed.map(r => `
@@ -1008,7 +1309,7 @@
                     labels: computed.map(c => c.label),
                     datasets: [
                         {
-                            label: 'Công suất dự báo NMĐG V1-2 (MW)',
+                            label: 'MW',
                             data: computed.map(c => c.powerMW),
                             borderColor: '#38bdf8',
                             backgroundColor: 'rgba(56, 189, 248, 0.15)',
@@ -1018,7 +1319,7 @@
                             pointRadius: (horizon === 'W1' || stepMin === 15) ? 0 : 2
                         },
                         {
-                            label: 'Tốc độ gió TB 12 tọa độ (m/s)',
+                            label: 'm/s',
                             data: computed.map(c => c.wind),
                             borderColor: '#fbbf24',
                             borderDash: [4, 4],
@@ -1036,14 +1337,13 @@
                     plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } },
                     scales: {
                         x: { ticks: { color: '#94a3b8', maxTicksLimit: 16 }, grid: { color: '#334155' } },
-                        y: { type: 'linear', position: 'left', min: 0, max: 50, ticks: { color: '#38bdf8' }, grid: { color: '#334155' }, title: { display: true, text: 'Công suất (MW)', color: '#38bdf8', font: { size: 10 } } },
-                        y1: { type: 'linear', position: 'right', min: 0, max: 20, ticks: { color: '#fbbf24' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Tốc độ gió (m/s)', color: '#fbbf24', font: { size: 10 } } }
+                        y: { type: 'linear', position: 'left', min: 0, max: 50, ticks: { color: '#38bdf8' }, grid: { color: '#334155' }, title: { display: true, text: 'MW', color: '#38bdf8', font: { size: 10 } } },
+                        y1: { type: 'linear', position: 'right', min: 0, max: 20, ticks: { color: '#fbbf24' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'm/s', color: '#fbbf24', font: { size: 10 } } }
                     }
                 }
             });
         }
 
-        // Bảng 3 cột gọn: WTG | Tốc độ gió (m/s) | Công suất dự báo (kW) + Hàng Tốc độ gió trung bình
         function render12WtgWindList() {
             const computed = window.currentComputedForecast || [];
             if (computed.length === 0) return;
@@ -1093,9 +1393,9 @@
             const avgWind12 = sumWind12 / 12;
             tfoot.innerHTML = `
                 <tr>
-                    <td class="p-2.5 text-emerald-400">Trung bình / Tổng 12 WTG</td>
-                    <td class="p-2.5 text-amber-300">TB: ${avgWind12.toFixed(2)} m/s</td>
-                    <td class="p-2.5 text-sky-400">Tổng: ${sumPower12KW.toFixed(1)} kW (${(sumPower12KW / 1000).toFixed(2)} MW)</td>
+                    <td class="p-2.5 text-emerald-400">${t('row_avg_total')}</td>
+                    <td class="p-2.5 text-amber-300">${t('avg_prefix')} ${avgWind12.toFixed(2)} m/s</td>
+                    <td class="p-2.5 text-sky-400">${t('total_prefix')} ${sumPower12KW.toFixed(1)} kW (${(sumPower12KW / 1000).toFixed(2)} MW)</td>
                 </tr>
             `;
         }
@@ -1106,47 +1406,47 @@
             const stepMin = document.getElementById('forecast-step').value;
 
             const wsSummaryData = window.currentComputedForecast.map((r, i) => ({
-                "Chu kỳ": i + 1,
-                [`Thời điểm (${stepMin} phút)`]: r.fullTime,
-                "Tốc độ gió TB 12 WTG (m/s)": r.wind,
-                "Công suất dự báo tổng (MW)": r.powerMW,
-                "Sản lượng dự báo (MWh)": r.energyMWh
+                "No": i + 1,
+                [`Time (${stepMin}m)`]: r.fullTime,
+                "Avg_Wind (m/s)": r.wind,
+                "Total_Power (MW)": r.powerMW,
+                "Energy (MWh)": r.energyMWh
             }));
 
             const wsDetail12Data = window.currentComputedForecast.map((r, i) => {
                 const rowObj = {
-                    "Chu kỳ": i + 1,
-                    [`Thời điểm (${stepMin} phút)`]: r.fullTime,
-                    "Gio_TB_12_WTG (m/s)": r.wind
+                    "No": i + 1,
+                    [`Time (${stepMin}m)`]: r.fullTime,
+                    "Avg_Wind_12WTG (m/s)": r.wind
                 };
                 TURBINE_COORDS.forEach((c, idx) => {
-                    rowObj[`${c.id}_Gio (m/s)`] = r.winds12[idx];
-                    rowObj[`${c.id}_CS (kW)`] = parseFloat(r.powers12KW[idx].toFixed(1));
+                    rowObj[`${c.id}_Wind (m/s)`] = r.winds12[idx];
+                    rowObj[`${c.id}_Power (kW)`] = parseFloat(r.powers12KW[idx].toFixed(1));
                 });
                 return rowObj;
             });
 
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wsSummaryData), `TongHop_${horizon}_${stepMin}p`);
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wsDetail12Data), `ChiTiet_12_WTG`);
-            XLSX.writeFile(wb, `DuBao_12Turbines_NMDG_V1-2_${horizon}_${stepMin}phut.xlsx`);
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wsSummaryData), `Summary_${horizon}_${stepMin}m`);
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wsDetail12Data), `Detail_12_WTG`);
+            XLSX.writeFile(wb, `Forecast_12WTG_NMDG_V1-2_${horizon}_${stepMin}m.xlsx`);
         }
 
         // ==================== 2.2 ĐÁNH GIÁ CHẤT LƯỢNG 12 TURBINES ====================
         const CHART_WIND_AXIS = [2.5, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24];
         let turbinesData = [
-            { id: 'WTG01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', samples: 12960, actualCurve: null, note: 'Tua-bin vận hành ổn định, bám sát đường cong Dynamic PC 4MW.' },
-            { id: 'WTG02', score: 94, status: 'good', dev: '-1.5%', temp: '65.1 °C', pitch: '0.12°', samples: 12960, actualCurve: null, note: 'Hiệu suất phát đạt chuẩn.' },
-            { id: 'WTG03', score: 78, status: 'warn', dev: '-5.8%', temp: '73.2 °C', pitch: '0.85°', samples: 12960, actualCurve: null, note: 'Sai lệch góc Pitch cánh số 2 và nhiệt độ ổ trục tăng nhẹ. Cần kiểm tra bộ điều khiển Pitch.' },
-            { id: 'WTG04', score: 95, status: 'good', dev: '-1.1%', temp: '63.8 °C', pitch: '0.10°', samples: 12960, actualCurve: null, note: 'Vận hành bình thường.' },
-            { id: 'WTG05', score: 92, status: 'good', dev: '-2.0%', temp: '66.0 °C', pitch: '0.18°', samples: 12960, actualCurve: null, note: 'Hoạt động tốt ở dải gió cao.' },
-            { id: 'WTG06', score: 65, status: 'crit', dev: '-9.4%', temp: '81.5 °C', pitch: '1.40°', samples: 12960, actualCurve: null, note: 'CẢNH BÁO: Công suất suy giảm >9% ở tốc độ gió 10m/s, nhiệt độ ổ trục máy phát cao. Cần dừng máy kiểm tra làm mát.' },
-            { id: 'WTG07', score: 97, status: 'good', dev: '-0.8%', temp: '62.9 °C', pitch: '0.09°', samples: 12960, actualCurve: null, note: 'Hiệu suất cao nhất toàn nhà máy.' },
-            { id: 'WTG08', score: 91, status: 'good', dev: '-2.3%', temp: '66.4 °C', pitch: '0.20°', samples: 12960, actualCurve: null, note: 'Vận hành bình thường.' },
-            { id: 'WTG09', score: 82, status: 'warn', dev: '-4.9%', temp: '71.0 °C', pitch: '0.45°', samples: 12960, actualCurve: null, note: 'Công suất giảm nhẹ buổi trưa do nhiệt độ Nacelle cao.' },
-            { id: 'WTG10', score: 95, status: 'good', dev: '-1.3%', temp: '64.2 °C', pitch: '0.14°', samples: 12960, actualCurve: null, note: 'Vận hành ổn định.' },
-            { id: 'WTG11', score: 93, status: 'good', dev: '-1.7%', temp: '65.5 °C', pitch: '0.16°', samples: 12960, actualCurve: null, note: 'Vận hành ổn định.' },
-            { id: 'WTG12', score: 94, status: 'good', dev: '-1.4%', temp: '64.8 °C', pitch: '0.11°', samples: 12960, actualCurve: null, note: 'Vận hành ổn định.' }
+            { id: 'WTG01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK.' },
+            { id: 'WTG02', score: 94, status: 'good', dev: '-1.5%', temp: '65.1 °C', pitch: '0.12°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK.' },
+            { id: 'WTG03', score: 78, status: 'warn', dev: '-5.8%', temp: '73.2 °C', pitch: '0.85°', samples: 12960, actualCurve: null, note: 'Pitch angle deviation & bearing temp slightly high.' },
+            { id: 'WTG04', score: 95, status: 'good', dev: '-1.1%', temp: '63.8 °C', pitch: '0.10°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK.' },
+            { id: 'WTG05', score: 92, status: 'good', dev: '-2.0%', temp: '66.0 °C', pitch: '0.18°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK.' },
+            { id: 'WTG06', score: 65, status: 'crit', dev: '-9.4%', temp: '81.5 °C', pitch: '1.40°', samples: 12960, actualCurve: null, note: 'WARNING: Power drop >9% at 10m/s, high generator bearing temp.' },
+            { id: 'WTG07', score: 97, status: 'good', dev: '-0.8%', temp: '62.9 °C', pitch: '0.09°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK.' },
+            { id: 'WTG08', score: 91, status: 'good', dev: '-2.3%', temp: '66.4 °C', pitch: '0.20°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK.' },
+            { id: 'WTG09', score: 82, status: 'warn', dev: '-4.9%', temp: '71.0 °C', pitch: '0.45°', samples: 12960, actualCurve: null, note: 'Slight derating at high ambient temp.' },
+            { id: 'WTG10', score: 95, status: 'good', dev: '-1.3%', temp: '64.2 °C', pitch: '0.14°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK.' },
+            { id: 'WTG11', score: 93, status: 'good', dev: '-1.7%', temp: '65.5 °C', pitch: '0.16°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK.' },
+            { id: 'WTG12', score: 94, status: 'good', dev: '-1.4%', temp: '64.8 °C', pitch: '0.11°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK.' }
         ];
 
         let powerChart = null;
@@ -1192,7 +1492,7 @@
                         <div class="flex justify-between items-center text-[11px]">
                             <span class="text-slate-400">4.0 MW</span>
                             <span class="px-2 py-0.5 rounded ${badgeColor} font-medium">
-                                ${wtg.status === 'good' ? 'Tốt' : (wtg.status === 'warn' ? 'Theo dõi' : 'Cảnh báo')}
+                                ${wtg.status === 'good' ? t('status_good') : (wtg.status === 'warn' ? t('status_warn') : t('status_crit'))}
                             </span>
                         </div>
                     </div>
@@ -1203,18 +1503,17 @@
         function selectTurbine(index) {
             selectedTurbineIndex = index;
             const wtg = turbinesData[index];
-            document.getElementById('chart-title').innerText = `Đường cong công suất thực tế vs Dynamic PC 4MW (${wtg.id})`;
-            document.getElementById('chart-subtitle').innerText = `Tổng hợp từ ${wtg.samples.toLocaleString()} bản ghi SCADA (chu kỳ 10 phút)`;
-            document.getElementById('detail-wtg-name').innerText = `Chi tiết đánh giá: ${wtg.id}`;
+            document.getElementById('chart-title').innerText = `Dynamic PC 4MW vs Actual (${wtg.id})`;
+            document.getElementById('detail-wtg-name').innerText = `${wtg.id} (HI)`;
             
             const colorClass = wtg.status === 'good' ? 'text-emerald-400' : (wtg.status === 'warn' ? 'text-amber-400' : 'text-rose-400');
             document.getElementById('detail-wtg-metrics').innerHTML = `
-                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Chỉ số chất lượng (HI):</span><span class="font-bold ${colorClass}">${wtg.score}%</span></li>
-                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Độ lệch Power Curve:</span><span class="text-white">${wtg.dev}</span></li>
-                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Nhiệt độ trung bình/đỉnh:</span><span class="text-white">${wtg.temp}</span></li>
-                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Sai lệch góc Pitch:</span><span class="text-white">${wtg.pitch}</span></li>
+                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">HI:</span><span class="font-bold ${colorClass}">${wtg.score}%</span></li>
+                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Power Curve Dev:</span><span class="text-white">${wtg.dev}</span></li>
+                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Temp:</span><span class="text-white">${wtg.temp}</span></li>
+                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Pitch Dev:</span><span class="text-white">${wtg.pitch}</span></li>
             `;
-            document.getElementById('detail-wtg-recommendation').innerHTML = `<strong class="text-sky-400">Kết luận kỹ thuật:</strong> ${wtg.note}`;
+            document.getElementById('detail-wtg-recommendation').innerHTML = `${wtg.note}`;
             updateChart(wtg);
         }
 
@@ -1230,8 +1529,8 @@
                 data: {
                     labels: CHART_WIND_AXIS.map(w => w + ' m/s'),
                     datasets: [
-                        { label: 'Đường cong chuẩn Dynamic PC 4MW (kW)', data: stdCurve, borderColor: '#38bdf8', borderDash: [5, 5], tension: 0.3, fill: false },
-                        { label: `Công suất thực tế ${wtg.id} (kW)`, data: actualPower, borderColor: wtg.status === 'crit' ? '#f43f5e' : (wtg.status === 'warn' ? '#f59e0b' : '#10b981'), backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.3, fill: true, spanGaps: true }
+                        { label: 'Dynamic PC 4MW (kW)', data: stdCurve, borderColor: '#38bdf8', borderDash: [5, 5], tension: 0.3, fill: false },
+                        { label: `${wtg.id} (kW)`, data: actualPower, borderColor: wtg.status === 'crit' ? '#f43f5e' : (wtg.status === 'warn' ? '#f59e0b' : '#10b981'), backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.3, fill: true, spanGaps: true }
                     ]
                 },
                 options: {
@@ -1264,12 +1563,9 @@
         }
 
         async function processScadaData() {
-            if (!uploadedScadaFile) {
-                alert('Vui lòng chọn file dữ liệu SCADA (.CSV hoặc .XLSX) trước khi bấm Phân tích!');
-                return;
-            }
+            if (!uploadedScadaFile) return;
             const btn = document.getElementById('btn-analyze-scada');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tính toán...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> ...';
 
             try {
                 const buffer = await uploadedScadaFile.arrayBuffer();
@@ -1379,47 +1675,36 @@
                     let healthScore = Math.round(Math.min(100, Math.max(40, perfRatio * 100 - tempPenalty)));
                     let status = healthScore > 85 ? 'good' : (healthScore >= 70 ? 'warn' : 'crit');
                     const curve = s.bins.map((b, idx) => b.cnt > 0 ? Math.round(b.sum / b.cnt) : Math.round(getExpectedGoldwindPower(CHART_WIND_AXIS[idx]) * perfRatio));
-                    const note = status === 'good'
-                        ? `Phân tích từ ${s.count.toLocaleString()} mẫu SCADA: Bám sát đường cong Dynamic PC 4MW.`
-                        : (status === 'warn'
-                            ? `Công suất lệch ${devPercent}%, nhiệt độ TB ${avgTemp.toFixed(1)}°C. Cần kiểm tra cảm biến gió và hệ thống Pitch.`
-                            : `CẢNH BÁO (${s.count.toLocaleString()} mẫu): Suy giảm hiệu suất ${devPercent}%, nhiệt độ đỉnh ${s.tempMax.toFixed(1)}°C. Đề nghị bảo trì khẩn cấp.`);
-                    return { id: wtg.id, score: healthScore, status, dev: (devPercent > 0 ? '+' : '') + devPercent + '%', temp: s.tempCount > 0 ? `${avgTemp.toFixed(1)} °C (Max ${s.tempMax.toFixed(1)}°C)` : 'N/A', pitch: s.pitchCount > 0 ? `${(s.pitchSum / s.pitchCount).toFixed(2)}°` : '0.15°', samples: s.count, actualCurve: curve, note };
+                    return { id: wtg.id, score: healthScore, status, dev: (devPercent > 0 ? '+' : '') + devPercent + '%', temp: s.tempCount > 0 ? `${avgTemp.toFixed(1)} °C` : 'N/A', pitch: s.pitchCount > 0 ? `${(s.pitchSum / s.pitchCount).toFixed(2)}°` : '0.15°', samples: s.count, actualCurve: curve, note: `${devPercent}% | ${s.count.toLocaleString()} samples` };
                 });
 
                 const banner = document.getElementById('scada-summary-banner');
                 banner.classList.remove('hidden');
-                banner.innerHTML = updatedCount > 0
-                    ? `<span><i class="fa-solid fa-circle-check text-emerald-400 mr-2"></i><strong>Hoàn tất!</strong> Đã phân tích ${totalRowsProcessed.toLocaleString()} dòng và cập nhật chất lượng thực tế cho <strong>${updatedCount}/12 tua-bin</strong>.</span>`
-                    : `<span><i class="fa-solid fa-triangle-exclamation text-amber-400 mr-2"></i>Đã đọc ${totalRowsProcessed.toLocaleString()} dòng nhưng chưa khớp tên cột chuẩn (WTG01..12, Wind, Power).</span>`;
+                banner.innerHTML = `<span><i class="fa-solid fa-circle-check text-emerald-400 mr-2"></i><strong>${updatedCount}/12 WTG</strong> (${totalRowsProcessed.toLocaleString()} rows)</span>`;
                 renderTurbines();
                 selectTurbine(selectedTurbineIndex);
             } catch (e) {
-                alert('Lỗi đọc file SCADA: ' + e.message);
+                alert(e.message);
             } finally {
-                btn.innerHTML = '<i class="fa-solid fa-play mr-1"></i> Phân tích dữ liệu';
+                btn.innerHTML = `<i class="fa-solid fa-play mr-1"></i> <span>${t('btn_analyze')}</span>`;
             }
         }
 
-        // ==================== 3. CHATBOX VẬN HÀNH (100% KHÔNG CẦN API KEY) ====================
+        // ==================== 3. CHATBOX VẬN HÀNH (KHÔNG CẦN API KEY) ====================
         let knowledgeChunks = [];
 
         const BUILTIN_PLANT_KB = [
             {
-                source: "Thông số kỹ thuật NMĐG V1-2 Trà Vinh",
-                text: "Nhà máy Điện gió V1-2 Trà Vinh có công suất thiết kế 48 MW, gồm 12 tua-bin gió Goldwind công suất 4.0 MW mỗi tổ máy, đặt tại Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long. Đường cong công suất Dynamic PC (mật độ không khí 1.15 kg/m³, TI 10%): tốc độ gió khởi động Cut-in 2.5 m/s (0.3 kW), đạt định mức 4000 kW từ 11.0 m/s đến 18.5 m/s, giảm công suất ở gió lớn từ 19.0 m/s (3987 kW) đến 24.0 m/s (1866 kW) và cắt gió Cut-out trên 24.0 m/s."
+                source: "NMĐG V1-2 Trà Vinh",
+                text: "NMĐG V1-2 Trà Vinh: 48 MW (12 x 4.0 MW Goldwind). Dynamic PC (1.15 kg/m³, TI 10%): Cut-in 2.5 m/s (0.3 kW), Rated 11.0–18.5 m/s (4000 kW), Cut-out > 24.0 m/s (1866 kW at 24.0 m/s)."
             },
             {
-                source: "Bảo vệ kém áp Relay 27 & LVRT (TT 39/2015/TT-BCT)",
-                text: "Relay 27 (27-1, 27-2, PTUV) giám sát điện áp thấp thanh cái 110kV và 35kV. Theo Thông tư 39/2015/TT-BCT, tổ máy điện gió phải duy trì phát điện (LVRT) khi điện áp lưới sụt giảm trong giới hạn cho phép. Khi Relay 27-2 tác động cắt máy cắt, nguyên nhân thường do sự cố ngắn mạch lưới truyền tải 110kV/220kV khu vực Duyên Hải - Trà Vinh làm sụt áp sâu hoặc nhảy MCB mạch nhị thứ biến điện áp TU (60FL). Cần kiểm tra đồ thị Uab, Ubc, Uca trên SCADA, kiểm tra MCB TU và xin lệnh Điều độ A2 khôi phục khi lưới ổn định."
+                source: "Relay 27 & LVRT (TT 39/2015/TT-BCT)",
+                text: "Relay 27 (27-1, 27-2, PTUV): Undervoltage / LVRT protection. Causes: 110kV/220kV grid fault in Duyen Hai - Tra Vinh area or VT secondary MCB trip (60FL). Action: Check Uab, Ubc, Uca on SCADA, inspect VT MCB, coordinate with A2/NSMO to restore."
             },
             {
-                source: "Bảo vệ quá áp Relay 59 & 59N (Lưới 35kV / 110kV)",
-                text: "Relay 59 (59-1, 59-2, PTOV) bảo vệ quá áp thanh cái. Tại nhà máy điện gió, vào thời điểm gió thấp, hệ thống cáp ngầm 35kV sinh ra lượng công suất phản kháng dung kháng (+Q) lớn đẩy điện áp thanh cái 35kV/110kV tăng cao vượt ngưỡng 110% Un. Biện pháp xử lý: kiểm tra bộ điều khiển PPC, chuyển sang chế độ điều áp tự động hoặc đặt cosφ cảm kháng để hút công suất phản kháng (-Q) kéo điện áp xuống. Nếu tác động Relay 59N (3U0 tăng cao), nguyên nhân là chạm đất 1 pha trên cáp ngầm 35kV hoặc đầu cáp T-plug tủ RMU tua-bin."
-            },
-            {
-                source: "Vận hành Máy biến áp lực 110/35kV & Trạm biến áp",
-                text: "Máy biến áp lực 110/35kV tại trạm nâng áp NMĐG V1-2 được bảo vệ bởi so lệch dọc 87T, quá dòng 50/51, rơ-le hơi Buchholz, rơ-le dòng dầu OLTC và nhiệt độ dầu/cuộn dây. Khi bảo vệ 87T hoặc Buchholz tác động, tuyệt đối không đóng điện lại máy biến áp khi chưa thí nghiệm cách điện, tỷ số biến và phân tích khí hòa tan trong dầu (DGA)."
+                source: "Relay 59 & 59N (35kV / 110kV)",
+                text: "Relay 59 (59-1, 59-2, PTOV): Overvoltage protection caused by excess capacitive reactive power (+Q) from 35kV underground cables during low wind. Action: Switch PPC to Voltage Control / inductive cosφ (-Q). Relay 59N (3U0): Single-phase earth fault on 35kV cable or RMU T-plug."
             }
         ];
 
@@ -1458,7 +1743,7 @@
                         for (let i = 1; i <= pdf.numPages; i++) {
                             const page = await pdf.getPage(i);
                             const content = await page.getTextContent();
-                            extractedText += `\n[Trang ${i}] ` + content.items.map(item => item.str).join(" ");
+                            extractedText += `\n[P.${i}] ` + content.items.map(item => item.str).join(" ");
                         }
                     } else if (file.name.toLowerCase().match(/\.docx$/)) {
                         icon = 'fa-file-word text-blue-400';
@@ -1470,7 +1755,7 @@
                         const arrayBuffer = await file.arrayBuffer();
                         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
                         workbook.SheetNames.forEach(sheetName => {
-                            extractedText += `\n--- Sheet: ${sheetName} ---\n` + XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName]);
+                            extractedText += `\n--- ${sheetName} ---\n` + XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName]);
                         });
                     } else {
                         extractedText = await file.text();
@@ -1479,18 +1764,18 @@
                     const newChunks = chunkTextWithOverlap(extractedText, file.name);
                     knowledgeChunks.push(...newChunks);
                     const countEl = document.getElementById('doc-chunk-count');
-                    if (countEl) countEl.innerText = `${knowledgeChunks.length} đoạn dữ liệu`;
+                    if (countEl) countEl.innerText = `${knowledgeChunks.length}`;
 
-                    list.innerHTML += `<li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-emerald-500/50"><span class="truncate pr-2"><i class="fa-solid ${icon} mr-2"></i>${file.name}</span><span class="text-emerald-400 text-[10px] whitespace-nowrap">${newChunks.length} đoạn</span></li>`;
+                    list.innerHTML += `<li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-emerald-500/50"><span class="truncate pr-2"><i class="fa-solid ${icon} mr-2"></i>${file.name}</span><span class="text-emerald-400 text-[10px] whitespace-nowrap">${newChunks.length}</span></li>`;
                 } catch (err) {
-                    alert("Lỗi đọc file " + file.name + ": " + err.message);
+                    alert(err.message);
                 }
             }
         }
 
         function retrieveTopRelevantChunks(query, topK = 4) {
             const allSources = [...knowledgeChunks, ...BUILTIN_PLANT_KB];
-            const stopWords = new Set(["là", "gì", "của", "và", "các", "những", "cho", "tôi", "hỏi", "về", "như", "thế", "nào", "tại", "khi", "có", "được", "không", "trong", "với", "theo"]);
+            const stopWords = new Set(["là", "gì", "của", "và", "các", "những", "cho", "tôi", "hỏi", "về", "như", "thế", "nào", "tại", "khi", "có", "được", "không", "trong", "với", "theo", "the", "is", "what", "how", "and", "of", "to", "in"]);
             const tokens = query.toLowerCase().replace(/[?.,!;:()\[\]"]/g, " ").split(/\s+/).filter(w => w.length >= 2 && !stopWords.has(w));
             if (tokens.length === 0) return { chunks: [], tokens: [] };
 
@@ -1501,9 +1786,7 @@
                 const lower = chunk.text.toLowerCase();
                 let score = 0;
                 tokens.forEach(tok => {
-                    if (lower.includes(tok)) {
-                        score += 2 + Math.min(3, (lower.split(tok).length - 1) * 0.5);
-                    }
+                    if (lower.includes(tok)) score += 2 + Math.min(3, (lower.split(tok).length - 1) * 0.5);
                 });
                 bigrams.forEach(bg => { if (lower.includes(bg)) score += 6; });
                 if (!BUILTIN_PLANT_KB.some(b => b.source === chunk.source)) score *= 1.4;
@@ -1537,14 +1820,15 @@
                 const ddgData = await ddgRes.json();
                 if (ddgData.AbstractText && ddgData.AbstractText.trim().length > 25) {
                     resultsHtml += `<div class="p-3 bg-slate-900/90 rounded-lg border border-emerald-500/40 text-xs space-y-1 text-slate-200 leading-relaxed">
-                        <div class="font-bold text-emerald-400"><i class="fa-solid fa-globe mr-1"></i> Tổng hợp trực tuyến (${ddgData.Heading || cleanQuery}):</div>
+                        <div class="font-bold text-emerald-400"><i class="fa-solid fa-globe mr-1"></i> ${ddgData.Heading || cleanQuery}</div>
                         <p>${ddgData.AbstractText}</p>
                     </div>`;
                 }
             } catch (e) {}
 
             if (!resultsHtml) {
-                for (const lang of ["vi", "en"]) {
+                const langs = currentLang === 'th' ? ['th', 'en'] : (currentLang === 'en' ? ['en', 'vi'] : ['vi', 'en']);
+                for (const lang of langs) {
                     try {
                         const searchUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json&origin=*`;
                         const res = await fetch(searchUrl);
@@ -1560,7 +1844,7 @@
                                 const fullText = pages[pageId]?.extract;
                                 if (fullText && fullText.trim().length > 30) {
                                     resultsHtml += `<div class="p-3 bg-slate-900/90 rounded-lg border border-sky-500/40 text-xs space-y-1.5 text-slate-200 leading-relaxed">
-                                        <div class="font-bold text-sky-400"><i class="fa-solid fa-book-open mr-1"></i> Tra cứu mở rộng (${topTitle}):</div>
+                                        <div class="font-bold text-sky-400"><i class="fa-solid fa-book-open mr-1"></i> ${topTitle}</div>
                                         <p>${fullText.replace(/\n/g, "<br>")}</p>
                                     </div>`;
                                     break;
@@ -1583,7 +1867,7 @@
                 <div class="flex items-start space-x-3">
                     <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                     <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl text-xs text-slate-200">
-                        Đã làm mới khung chat. Mời bạn nhập câu hỏi kỹ thuật hoặc nội dung cần tra cứu!
+                        ${t('chat_welcome')}
                     </div>
                 </div>`;
         }
@@ -1598,7 +1882,7 @@
             input.value = '';
 
             const loadingId = "loading-" + Date.now();
-            box.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-xs text-slate-300">Đang quét tài liệu nhà máy và tra cứu dữ liệu mở...</div></div>`;
+            box.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-xs text-slate-300">...</div></div>`;
             box.scrollTop = box.scrollHeight;
 
             const { chunks: topChunks, tokens } = retrieveTopRelevantChunks(msg, 3);
@@ -1608,28 +1892,22 @@
             let localHtml = "";
             if (topChunks.length > 0) {
                 localHtml = `<div class="p-3 bg-slate-900/95 rounded-lg border border-sky-500/50 text-xs space-y-2.5">
-                    <div class="text-sky-400 font-bold"><i class="fa-solid fa-file-lines mr-1"></i> Trích xuất trực tiếp từ Tài liệu & Dữ liệu Nhà máy:</div>
                     ${topChunks.map(c => `
                         <div class="pl-2.5 border-l-2 border-amber-400/70 space-y-1">
-                            <div class="text-[11px] text-amber-300 font-semibold">[Nguồn: ${c.source}]</div>
+                            <div class="text-[11px] text-amber-300 font-semibold">[${c.source}]</div>
                             <p class="text-slate-200 leading-relaxed">${highlightTokens(c.text, tokens)}</p>
                         </div>
                     `).join("")}
                 </div>`;
             }
 
-            const fallbackMsg = (!localHtml && !webHtml)
-                ? `<p class="text-xs text-slate-300">Chưa tìm thấy đoạn nội dung trùng khớp từ khóa <strong>"${safeMsg}"</strong>. Bạn hãy thử dùng từ khóa ngắn hơn (ví dụ: <em>"Relay 27"</em>, <em>"Dynamic PC"</em>, <em>"Máy biến áp"</em>) hoặc tải thêm file PDF/Word tài liệu nhà máy vào cột bên trái.</p>`
-                : "";
-
             box.innerHTML += `
                 <div class="flex items-start space-x-3">
                     <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                     <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2.5 text-slate-200">
-                        <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Kết quả tra cứu trực tiếp (Không cần API Key)</div>
                         ${localHtml}
                         ${webHtml}
-                        ${fallbackMsg}
+                        ${(!localHtml && !webHtml) ? `<p class="text-xs text-slate-300">No matching records found for "${safeMsg}".</p>` : ''}
                     </div>
                 </div>`;
             box.scrollTop = box.scrollHeight;
@@ -1680,7 +1958,7 @@
                 chipsBox.classList.add('hidden');
 
                 try {
-                    statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Đang quét chữ số nhiệt độ trên ảnh...';
+                    statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>OCR...';
                     const processedImg = await preprocessThermalImageForOCR(dataUrl);
                     const result = await Tesseract.recognize(processedImg, 'eng', {
                         logger: m => {
@@ -1713,22 +1991,22 @@
                         document.getElementById('th-t1').value = uniqueTemps[0];
                         document.getElementById('th-t2').value = uniqueTemps[uniqueTemps.length - 1];
                         statusBox.className = "p-3 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-xs text-emerald-300";
-                        statusBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i><strong>Đã đọc từ ảnh:</strong> T1 = ${uniqueTemps[0]}°C, T2 = ${uniqueTemps[uniqueTemps.length - 1]}°C.`;
-                        chipsBox.innerHTML = '<span class="text-slate-400 mr-1">Các số đọc được:</span>' + uniqueTemps.map(t => `<button type="button" onclick="applyDetectedTemp(${t})" class="px-2 py-0.5 bg-slate-800 hover:bg-sky-700 border border-slate-600 rounded text-amber-300 font-semibold">${t}°C</button>`).join('');
+                        statusBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i>T1 = ${uniqueTemps[0]}°C | T2 = ${uniqueTemps[uniqueTemps.length - 1]}°C`;
+                        chipsBox.innerHTML = uniqueTemps.map(t => `<button type="button" onclick="applyDetectedTemp(${t})" class="px-2 py-0.5 bg-slate-800 hover:bg-sky-700 border border-slate-600 rounded text-amber-300 font-semibold">${t}°C</button>`).join('');
                         chipsBox.classList.remove('hidden');
                         analyzeThermal();
                     } else if (uniqueTemps.length === 1) {
                         document.getElementById('th-t1').value = uniqueTemps[0];
                         statusBox.className = "p-3 rounded-lg bg-amber-950/70 border border-amber-500/40 text-xs text-amber-300";
-                        statusBox.innerHTML = `<i class="fa-solid fa-circle-info mr-1.5"></i>Đọc được 1 mức nhiệt: <strong>${uniqueTemps[0]}°C</strong> (T1). Hãy kiểm tra ô T2.`;
+                        statusBox.innerHTML = `<i class="fa-solid fa-circle-info mr-1.5"></i>T1 = <strong>${uniqueTemps[0]}°C</strong>`;
                         analyzeThermal();
                     } else {
                         statusBox.className = "p-3 rounded-lg bg-amber-950/70 border border-amber-500/40 text-xs text-amber-300";
-                        statusBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Chưa đọc rõ số trên ảnh. Vui lòng nhập tay T1, T2 bên dưới.`;
+                        statusBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Manual T1/T2`;
                     }
                 } catch (err) {
                     statusBox.className = "p-3 rounded-lg bg-rose-950/70 border border-rose-500/40 text-xs text-rose-300";
-                    statusBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Lỗi OCR: ${err.message}.`;
+                    statusBox.innerHTML = `${err.message}`;
                 }
             };
             reader.readAsDataURL(file);
@@ -1749,22 +2027,22 @@
             const t2 = parseFloat(document.getElementById('th-t2').value);
             const deltaT = (t1 - t2).toFixed(1);
 
-            let level = 'Cấp 1 (Rủi ro thấp - Bình thường)';
+            let level = 'Level 1 (Normal)';
             let color = 'emerald';
-            let action = 'Tiếp tục vận hành bình thường, theo dõi định kỳ hàng tháng.';
+            let action = 'Continue normal operation, routine monthly inspection.';
 
             if (deltaT > 35) {
-                level = 'Cấp 3 (RỦI RO KHẨN CẤP - Nguy cơ phóng điện/cháy)';
+                level = 'Level 3 (CRITICAL - Immediate Trip/Isolation)';
                 color = 'rose';
-                action = 'Báo cáo ngay Trưởng ca và Điều độ A2 để xin tách thiết bị khẩn cấp khỏi vận hành, cô lập bằng dao cách ly và tiến hành sửa chữa.';
+                action = 'Report to Shift Leader & A2/NSMO immediately for emergency isolation and repair.';
             } else if (deltaT > 15) {
-                level = 'Cấp 2 (Rủi ro cao - Phát nhiệt nguy hiểm)';
+                level = 'Level 2 (HIGH RISK - Severe Overheating)';
                 color = 'amber';
-                action = 'Tăng cường soi nhiệt 1 lần/ngày lúc mang tải cao. Đăng ký cắt điện gần nhất với A2 để vệ sinh tiếp xúc, bôi mỡ dẫn điện và siết lực lại đầu cốt.';
+                action = 'Daily thermal check at high load. Schedule outage with A2/NSMO to clean & torque connections.';
             } else if (deltaT >= 5) {
-                level = 'Cấp 1+ (Rủi ro trung bình - Phát nhiệt nhẹ)';
+                level = 'Level 1+ (MODERATE - Slight Heating)';
                 color = 'sky';
-                action = 'Theo dõi chặt chẽ xu hướng tăng nhiệt khi các tua-bin phát công suất lớn.';
+                action = 'Monitor closely during peak wind generation.';
             }
 
             document.getElementById('thermal-result-box').innerHTML = `
@@ -1773,19 +2051,16 @@
                         <span class="text-xs uppercase font-bold text-${color}-400">${level}</span>
                         <span class="text-lg font-bold text-${color}-400">ΔT = ${deltaT} °C</span>
                     </div>
-                    <p class="text-sm text-slate-200 mt-2">Thiết bị: <strong>${equip} - Cấp điện áp ${volt}</strong></p>
-                    <p class="text-xs text-slate-300 mt-1">Nhiệt độ điểm sự cố T1 = ${t1}°C | Pha đối chiếu T2 = ${t2}°C.</p>
+                    <p class="text-sm text-slate-200 mt-2"><strong>${equip} - ${volt}</strong></p>
+                    <p class="text-xs text-slate-300 mt-1">T1 = ${t1}°C | T2 = ${t2}°C</p>
                 </div>
-                <div class="space-y-2 text-sm">
-                    <h4 class="font-semibold text-sky-400">Đánh giá nguyên nhân (Môi trường biển Cồn Tàu):</h4>
-                    <p class="text-xs text-slate-300">Độ ẩm và hơi muối ven biển gây oxy hóa bề mặt kẹp cực sứ, đầu cốt cáp 35/110kV hoặc tiếp điểm dao cách ly làm tăng điện trở tiếp xúc.</p>
-                    <h4 class="font-semibold text-sky-400 pt-2">Phương án xử lý đề xuất:</h4>
-                    <p class="text-xs text-slate-300">${action}</p>
+                <div class="space-y-2 text-xs text-slate-300">
+                    <p>${action}</p>
                 </div>
             `;
         }
 
-        // ==================== 4.2 PHÂN TÍCH CHUYÊN SÂU SỰ CỐ RELAY 27 / 59 (SIEMENS / ABB) ====================
+        // ==================== 4.2 PHÂN TÍCH SỰ CỐ RELAY 27 / 59 ====================
         async function handleRelayFileUpload(input) {
             if (!input.files || !input.files[0]) return;
             const file = input.files[0];
@@ -1798,28 +2073,26 @@
         function loadSampleRelayLog(type) {
             if (type === '27') {
                 document.getElementById('relay-vendor').value = "Siemens SIPROTEC (7SJ85 / 7UT85 / 7SA86)";
-                document.getElementById('relay-bay').value = "Ngăn đường dây 110kV / Thanh cái C11 (TU 110kV)";
+                document.getElementById('relay-bay').value = "110kV Busbar C11 / Feeder 171";
                 document.getElementById('relay-raw-text').value = `DEVICE: SIPROTEC 5 - 7SA86 / 7SJ85 (110kV Busbar C11 & Feeder 171)
 FAULT RECORD NO: 0218 | DATE: 2026-11-25 14:18:09.410
-PROTECTION PICKUP & TRIP: 27-2 (Undervoltage Stage 2 / Kém áp cấp 2 - Vượt ngưỡng LVRT)
-FAULTED PHASE: L1-L2-L3 (Sụt áp đối xứng 3 pha từ lưới truyền tải 110kV)
+PROTECTION PICKUP & TRIP: 27-2 (Undervoltage Stage 2 - LVRT Exceeded)
+FAULTED PHASE: L1-L2-L3
 OPERATING TIME: 620 ms (0.62 s) | CB 171 & WTG Group Trip
 MEASURED VALUES AT TRIP:
 Uab = 68.4 kV (62.2% Un) | Ubc = 67.9 kV (61.7% Un) | Uca = 68.1 kV (61.9% Un)
-Ua = 39.5 kV | Ub = 39.2 kV | Uc = 39.3 kV | 3U0 = 0.4 kV
-f = 49.88 Hz | P_export = 42.5 MW -> 0 MW`;
+Ua = 39.5 kV | Ub = 39.2 kV | Uc = 39.3 kV | 3U0 = 0.4 kV`;
             } else {
                 document.getElementById('relay-vendor').value = "Siemens SIPROTEC (7SJ85 / 7UT85 / 7SA86)";
-                document.getElementById('relay-bay').value = "Thanh cái 35kV C31 / C32 (TU 35kV)";
+                document.getElementById('relay-bay').value = "35kV Busbar C31 / C32";
                 document.getElementById('relay-raw-text').value = `DEVICE: SIPROTEC 5 - 7SJ85 (35kV Busbar C31 - Feeder 371/372)
 FAULT RECORD NO: 0219 | DATE: 2026-11-25 14:25:42.105
-PROTECTION TRIP: 59-1 (Overvoltage Stage 1 - Quá áp thanh cái 35kV) & 59N (Neutral Displacement 3U0)
-FAULTED PHASE: Phase L1-L2-L3 High Voltage (Quá áp 3 pha 35kV)
+PROTECTION TRIP: 59-1 (Overvoltage Stage 1) & 59N (Neutral Displacement 3U0)
+FAULTED PHASE: L1-L2-L3
 OPERATING TIME: 1.50 s (1500 ms)
 MEASURED VALUES AT TRIP:
 Uab = 39.4 kV (112.6% Un) | Ubc = 39.2 kV (112.0% Un) | Uca = 39.5 kV (112.8% Un)
-Ua = 22.8 kV | Ub = 22.6 kV | Uc = 22.8 kV | 3U0 = 4.2 kV
-Q_reactive = +8.4 MVAr (Dư thừa công suất phản kháng cáp ngầm 35kV)`;
+Ua = 22.8 kV | Ub = 22.6 kV | Uc = 22.8 kV | 3U0 = 4.2 kV`;
             }
             analyzeRelayFault();
         }
@@ -1830,62 +2103,47 @@ Q_reactive = +8.4 MVAr (Dư thừa công suất phản kháng cáp ngầm 35kV)`
             const raw = document.getElementById('relay-raw-text').value.trim();
             const output = document.getElementById('relay-analysis-output');
 
-            if (!raw) {
-                alert("Vui lòng tải file sự cố hoặc nhấn nút 'Nạp mẫu Relay 27 (Kém áp)' / 'Nạp mẫu Relay 59/59N (Quá áp)' để phân tích!");
-                return;
-            }
+            if (!raw) return;
 
             const rules = [
                 {
                     regex: /27-2|27\s*STAGE\s*2|UNDERVOLTAGE.*2|27.*LVRT/i,
-                    code: "Relay 27-2 (Bảo vệ Kém áp cấp 2 / Vượt giới hạn LVRT)",
-                    cause: "Điện áp lưới 110kV khu vực Duyên Hải – Trà Vinh sụt giảm sâu (thường dưới 70%–80% Un) vượt quá đường đặc tính chịu đựng điện áp thấp (LVRT) theo Thông tư 39/2015/TT-BCT do sự cố ngắn mạch trên lưới truyền tải 110kV/220kV.",
-                    action: "1) Kiểm tra đồ thị điện áp Uab, Ubc, Uca trên SCADA trạm 110kV và đối chiếu nhật ký vận hành với Điều độ miền Nam (A2).\n2) Kiểm tra trạng thái MCB nhị thứ biến điện áp (TU 110kV/35kV) để loại trừ trường hợp nhảy áp-tô-mát mạch áp.\n3) Khi điện áp lưới phục hồi ổn định trong dải 0.90–1.10 Un, xin lệnh A2 để đóng lại máy cắt và khởi động lại 12 tua-bin Goldwind."
+                    code: "Relay 27-2 (Undervoltage Stage 2 / LVRT)",
+                    cause: "110kV/220kV grid voltage sag (< 70–80% Un) exceeding LVRT curve (TT 39/2015/TT-BCT).",
+                    action: "1) Verify Uab, Ubc, Uca on 110kV SCADA & coordinate with A2/NSMO.\n2) Check VT secondary MCB (60FL).\n3) Reclose & restart 12 Goldwind WTGs once grid voltage recovers to 0.90–1.10 Un."
                 },
                 {
                     regex: /27-1|\b27\b|PTUV|UNDER\s*VOLT/i,
-                    code: "Relay 27 / 27-1 (Bảo vệ Kém áp cấp 1 / Mất áp thanh cái)",
-                    cause: "Sụt giảm điện áp thanh cái 110kV/35kV kéo dài (thường < 85% Un trong 1.5s–3.0s) hoặc mất nguồn đo lường từ biến điện áp TU (đứt cầu chì cao thế/hạ thế TU, hỏng tiếp điểm phụ dao cách ly).",
-                    action: "1) Kiểm tra xem sụt áp xảy ra thực tế trên cả 3 pha (sự cố lưới) hay chỉ mất áp ở 1 ngăn lộ (lỗi mạch nhị thứ TU / chức năng 60FL Fuse Failure).\n2) Nếu sụt áp toàn trạm do lưới, chờ điện áp lưới trở lại bình thường và phối hợp A2 khôi phục phát điện."
+                    code: "Relay 27 / 27-1 (Undervoltage Stage 1)",
+                    cause: "Sustained busbar undervoltage (< 85% Un) or VT secondary fuse/MCB failure.",
+                    action: "Check 3-phase voltage vs VT secondary MCB (60FL), then restore generation with A2/NSMO."
                 },
                 {
                     regex: /59N|59G|64G|3U0|3V0|NEUTRAL.*DISP|RESIDUAL.*VOLT/i,
-                    code: "Relay 59N / 64G (Bảo vệ Quá áp thứ tự không 3U0)",
-                    cause: "Xuất hiện điện áp thứ tự không 3U0 lớn do chạm đất 1 pha trên hệ thống cáp ngầm 35kV trung tính cách ly/nối đất qua trở kháng nối các tua-bin Goldwind, hoặc hư hỏng đầu cáp (T-plug), sứ cách điện bị phóng điện do hơi muối.",
-                    action: "1) Kiểm tra giá trị điện áp 3 pha Ua, Ub, Uc: pha bị chạm đất sẽ có điện áp pha giảm thấp gần 0 kV trong khi 2 pha còn lại tăng cao lên bằng điện áp dây (√3 lần Upha).\n2) Kiểm tra chỉ thị sự cố chạm đất tại các xuất tuyến 371/372/373 và tủ RMU chân trụ tua-bin để khoanh vùng đoạn cáp sự cố."
+                    code: "Relay 59N / 64G (Zero-Sequence Overvoltage 3U0)",
+                    cause: "Single-phase earth fault on 35kV underground cable or RMU T-plug connector.",
+                    action: "Check faulted phase voltage drop & inspect Fault Indicators at 35kV RMU cabinets along Feeders 371/372/373."
                 },
                 {
                     regex: /59-2|59\s*STAGE\s*2|OVERVOLTAGE.*2|59.*HVRT/i,
-                    code: "Relay 59-2 (Bảo vệ Quá áp cấp 2 / Vượt ngưỡng HVRT)",
-                    cause: "Điện áp thanh cái 110kV/35kV tăng vọt đột biến (thường > 115%–120% Un) vượt giới hạn chịu đựng quá áp (HVRT) khi lưới truyền tải bị sa thải phụ tải lớn hoặc cắt đột ngột đường dây mang tải cao.",
-                    action: "1) Kiểm tra bộ điều khiển công suất phản kháng (PPC / SCADA) của nhà máy, đảm bảo chế độ điều chỉnh điện áp/cosφ đang hoạt động đúng để hút công suất phản kháng (-Q) kéo điện áp xuống.\n2) Kiểm tra mức nấc phân áp (OLTC) của máy biến áp lực 110/35kV trước khi hòa lưới lại."
+                    code: "Relay 59-2 (Overvoltage Stage 2 / HVRT)",
+                    cause: "Sudden grid overvoltage (> 115–120% Un) exceeding HVRT limit.",
+                    action: "Verify PPC Voltage/Q control mode (-Q absorption) and 110/35kV OLTC tap position."
                 },
                 {
                     regex: /59-1|\b59\b|PTOV|OVER\s*VOLT/i,
-                    code: "Relay 59 / 59-1 (Bảo vệ Quá áp cấp 1)",
-                    cause: "Điện áp vận hành trên thanh cái 35kV hoặc 110kV vượt ngưỡng chỉnh định cấp 1 (thường > 110% Un). Tại nhà máy điện gió, nguyên nhân rất phổ biến là do tuyến cáp ngầm 35kV dài sinh ra lượng công suất phản kháng dung kháng (+Q) lớn vào thời điểm gió thấp, đẩy điện áp thanh cái lên cao.",
-                    action: "1) Kiểm tra chế độ điều khiển Q/U trên hệ thống PPC (Power Plant Controller): chuyển sang chế độ điều khiển điện áp tự động (Voltage Control) hoặc đặt giá trị cosφ cảm kháng (hút Q) theo yêu cầu của A2.\n2) Kiểm tra nấc phân áp máy biến áp 110/35kV và trạng thái các dàn tụ/kháng bù (nếu có)."
-                },
-                {
-                    regex: /50N|51N|67N|3I0|IN\s*=/i,
-                    code: "Relay 50N/51N/67N (Quá dòng chạm đất đi kèm)",
-                    cause: "Dòng chạm đất tăng cao trên xuất tuyến cáp ngầm 35kV hoặc phía 110kV đi kèm với biến động điện áp.",
-                    action: "Kiểm tra chỉ thị sự cố tại tủ RMU các tua-bin thuộc xuất tuyến bị cắt, đo cách điện cáp 35kV trước khi đóng lại."
-                },
-                {
-                    regex: /87T|PDIF/i,
-                    code: "Relay 87T (Bảo vệ so lệch Máy biến áp)",
-                    cause: "Sự cố nội bộ máy biến áp lực 110/35kV.",
-                    action: "Không đóng điện lại MBA, kiểm tra rơ-le hơi Buchholz và thí nghiệm DGA."
+                    code: "Relay 59 / 59-1 (Overvoltage Stage 1)",
+                    cause: "Busbar overvoltage (> 110% Un) due to excess capacitive reactive power (+Q) from 35kV cables during low wind.",
+                    action: "Set PPC to automatic Voltage Control or inductive power factor (absorb -Q) and check OLTC tap."
                 }
             ];
 
             let matchedRules = rules.filter(r => r.regex.test(raw));
             if (matchedRules.length === 0) {
                 matchedRules.push({
-                    code: "Sự cố bảo vệ điện áp / Rơ-le 27-59 (General Voltage Protection Trip)",
-                    cause: "Biến động điện áp trên thanh cái 110kV/35kV vượt ngưỡng chỉnh định thời gian - điện áp của rơ-le bảo vệ hoặc lỗi mạch đo lường TU.",
-                    action: "Kiểm tra bản ghi giá trị điện áp 3 pha Ua, Ub, Uc, Uab, Ubc, Uca trong log sự cố và đối chiếu với phiếu chỉnh định rơ-le của NMĐG V1-2."
+                    code: "Relay 27 / 59 Voltage Protection Trip",
+                    cause: "110kV/35kV busbar voltage excursion beyond relay setting.",
+                    action: "Check Ua, Ub, Uc, Uab, Ubc, Uca values against NMĐG V1-2 relay setting sheet."
                 });
             }
 
@@ -1894,23 +2152,22 @@ Q_reactive = +8.4 MVAr (Dư thừa công suất phản kháng cáp ngầm 35kV)`
             const phaseMatch = raw.match(/(?:PHASE|PHA)[\s:]*([L123ABC\-NG\/]+)/i);
             const timeMatch = raw.match(/(\d+(?:\.\d+)?)\s*(?:ms|s)\b/i);
 
-            const detectedPhase = phaseMatch ? phaseMatch[1] : "3 pha / Thanh cái";
-            const tripTime = timeMatch ? timeMatch[0] : "Theo đặc tuyến chỉnh định";
-            const voltSummary = voltMatches ? voltMatches.slice(0, 7).join(" | ") : (pctMatches ? pctMatches.join(" | ") : "Xem chi tiết trong nội dung log đã nạp");
+            const detectedPhase = phaseMatch ? phaseMatch[1] : "L1-L2-L3";
+            const tripTime = timeMatch ? timeMatch[0] : "Setting curve";
+            const voltSummary = voltMatches ? voltMatches.slice(0, 7).join(" | ") : (pctMatches ? pctMatches.join(" | ") : "-");
 
             output.innerHTML = `
                 <div class="p-4 rounded-lg bg-rose-950/60 border border-rose-500/60 space-y-2.5">
                     <div class="flex flex-wrap justify-between items-center gap-2">
-                        <span class="text-xs uppercase font-bold text-rose-400"><i class="fa-solid fa-bolt mr-1"></i> Chẩn đoán sự cố Rơ-le 27 / 59: ${vendor}</span>
+                        <span class="text-xs uppercase font-bold text-rose-400"><i class="fa-solid fa-bolt mr-1"></i> ${vendor}</span>
                         <span class="px-2.5 py-0.5 bg-rose-500/20 border border-rose-400/40 rounded text-xs font-bold text-rose-300">${bay}</span>
                     </div>
-                    <div class="text-sm font-bold text-white">Chức năng tác động: ${matchedRules.map(m => m.code).join(" + ")}</div>
+                    <div class="text-sm font-bold text-white">${matchedRules.map(m => m.code).join(" + ")}</div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
-                        <div class="bg-slate-900/90 p-2.5 rounded border border-slate-700"><span class="text-slate-400 block">Đối tượng / Pha tác động:</span><strong class="text-amber-400">${detectedPhase}</strong></div>
-                        <div class="bg-slate-900/90 p-2.5 rounded border border-slate-700"><span class="text-slate-400 block">Thời gian tác động (Trip Time):</span><strong class="text-sky-400">${tripTime}</strong></div>
+                        <div class="bg-slate-900/90 p-2.5 rounded border border-slate-700"><span class="text-slate-400 block">Phase:</span><strong class="text-amber-400">${detectedPhase}</strong></div>
+                        <div class="bg-slate-900/90 p-2.5 rounded border border-slate-700"><span class="text-slate-400 block">Trip Time:</span><strong class="text-sky-400">${tripTime}</strong></div>
                     </div>
                     <div class="bg-slate-900/90 p-2.5 rounded border border-slate-700 text-xs">
-                        <span class="text-slate-400 block mb-1">Thông số điện áp ghi nhận tại thời điểm Trip:</span>
                         <strong class="text-emerald-300 font-mono">${voltSummary}</strong>
                     </div>
                 </div>
@@ -1919,11 +2176,8 @@ Q_reactive = +8.4 MVAr (Dư thừa công suất phản kháng cáp ngầm 35kV)`
                     ${matchedRules.map(m => `
                         <div class="p-3.5 bg-slate-900/80 rounded-lg border border-slate-700 space-y-2">
                             <div class="font-bold text-sky-400 text-sm">${m.code}</div>
-                            <p class="text-slate-300 leading-relaxed"><strong class="text-amber-300">Nguyên nhân kỹ thuật:</strong> ${m.cause}</p>
-                            <div class="text-slate-200 leading-relaxed space-y-1">
-                                <strong class="text-emerald-400 block">Quy trình kiểm tra & xử lý vận hành:</strong>
-                                <p class="whitespace-pre-line pl-2 border-l-2 border-emerald-500/50">${m.action}</p>
-                            </div>
+                            <p class="text-slate-300 leading-relaxed">${m.cause}</p>
+                            <div class="text-slate-200 leading-relaxed pl-2 border-l-2 border-emerald-500/50 whitespace-pre-line">${m.action}</div>
                         </div>
                     `).join('')}
                 </div>

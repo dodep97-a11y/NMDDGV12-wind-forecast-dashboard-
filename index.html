@@ -92,10 +92,6 @@
                 </div>
             </div>
             <div class="flex items-center space-x-3 mt-2 md:mt-0">
-                <button onclick="configureApiKey()" id="header-api-btn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs rounded-lg transition flex items-center space-x-1.5">
-                    <i class="fa-solid fa-key"></i>
-                    <span>API Key (Google AI)</span>
-                </button>
                 <span class="px-3 py-1 bg-emerald-900/50 border border-emerald-500/50 text-emerald-400 text-xs rounded-full flex items-center">
                     <span class="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-ping"></span> nmdgv12travinh
                 </span>
@@ -114,7 +110,7 @@
             </button>
             <button onclick="switchMainTab('chatbot')" id="btn-main-chatbot" class="text-slate-300 hover:bg-slate-700 px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-robot"></i>
-                <span>2. Chatbot Vận hành (Tài liệu + Google)</span>
+                <span>2. Chatbot Vận hành (Tài liệu + Tra cứu mở)</span>
             </button>
             <button onclick="switchMainTab('faults')" id="btn-main-faults" class="text-slate-300 hover:bg-slate-700 px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-bolt-lightning"></i>
@@ -310,14 +306,14 @@
                 </div>
             </section>
 
-            <!-- ==================== MỤC 2: CHATBOT VẬN HÀNH (NÂNG CẤP RAG + AI + GOOGLE SEARCH) ==================== -->
+            <!-- ==================== MỤC 2: CHATBOT VẬN HÀNH (100% KHÔNG CẦN API KEY) ==================== -->
             <section id="main-chatbot" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="card p-5 flex flex-col justify-between space-y-4">
                     <div class="space-y-4">
                         <h2 class="text-base font-bold text-sky-400 flex items-center">
-                            <i class="fa-solid fa-folder-open mr-2"></i> Kho tài liệu & Cấu hình Tra cứu
+                            <i class="fa-solid fa-folder-open mr-2"></i> Kho tài liệu Nhà máy
                         </h2>
-                        <p class="text-xs text-slate-400">Nạp tài liệu PDF, Word, Excel của NMĐG V1-2. Hệ thống tự động chia đoạn thông minh (Smart Chunking) để tìm chính xác thông số kỹ thuật trong tài liệu.</p>
+                        <p class="text-xs text-slate-400">Nạp tài liệu PDF, Word, Excel của NMĐG V1-2. Hệ thống tự động chia đoạn thông minh (Smart Chunking) để trích xuất chính xác thông số kỹ thuật.</p>
                         
                         <label class="border-2 border-dashed border-slate-600 hover:border-sky-500 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-slate-800/40">
                             <i class="fa-solid fa-cloud-arrow-up text-2xl text-sky-400 mb-2"></i>
@@ -331,7 +327,7 @@
                                 <h3 class="text-xs font-semibold uppercase text-slate-400">Tài liệu đã nạp:</h3>
                                 <span id="doc-chunk-count" class="text-[11px] text-sky-400">0 đoạn dữ liệu</span>
                             </div>
-                            <ul id="doc-list" class="space-y-2 text-xs max-h-48 overflow-y-auto">
+                            <ul id="doc-list" class="space-y-2 text-xs max-h-56 overflow-y-auto">
                                 <li id="empty-doc-msg" class="p-2.5 bg-slate-800/60 rounded flex items-center justify-between border border-slate-700 text-slate-400 italic">
                                     <span>Chưa nạp file thủ công (Đang dùng dữ liệu chuẩn NMĐG V1-2)</span>
                                 </li>
@@ -339,16 +335,9 @@
                         </div>
                     </div>
 
-                    <!-- Khung hướng dẫn & trạng thái Google AI / Search -->
-                    <div class="p-3.5 rounded-lg bg-slate-900/90 border border-slate-700 space-y-2 text-xs">
-                        <div class="font-bold text-amber-300 flex items-center justify-between">
-                            <span><i class="fa-brands fa-google mr-1.5"></i> Kết nối Google Search AI</span>
-                            <span id="gemini-key-indicator" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400">Chưa nhập Key</span>
-                        </div>
-                        <p class="text-[11px] text-slate-400 leading-relaxed">Để Chatbot tự động tổng hợp kết quả tìm kiếm Google thời gian thực và phân tích sâu tài liệu PDF/Word, hãy dán mã <strong>Gemini API Key</strong> (miễn phí tại <code>aistudio.google.com</code>).</p>
-                        <button onclick="configureApiKey()" class="w-full py-1.5 bg-amber-600/80 hover:bg-amber-600 text-white font-semibold rounded-lg text-xs transition">
-                            <i class="fa-solid fa-key mr-1"></i> Nhập / Cập nhật API Key
-                        </button>
+                    <div class="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/30 text-[11px] text-emerald-200 space-y-1">
+                        <div class="font-bold text-emerald-300"><i class="fa-solid fa-shield-check mr-1"></i> Chế độ hoạt động độc lập</div>
+                        <p class="text-slate-300 leading-relaxed">Tìm kiếm trực tiếp trong tài liệu nhà máy và nguồn tri thức mở (Wikipedia / DuckDuckGo) mà không cần API Key.</p>
                     </div>
                 </div>
 
@@ -359,10 +348,10 @@
                             <span class="font-bold text-sm">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <span id="chatbot-mode-badge" class="text-[11px] bg-emerald-950 border border-emerald-500/40 px-2.5 py-1 rounded text-emerald-300">
-                                <i class="fa-solid fa-brain mr-1"></i> RAG Tài liệu + Tra cứu trực tuyến
+                            <span class="text-[11px] bg-emerald-950 border border-emerald-500/40 px-2.5 py-1 rounded text-emerald-300">
+                                <i class="fa-solid fa-bolt mr-1"></i> Tài liệu Nhà máy + Tri thức mở
                             </span>
-                            <button onclick="clearChatHistory()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-[11px] text-slate-300 transition" title="Xóa lịch sử hội thoại để bắt đầu chủ đề mới">
+                            <button onclick="clearChatHistory()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-[11px] text-slate-300 transition" title="Làm mới khung chat">
                                 <i class="fa-solid fa-trash-can mr-1"></i> Làm mới chat
                             </button>
                         </div>
@@ -373,11 +362,11 @@
                             <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                             <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2">
                                 <p>Xin chào kỹ sư vận hành! Tôi là trợ lý kỹ thuật của <strong>NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW)</strong>.</p>
-                                <p class="text-xs text-slate-300">Hệ thống đã được nâng cấp bộ tìm kiếm theo ngữ cảnh (Smart RAG) và ghi nhớ mạch hội thoại. Bạn có thể hỏi về quy trình vận hành trong file đã tải lên hoặc đặt các câu hỏi kỹ thuật chuyên sâu như:</p>
+                                <p class="text-xs text-slate-300">Hãy nạp tài liệu nhà máy ở cột bên trái hoặc chọn nhanh một chủ đề bên dưới để tra cứu ngay:</p>
                                 <div class="flex flex-wrap gap-1.5 pt-1">
                                     <button onclick="askQuickQuestion('Nguyên nhân và cách xử lý khi Relay 27-2 tác động tại NMĐG V1-2?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Xử lý Relay 27-2 tác động?</button>
                                     <button onclick="askQuickQuestion('Thông số đường cong công suất Dynamic PC của tua-bin Goldwind 4MW tại nhà máy?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Đường cong công suất Goldwind 4MW?</button>
-                                    <button onclick="askQuickQuestion('Quy định LVRT và HVRT đối với nhà máy điện gió theo Thông tư 39/2015/TT-BCT?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Quy định LVRT/HVRT TT39?</button>
+                                    <button onclick="askQuickQuestion('Xử lý quá áp Relay 59 và chạm đất 59N trên lưới 35kV?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Xử lý Relay 59 / 59N?</button>
                                 </div>
                             </div>
                         </div>
@@ -491,7 +480,7 @@
                         <h2 class="text-base font-bold text-rose-400 flex items-center">
                             <i class="fa-solid fa-file-waveform mr-2"></i> Nạp bản ghi sự cố Rơ-le 27 / 59
                         </h2>
-                        <p class="text-xs text-slate-400">Chuyên sâu chẩn đoán bảo vệ điện áp <strong>27 (Kém áp / LVRT)</strong>, <strong>59 (Quá áp / HVRT)</strong>, <strong>59N (Quá áp thứ tự không $3U_0$)</strong> xuất từ Siemens DIGSI 5 / SIGRA hoặc ABB PCM600.</p>
+                        <p class="text-xs text-slate-400">Chuyên sâu chẩn đoán bảo vệ điện áp <strong>27 (Kém áp / LVRT)</strong>, <strong>59 (Quá áp / HVRT)</strong>, <strong>59N (Quá áp thứ tự không 3U0)</strong> xuất từ Siemens DIGSI 5 / SIGRA hoặc ABB PCM600.</p>
 
                         <div>
                             <label class="block text-xs text-slate-400 mb-1">Hãng / Dòng Rơ-le bảo vệ</label>
@@ -546,8 +535,8 @@
                                 <p>Hệ thống tự động phân tích chi tiết các bản ghi tác động bảo vệ điện áp từ rơ-le Siemens SIPROTEC và ABB Relion:</p>
                                 <ul class="list-disc list-inside space-y-1 text-slate-400">
                                     <li><strong>Relay 27 (27-1 / 27-2 / PTUV - Bảo vệ Kém áp):</strong> Phân tích sụt áp lưới truyền tải 110kV khu vực Duyên Hải – Trà Vinh, kiểm tra điều kiện <strong>LVRT (Low Voltage Ride Through)</strong> theo Thông tư 39/2015/TT-BCT hoặc lỗi mất áp thứ cấp mạch TU (MCB TU / Fuse Failure 60FL).</li>
-                                    <li><strong>Relay 59 (59-1 / 59-2 / PTOV - Bảo vệ Quá áp):</strong> Phân tích hiện tượng quá áp thanh cái 35kV/110kV do dư thừa công suất phản kháng ($Q$) của tuyến cáp ngầm 35kV khi gió thấp hoặc sa thải phụ tải đột ngột trên lưới.</li>
-                                    <li><strong>Relay 59N / 64G (Quá áp thứ tự không $3U_0$):</strong> Chẩn đoán dịch chuyển điểm trung tính trên lưới 35kV trung tính cách ly/trở kháng cao khi chạm đất 1 pha tuyến cáp ngầm nối các tua-bin Goldwind.</li>
+                                    <li><strong>Relay 59 (59-1 / 59-2 / PTOV - Bảo vệ Quá áp):</strong> Phân tích hiện tượng quá áp thanh cái 35kV/110kV do dư thừa công suất phản kháng (Q) của tuyến cáp ngầm 35kV khi gió thấp hoặc sa thải phụ tải đột ngột trên lưới.</li>
+                                    <li><strong>Relay 59N / 64G (Quá áp thứ tự không 3U0):</strong> Chẩn đoán dịch chuyển điểm trung tính trên lưới 35kV trung tính cách ly/trở kháng cao khi chạm đất 1 pha tuyến cáp ngầm nối các tua-bin Goldwind.</li>
                                 </ul>
                             </div>
                         </div>
@@ -572,43 +561,6 @@
     <script>
         if (window.pdfjsLib) {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        }
-
-        let GEMINI_API_KEY = localStorage.getItem("tttv_ai_studio_key") || "";
-
-        function updateApiKeyUI() {
-            const ind = document.getElementById("gemini-key-indicator");
-            const btn = document.getElementById("header-api-btn");
-            if (GEMINI_API_KEY && GEMINI_API_KEY.startsWith("AIza")) {
-                if (ind) {
-                    ind.className = "text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-semibold";
-                    ind.innerText = "Đã kết nối AI";
-                }
-                if (btn) {
-                    btn.className = "px-3 py-1.5 bg-emerald-950/60 hover:bg-emerald-900/70 text-emerald-300 border border-emerald-500/40 text-xs rounded-lg transition flex items-center space-x-1.5";
-                }
-            } else {
-                if (ind) {
-                    ind.className = "text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400";
-                    ind.innerText = "Chưa nhập Key";
-                }
-            }
-        }
-
-        function configureApiKey() {
-            const newKey = prompt("Dán mã Gemini API Key (bắt đầu bằng AIzaSy...) từ Google AI Studio (https://aistudio.google.com/apikey) để kích hoạt AI + Google Search:", GEMINI_API_KEY);
-            if (newKey !== null) {
-                GEMINI_API_KEY = newKey.trim();
-                localStorage.setItem("tttv_ai_studio_key", GEMINI_API_KEY);
-                updateApiKeyUI();
-                if (GEMINI_API_KEY.startsWith("AIza")) {
-                    alert("Đã lưu API Key thành công! Chatbot đã sẵn sàng tổng hợp tài liệu nhà máy và tìm kiếm Google thời gian thực.");
-                } else if (GEMINI_API_KEY === "") {
-                    alert("Đã xóa API Key. Chatbot sẽ sử dụng kho tri thức nội bộ và tra cứu trực tuyến mặc định.");
-                } else {
-                    alert("Lưu ý: Mã API Key từ Google AI Studio thường bắt đầu bằng 'AIzaSy...'. Vui lòng kiểm tra lại nếu gặp lỗi kết nối.");
-                }
-            }
         }
 
         // ==================== 1. ĐĂNG NHẬP ====================
@@ -1059,7 +1011,6 @@
 
         function initDashboard() {
             if (isInitialized) return;
-            updateApiKeyUI();
             generateDefaultWindSeries();
             renderForecastView();
             renderTurbines();
@@ -1305,42 +1256,41 @@
             }
         }
 
-        // ==================== 3. CHATBOX VẬN HÀNH (SMART RAG CHUNKING + MULTI-TURN AI + GOOGLE SEARCH) ====================
-        let knowledgeChunks = []; // Mảng chứa các đoạn văn bản đã chia từ tài liệu upload
-        let chatHistory = [];     // Lưu lịch sử hội thoại để hỏi nối tiếp
+        // ==================== 3. CHATBOX VẬN HÀNH (100% KHÔNG CẦN API KEY) ====================
+        let knowledgeChunks = [];
 
-        // Kho tri thức kỹ thuật cốt lõi tích hợp sẵn của NMĐG V1-2 Trà Vinh
         const BUILTIN_PLANT_KB = [
             {
                 source: "Thông số kỹ thuật NMĐG V1-2 Trà Vinh",
-                text: "Nhà máy Điện gió V1-2 Trà Vinh có công suất thiết kế 48 MW, gồm 12 tua-bin gió Goldwind công suất 4.0 MW mỗi tổ máy, đặt tại Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long. Đường cong công suất Dynamic PC (mật độ không khí 1.15 kg/m³, độ nhiễu động TI 10%): tốc độ gió khởi động (Cut-in) là 2.5 m/s (0.3 kW), đạt công suất định mức 4000 kW từ 11.0 m/s đến 18.5 m/s, giảm công suất ở gió lớn từ 19.0 m/s (3987 kW) đến 24.0 m/s (1866 kW) và cắt gió (Cut-out) trên 24.0 m/s."
+                text: "Nhà máy Điện gió V1-2 Trà Vinh có công suất thiết kế 48 MW, gồm 12 tua-bin gió Goldwind công suất 4.0 MW mỗi tổ máy, đặt tại Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long. Đường cong công suất Dynamic PC (mật độ không khí 1.15 kg/m³, TI 10%): tốc độ gió khởi động Cut-in 2.5 m/s (0.3 kW), đạt định mức 4000 kW từ 11.0 m/s đến 18.5 m/s, giảm công suất ở gió lớn từ 19.0 m/s (3987 kW) đến 24.0 m/s (1866 kW) và cắt gió Cut-out trên 24.0 m/s."
             },
             {
-                source: "Quy định vận hành & Relay 27/59 (TT 39/2015/TT-BCT)",
-                text: "Bảo vệ kém áp Relay 27 (27-1, 27-2, PTUV) và quá áp Relay 59 (59-1, 59-2, PTOV) giám sát điện áp thanh cái 110kV và 35kV. Theo Thông tư 39/2015/TT-BCT, các tổ máy điện gió phải có khả năng chịu đựng điện áp thấp (LVRT) và quá áp (HVRT) trong khoảng thời gian quy định trước khi tách lưới. Khi Relay 27-2 tác động, nguyên nhân thường do sự cố ngắn mạch trên lưới truyền tải 110kV/220kV khu vực Duyên Hải - Trà Vinh hoặc nhảy MCB nhị thứ biến điện áp TU. Khi Relay 59 tác động vào lúc gió thấp, nguyên nhân thường do cáp ngầm 35kV phát dư thừa công suất phản kháng dung kháng (+Q) đẩy điện áp thanh cái lên cao; cần chuyển bộ điều khiển PPC sang chế độ điều áp tự động để hút công suất phản kháng (-Q)."
+                source: "Bảo vệ kém áp Relay 27 & LVRT (TT 39/2015/TT-BCT)",
+                text: "Relay 27 (27-1, 27-2, PTUV) giám sát điện áp thấp thanh cái 110kV và 35kV. Theo Thông tư 39/2015/TT-BCT, tổ máy điện gió phải duy trì phát điện (LVRT) khi điện áp lưới sụt giảm trong giới hạn cho phép. Khi Relay 27-2 tác động cắt máy cắt, nguyên nhân thường do sự cố ngắn mạch lưới truyền tải 110kV/220kV khu vực Duyên Hải - Trà Vinh làm sụt áp sâu hoặc nhảy MCB mạch nhị thứ biến điện áp TU (60FL). Cần kiểm tra đồ thị Uab, Ubc, Uca trên SCADA, kiểm tra MCB TU và xin lệnh Điều độ A2 khôi phục khi lưới ổn định."
             },
             {
-                source: "Bảo vệ chạm đất lưới 35kV (Relay 59N / 50N / 67N)",
-                text: "Lưới phân phối 35kV nối các tua-bin Goldwind về trạm biến áp nâng áp 110/35kV sử dụng cáp ngầm 35kV. Khi xảy ra chạm đất 1 pha trên cáp ngầm hoặc đầu cáp T-plug tại tủ RMU chân trụ tua-bin, điện áp thứ tự không 3U0 tăng cao kích hoạt Relay 59N và quá dòng chạm đất có hướng 67N/50N. Pha bị chạm đất có điện áp giảm gần về 0 kV trong khi 2 pha lành tăng lên bằng điện áp dây (~35 kV). Cần kiểm tra chỉ thị sự cố (Fault Indicator) tại các tủ RMU dọc xuất tuyến 371, 372, 373 để khoanh vùng đoạn cáp sự cố."
+                source: "Bảo vệ quá áp Relay 59 & 59N (Lưới 35kV / 110kV)",
+                text: "Relay 59 (59-1, 59-2, PTOV) bảo vệ quá áp thanh cái. Tại nhà máy điện gió, vào thời điểm gió thấp, hệ thống cáp ngầm 35kV sinh ra lượng công suất phản kháng dung kháng (+Q) lớn đẩy điện áp thanh cái 35kV/110kV tăng cao vượt ngưỡng 110% Un. Biện pháp xử lý: kiểm tra bộ điều khiển PPC, chuyển sang chế độ điều áp tự động hoặc đặt cosφ cảm kháng để hút công suất phản kháng (-Q) kéo điện áp xuống. Nếu tác động Relay 59N (3U0 tăng cao), nguyên nhân là chạm đất 1 pha trên cáp ngầm 35kV hoặc đầu cáp T-plug tủ RMU tua-bin."
+            },
+            {
+                source: "Vận hành Máy biến áp lực 110/35kV & Trạm biến áp",
+                text: "Máy biến áp lực 110/35kV tại trạm nâng áp NMĐG V1-2 được bảo vệ bởi so lệch dọc 87T, quá dòng 50/51, rơ-le hơi Buchholz, rơ-le dòng dầu OLTC và nhiệt độ dầu/cuộn dây. Khi bảo vệ 87T hoặc Buchholz tác động, tuyệt đối không đóng điện lại máy biến áp khi chưa thí nghiệm cách điện, tỷ số biến và phân tích khí hòa tan trong dầu (DGA)."
             }
         ];
 
-        function chunkTextWithOverlap(text, sourceName, chunkSize = 750, overlap = 150) {
+        function chunkTextWithOverlap(text, sourceName, chunkSize = 650, overlap = 120) {
             const clean = text.replace(/\r\n/g, "\n").replace(/[ \t]+/g, " ").trim();
             if (!clean) return [];
             const chunks = [];
             let start = 0;
             while (start < clean.length) {
                 let end = Math.min(start + chunkSize, clean.length);
-                // Cố gắng ngắt ở dấu xuống dòng hoặc dấu chấm câu để không đứt giữa câu
                 if (end < clean.length) {
                     const lastBreak = Math.max(clean.lastIndexOf("\n", end), clean.lastIndexOf(". ", end));
                     if (lastBreak > start + chunkSize * 0.5) end = lastBreak + 1;
                 }
                 const slice = clean.slice(start, end).trim();
-                if (slice.length > 15) {
-                    chunks.push({ source: sourceName, text: slice });
-                }
+                if (slice.length > 15) chunks.push({ source: sourceName, text: slice });
                 if (end >= clean.length) break;
                 start = Math.max(start + 1, end - overlap);
             }
@@ -1383,7 +1333,8 @@
 
                     const newChunks = chunkTextWithOverlap(extractedText, file.name);
                     knowledgeChunks.push(...newChunks);
-                    document.getElementById('doc-chunk-count').innerText = `${knowledgeChunks.length} đoạn dữ liệu`;
+                    const countEl = document.getElementById('doc-chunk-count');
+                    if (countEl) countEl.innerText = `${knowledgeChunks.length} đoạn dữ liệu`;
 
                     list.innerHTML += `<li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-emerald-500/50"><span class="truncate pr-2"><i class="fa-solid ${icon} mr-2"></i>${file.name}</span><span class="text-emerald-400 text-[10px] whitespace-nowrap">${newChunks.length} đoạn</span></li>`;
                 } catch (err) {
@@ -1392,144 +1343,89 @@
             }
         }
 
-        // Chấm điểm và truy xuất top đoạn văn liên quan nhất trong tài liệu nội bộ + tri thức sẵn có
-        function retrieveTopRelevantChunks(query, topK = 5) {
+        function retrieveTopRelevantChunks(query, topK = 4) {
             const allSources = [...knowledgeChunks, ...BUILTIN_PLANT_KB];
             const stopWords = new Set(["là", "gì", "của", "và", "các", "những", "cho", "tôi", "hỏi", "về", "như", "thế", "nào", "tại", "khi", "có", "được", "không", "trong", "với", "theo"]);
-            const tokens = query.toLowerCase()
-                .replace(/[?.,!;:()\[\]"]/g, " ")
-                .split(/\s+/)
-                .filter(w => w.length >= 2 && !stopWords.has(w));
+            const tokens = query.toLowerCase().replace(/[?.,!;:()\[\]"]/g, " ").split(/\s+/).filter(w => w.length >= 2 && !stopWords.has(w));
+            if (tokens.length === 0) return { chunks: [], tokens: [] };
 
-            if (tokens.length === 0) return [];
-
-            // Tạo thêm cặp từ ghép (bigrams) để ưu tiên khớp chính xác thuật ngữ như "relay 27", "máy biến áp", "đường cong"
             const bigrams = [];
-            for (let i = 0; i < tokens.length - 1; i++) {
-                bigrams.push(tokens[i] + " " + tokens[i + 1]);
-            }
+            for (let i = 0; i < tokens.length - 1; i++) bigrams.push(tokens[i] + " " + tokens[i + 1]);
 
             const scored = allSources.map(chunk => {
                 const lower = chunk.text.toLowerCase();
                 let score = 0;
                 tokens.forEach(tok => {
                     if (lower.includes(tok)) {
-                        score += 2;
-                        // Thưởng thêm điểm nếu từ khóa xuất hiện nhiều lần
-                        const occurrences = lower.split(tok).length - 1;
-                        score += Math.min(3, occurrences * 0.5);
+                        score += 2 + Math.min(3, (lower.split(tok).length - 1) * 0.5);
                     }
                 });
-                bigrams.forEach(bg => {
-                    if (lower.includes(bg)) score += 5;
-                });
-                // Ưu tiên tài liệu do người dùng tự tải lên
-                if (!chunk.source.startsWith("Thông số kỹ thuật") && !chunk.source.startsWith("Quy định vận hành") && !chunk.source.startsWith("Bảo vệ chạm đất")) {
-                    score *= 1.3;
-                }
+                bigrams.forEach(bg => { if (lower.includes(bg)) score += 6; });
+                if (!BUILTIN_PLANT_KB.some(b => b.source === chunk.source)) score *= 1.4;
                 return { ...chunk, score };
             });
 
-            return scored
-                .filter(item => item.score > 0)
-                .sort((a, b) => b.score - a.score)
-                .slice(0, topK);
+            return {
+                chunks: scored.filter(item => item.score > 0).sort((a, b) => b.score - a.score).slice(0, topK),
+                tokens
+            };
         }
 
-        // Gọi Gemini API (tự động thử các model ổn định 2026 + bật Google Search Grounding)
-        async function callGeminiWithGoogleSearch(userMsg, contextText) {
-            const modelsToTry = ["gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-4-hydrogen", "gemini-2.5-flash"];
-            const systemInstructionText = `Bạn là Kỹ sư Trưởng ca & Trợ lý Kỹ thuật Vận hành chuyên sâu của Nhà máy Điện gió V1-2 Trà Vinh (48 MW - 12 tua-bin Goldwind 4 MW, tại Khóm Cồn Tàu, xã Trường Long Hòa, tỉnh Vĩnh Long).
-Quy tắc trả lời bắt buộc:
-1. Ưu tiên tuyệt đối thông tin trong phần [TÀI LIỆU NỘI BỘ NHÀ MÁY] nếu có số liệu liên quan.
-2. Kết hợp công cụ Google Search để bổ sung thông tin kỹ thuật, quy chuẩn ngành điện Việt Nam (Thông tư 39/2015/TT-BCT, quy trình điều độ A2/NSMO, tài liệu hãng Goldwind, Siemens SIPROTEC, ABB) chính xác và cập nhật nhất.
-3. Trả lời trực tiếp vào trọng tâm câu hỏi bằng tiếng Việt rõ ràng, mạch lạc, có gạch đầu dòng thông số cụ thể. Không yêu cầu người dùng tự mở link Google.`;
-
-            const contentsPayload = [
-                ...chatHistory.slice(-6), // Giữ 3 lượt hội thoại gần nhất để hiểu ngữ cảnh nối tiếp
-                {
-                    role: "user",
-                    parts: [{
-                        text: `[TÀI LIỆU NỘI BỘ NHÀ MÁY TRÍCH XUẤT]:\n${contextText || "(Chưa có tài liệu riêng khớp từ khóa, hãy dùng kiến thức kỹ thuật & Google Search)"}\n\n[CÂU HỎI CỦA KỸ SƯ VẬN HÀNH]:\n${userMsg}`
-                    }]
+        function highlightTokens(text, tokens) {
+            let safe = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            tokens.forEach(tok => {
+                if (tok.length >= 2) {
+                    const re = new RegExp(`(${tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                    safe = safe.replace(re, '<mark class="bg-amber-500/30 text-amber-200 px-0.5 rounded">$1</mark>');
                 }
-            ];
-
-            let lastError = null;
-            for (const modelId of modelsToTry) {
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            system_instruction: { parts: [{ text: systemInstructionText }] },
-                            contents: contentsPayload,
-                            tools: [{ google_search: {} }]
-                        })
-                    });
-                    const data = await response.json();
-                    if (!response.ok || data.error) {
-                        lastError = data.error?.message || `HTTP ${response.status}`;
-                        continue;
-                    }
-                    const candidate = data.candidates?.[0];
-                    const replyText = candidate?.content?.parts?.map(p => p.text).join("") || "";
-                    if (replyText.trim().length > 0) {
-                        // Lấy danh sách nguồn web thực tế từ Google Search Grounding (nếu có)
-                        let webSources = [];
-                        const chunks = candidate?.groundingMetadata?.groundingChunks || [];
-                        chunks.forEach(c => {
-                            if (c.web?.title) webSources.push(c.web.title);
-                        });
-                        return { text: replyText, model: modelId, webSources: [...new Set(webSources)].slice(0, 4) };
-                    }
-                } catch (e) {
-                    lastError = e.message;
-                }
-            }
-            throw new Error(lastError || "Không kết nối được Gemini API");
+            });
+            return safe.replace(/\n/g, "<br>");
         }
 
-        // Tra cứu trực tuyến dự phòng (Wikipedia VI/EN + Kho nội bộ) khi chưa nhập API Key
-        async function fetchDirectKnowledgeAnswer(query) {
-            const cleanQuery = query.replace(/\?|là gì|như thế nào|cách|quy trình|nguyên nhân|xử lý/gi, " ").replace(/\s+/g, " ").trim() || query;
-            
-            for (const lang of ["vi", "en"]) {
-                try {
-                    const searchUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json&origin=*`;
-                    const res = await fetch(searchUrl);
-                    const data = await res.json();
-                    if (data.query?.search?.length > 0) {
-                        const topTitle = data.query.search[0].title;
-                        const extractUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(topTitle)}&format=json&origin=*`;
-                        const extRes = await fetch(extractUrl);
-                        const extData = await extRes.json();
-                        const pages = extData.query?.pages;
-                        if (pages) {
-                            const pageId = Object.keys(pages)[0];
-                            const fullText = pages[pageId]?.extract;
-                            if (fullText && fullText.trim().length > 30) {
-                                return `<div class="p-3 bg-slate-900/90 rounded-lg border border-slate-700 text-xs space-y-1.5 text-slate-200 leading-relaxed">
-                                    <div class="font-bold text-sky-400"><i class="fa-solid fa-book-open mr-1"></i> Tài liệu tham khảo mở rộng (${topTitle}):</div>
-                                    <p>${fullText.replace(/\n/g, "<br>")}</p>
-                                </div>`;
+        async function fetchFreeOnlineKnowledge(query) {
+            const cleanQuery = query.replace(/\?|là gì|như thế nào|cách|quy trình|nguyên nhân|xử lý|định nghĩa/gi, " ").replace(/\s+/g, " ").trim() || query;
+            let resultsHtml = "";
+
+            try {
+                const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(cleanQuery)}&format=json&no_html=1&skip_disambig=1`;
+                const ddgRes = await fetch(ddgUrl);
+                const ddgData = await ddgRes.json();
+                if (ddgData.AbstractText && ddgData.AbstractText.trim().length > 25) {
+                    resultsHtml += `<div class="p-3 bg-slate-900/90 rounded-lg border border-emerald-500/40 text-xs space-y-1 text-slate-200 leading-relaxed">
+                        <div class="font-bold text-emerald-400"><i class="fa-solid fa-globe mr-1"></i> Tổng hợp trực tuyến (${ddgData.Heading || cleanQuery}):</div>
+                        <p>${ddgData.AbstractText}</p>
+                    </div>`;
+                }
+            } catch (e) {}
+
+            if (!resultsHtml) {
+                for (const lang of ["vi", "en"]) {
+                    try {
+                        const searchUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json&origin=*`;
+                        const res = await fetch(searchUrl);
+                        const data = await res.json();
+                        if (data.query?.search?.length > 0) {
+                            const topTitle = data.query.search[0].title;
+                            const extractUrl = `https://${lang}.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(topTitle)}&format=json&origin=*`;
+                            const extRes = await fetch(extractUrl);
+                            const extData = await extRes.json();
+                            const pages = extData.query?.pages;
+                            if (pages) {
+                                const pageId = Object.keys(pages)[0];
+                                const fullText = pages[pageId]?.extract;
+                                if (fullText && fullText.trim().length > 30) {
+                                    resultsHtml += `<div class="p-3 bg-slate-900/90 rounded-lg border border-sky-500/40 text-xs space-y-1.5 text-slate-200 leading-relaxed">
+                                        <div class="font-bold text-sky-400"><i class="fa-solid fa-book-open mr-1"></i> Tra cứu mở rộng (${topTitle}):</div>
+                                        <p>${fullText.replace(/\n/g, "<br>")}</p>
+                                    </div>`;
+                                    break;
+                                }
                             }
                         }
-                    }
-                } catch (e) {}
+                    } catch (e) {}
+                }
             }
-            return "";
-        }
-
-        function formatMarkdownToHtml(text) {
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/\*\*(.*?)\*\*/g, "<strong class='text-white'>$1</strong>")
-                .replace(/^\* (.*$)/gm, "<li class='ml-4 list-disc'>$1</li>")
-                .replace(/^- (.*$)/gm, "<li class='ml-4 list-disc'>$1</li>")
-                .replace(/\n/g, "<br>");
+            return resultsHtml;
         }
 
         function askQuickQuestion(text) {
@@ -1538,13 +1434,11 @@ Quy tắc trả lời bắt buộc:
         }
 
         function clearChatHistory() {
-            chatHistory = [];
-            const box = document.getElementById('chat-messages');
-            box.innerHTML = `
+            document.getElementById('chat-messages').innerHTML = `
                 <div class="flex items-start space-x-3">
                     <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                     <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl text-xs text-slate-200">
-                        Đã làm mới lịch sử hội thoại. Mời bạn đặt câu hỏi mới!
+                        Đã làm mới khung chat. Mời bạn nhập câu hỏi kỹ thuật hoặc nội dung cần tra cứu!
                     </div>
                 </div>`;
         }
@@ -1559,98 +1453,40 @@ Quy tắc trả lời bắt buộc:
             input.value = '';
 
             const loadingId = "loading-" + Date.now();
-            box.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-xs text-slate-300">Đang phân tích ngữ cảnh, đối chiếu tài liệu nhà máy & tìm kiếm dữ liệu chính xác...</div></div>`;
+            box.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-xs text-slate-300">Đang quét tài liệu nhà máy và tra cứu dữ liệu mở...</div></div>`;
             box.scrollTop = box.scrollHeight;
 
-            // 1. Truy xuất các đoạn văn bản liên quan nhất từ tài liệu đã nạp + tri thức nhà máy
-            const topChunks = retrieveTopRelevantChunks(msg, 5);
-            const contextStr = topChunks.map((c, idx) => `[Nguồn ${idx + 1}: ${c.source}]\n${c.text}`).join("\n\n");
+            const { chunks: topChunks, tokens } = retrieveTopRelevantChunks(msg, 3);
+            const webHtml = await fetchFreeOnlineKnowledge(msg);
+            document.getElementById(loadingId)?.remove();
 
-            try {
-                if (GEMINI_API_KEY && GEMINI_API_KEY.startsWith("AIza")) {
-                    const aiRes = await callGeminiWithGoogleSearch(msg, contextStr);
-                    document.getElementById(loadingId)?.remove();
-
-                    // Lưu vào bộ nhớ hội thoại
-                    chatHistory.push({ role: "user", parts: [{ text: msg }] });
-                    chatHistory.push({ role: "model", parts: [{ text: aiRes.text }] });
-
-                    const usedSources = [
-                        ...topChunks.map(c => c.source),
-                        ...aiRes.webSources.map(w => `Google: ${w}`)
-                    ];
-                    const uniqueSources = [...new Set(usedSources)].slice(0, 5);
-                    const sourceBadges = uniqueSources.length > 0
-                        ? `<div class="pt-2 border-t border-slate-700 flex flex-wrap gap-1.5 items-center text-[10px] text-slate-400">
-                            <span class="font-semibold text-slate-300">Nguồn đối chiếu:</span>
-                            ${uniqueSources.map(s => `<span class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded text-sky-300">${s}</span>`).join("")}
-                           </div>`
-                        : "";
-
-                    box.innerHTML += `
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-slate-800 p-3.5 rounded-lg border border-emerald-500/40 max-w-2xl space-y-2 text-slate-200 leading-relaxed">
-                                <div class="text-[11px] text-emerald-400 font-semibold flex items-center justify-between">
-                                    <span><i class="fa-brands fa-google mr-1"></i> AI Tổng hợp Tài liệu & Google Search</span>
-                                    <span class="text-[10px] text-slate-400 font-normal">${aiRes.model}</span>
-                                </div>
-                                <div class="text-xs sm:text-sm">${formatMarkdownToHtml(aiRes.text)}</div>
-                                ${sourceBadges}
-                            </div>
-                        </div>`;
-                } else {
-                    // Chế độ không dùng API Key: Hiển thị trích xuất thông minh từ tài liệu + Wikipedia
-                    const webHtml = await fetchDirectKnowledgeAnswer(msg);
-                    document.getElementById(loadingId)?.remove();
-
-                    let localHtml = "";
-                    if (topChunks.length > 0) {
-                        localHtml = `<div class="p-3 bg-slate-900/95 rounded-lg border border-sky-500/50 text-xs space-y-2">
-                            <div class="text-sky-400 font-bold"><i class="fa-solid fa-file-lines mr-1"></i> Kết quả khớp chính xác nhất trong Tài liệu Nhà máy:</div>
-                            ${topChunks.slice(0, 3).map(c => `
-                                <div class="pl-2.5 border-l-2 border-sky-500/60 space-y-0.5">
-                                    <div class="text-[10px] text-amber-300 font-semibold">[${c.source}]</div>
-                                    <p class="text-slate-200 leading-relaxed">${c.text}</p>
-                                </div>
-                            `).join("")}
-                        </div>`;
-                    }
-
-                    const hintBanner = `<div class="p-2.5 rounded bg-amber-950/40 border border-amber-500/30 text-[11px] text-amber-200 flex items-center justify-between gap-2">
-                        <span><i class="fa-solid fa-lightbulb mr-1 text-amber-400"></i> Muốn AI tự tổng hợp từ Google Search & viết câu trả lời phân tích sâu hơn?</span>
-                        <button onclick="configureApiKey()" class="px-2 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded font-semibold whitespace-nowrap">Nhập API Key</button>
-                    </div>`;
-
-                    box.innerHTML += `
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2.5 text-slate-200">
-                                <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Kết quả tra cứu Tài liệu & Tri thức mở</div>
-                                ${localHtml}
-                                ${webHtml}
-                                ${(!localHtml && !webHtml) ? '<p class="text-xs text-slate-300">Chưa tìm thấy thông tin trùng khớp. Hãy nạp tài liệu PDF/Word/Excel của nhà máy ở cột bên trái hoặc nhập Gemini API Key để tìm kiếm trực tiếp trên Google.</p>' : ''}
-                                ${hintBanner}
-                            </div>
-                        </div>`;
-                }
-            } catch (error) {
-                const webHtml = await fetchDirectKnowledgeAnswer(msg);
-                document.getElementById(loadingId)?.remove();
-                let localHtml = topChunks.length > 0
-                    ? `<div class="p-3 bg-slate-900 rounded border border-sky-500/40 text-xs space-y-1.5"><div class="text-sky-400 font-bold">Trích xuất từ tài liệu nội bộ:</div>${topChunks.slice(0, 3).map(c => `<p class="text-slate-200">• <strong>[${c.source}]</strong>: ${c.text}</p>`).join("")}</div>`
-                    : "";
-
-                box.innerHTML += `
-                    <div class="flex items-start space-x-3">
-                        <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
-                        <div class="bg-slate-800 p-3.5 rounded-lg border border-rose-500/40 max-w-2xl space-y-2 text-slate-200">
-                            <div class="text-[11px] text-rose-400 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Lỗi gọi Google AI API (${error.message}) — Đã chuyển sang dữ liệu nội bộ:</div>
-                            ${localHtml}
-                            ${webHtml}
+            let localHtml = "";
+            if (topChunks.length > 0) {
+                localHtml = `<div class="p-3 bg-slate-900/95 rounded-lg border border-sky-500/50 text-xs space-y-2.5">
+                    <div class="text-sky-400 font-bold"><i class="fa-solid fa-file-lines mr-1"></i> Trích xuất trực tiếp từ Tài liệu & Dữ liệu Nhà máy:</div>
+                    ${topChunks.map(c => `
+                        <div class="pl-2.5 border-l-2 border-amber-400/70 space-y-1">
+                            <div class="text-[11px] text-amber-300 font-semibold">[Nguồn: ${c.source}]</div>
+                            <p class="text-slate-200 leading-relaxed">${highlightTokens(c.text, tokens)}</p>
                         </div>
-                    </div>`;
+                    `).join("")}
+                </div>`;
             }
+
+            const fallbackMsg = (!localHtml && !webHtml)
+                ? `<p class="text-xs text-slate-300">Chưa tìm thấy đoạn nội dung trùng khớp từ khóa <strong>"${safeMsg}"</strong>. Bạn hãy thử dùng từ khóa ngắn hơn (ví dụ: <em>"Relay 27"</em>, <em>"Dynamic PC"</em>, <em>"Máy biến áp"</em>) hoặc tải thêm file PDF/Word tài liệu nhà máy vào cột bên trái.</p>`
+                : "";
+
+            box.innerHTML += `
+                <div class="flex items-start space-x-3">
+                    <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2.5 text-slate-200">
+                        <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Kết quả tra cứu trực tiếp (Không cần API Key)</div>
+                        ${localHtml}
+                        ${webHtml}
+                        ${fallbackMsg}
+                    </div>
+                </div>`;
             box.scrollTop = box.scrollHeight;
         }
 

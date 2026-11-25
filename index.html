@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TTTV_NMĐG V1-2 Trà Vinh | Hệ thống Quản lý & Vận hành V2.0</title>
+    <title>TTTV_NMĐG V1-2 Trà Vinh | Hệ thống Quản lý & Vận hành V2.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -106,7 +106,7 @@
             </div>
         </header>
 
-        <!-- MAIN NAVIGATION TABS (3 MỤC CHÍNH THEO THIẾT KẾ) -->
+        <!-- MAIN NAVIGATION TABS -->
         <nav class="bg-slate-800/80 px-6 flex space-x-2 border-b border-slate-700 overflow-x-auto">
             <button onclick="switchMainTab('turbines')" id="btn-main-turbines" class="tab-active px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-fan"></i>
@@ -131,7 +131,7 @@
                 <div class="flex flex-wrap gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 w-fit">
                     <button onclick="switchSubTab('turbines', 'forecast')" id="subbtn-turbines-forecast" class="subtab-active px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-chart-line text-sky-300"></i>
-                        <span>1.1 Dự báo công suất (Windy D+1, D+2, W+1 - Chu kỳ 30 phút)</span>
+                        <span>1.1 Dự báo công suất (Windy D, D+1, D+2, W+1 - Chu kỳ 30 phút)</span>
                     </button>
                     <button onclick="switchSubTab('turbines', 'health')" id="subbtn-turbines-health" class="text-slate-300 hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-heart-pulse text-emerald-400"></i>
@@ -139,9 +139,8 @@
                     </button>
                 </div>
 
-                <!-- SUB-TAB 1.1: DỰ BÁO CÔNG SUẤT TỪ WINDY (D+1, D+2, W+1 - CHU KỲ 30 PHÚT) -->
+                <!-- SUB-TAB 1.1: DỰ BÁO CÔNG SUẤT TỪ WINDY (D, D+1, D+2, W+1 - CHU KỲ 30 PHÚT) -->
                 <div id="sub-turbines-forecast" class="space-y-6">
-                    <!-- Windy Live Radar & Control Bar -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <!-- Bản đồ gió Windy trực tiếp tại tọa độ NMĐG V1-2 Trà Vinh -->
                         <div class="card p-4 flex flex-col justify-between space-y-3">
@@ -149,35 +148,58 @@
                                 <h3 class="text-sm font-bold text-sky-400"><i class="fa-solid fa-wind mr-1.5"></i>Bản đồ gió Windy trực tiếp (Cồn Tàu)</h3>
                                 <a href="https://www.windy.com/9.660/106.560?9.660,106.560,11" target="_blank" class="text-[11px] text-sky-300 underline hover:text-white">Mở web Windy <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
                             </div>
-                            <div class="rounded-lg overflow-hidden border border-slate-700 h-64 bg-slate-950">
+                            <div class="rounded-lg overflow-hidden border border-slate-700 h-72 bg-slate-950">
                                 <iframe width="100%" height="100%" src="https://embed.windy.com/embed2.html?lat=9.660&lon=106.560&detailLat=9.660&detailLon=106.560&width=650&height=450&zoom=10&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=m%2Fs&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
                             </div>
-                            <p class="text-[11px] text-slate-400">Tọa độ NMĐG V1-2: 9.660°N, 106.560°E | Độ cao Hub tua-bin Goldwind: ~100–120m (hệ số trượt gió α = 0.14).</p>
+                            <p class="text-[11px] text-slate-400">Tọa độ NMĐG V1-2: 9.660°N, 106.560°E | Độ cao Hub Goldwind 4MW: ~100–120m.</p>
                         </div>
 
-                        <!-- Bộ cấu hình & Nạp dữ liệu gió Windy -->
+                        <!-- Bộ cấu hình & Nạp file Đường cong công suất Excel + Dữ liệu Windy -->
                         <div class="card p-5 lg:col-span-2 flex flex-col justify-between space-y-4">
-                            <div>
-                                <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                            <div class="space-y-4">
+                                <div class="flex flex-wrap justify-between items-center gap-2">
                                     <div>
                                         <h2 class="text-base font-bold text-white">Mô hình Dự báo Công suất Phát điện (Chu kỳ 30 phút)</h2>
-                                        <p class="text-xs text-slate-400">Quy đổi tốc độ gió từ Windy (mô hình ECMWF/GFS) qua đường cong công suất chuẩn Goldwind 4 MW × 12 tổ máy (48 MW).</p>
+                                        <p class="text-xs text-slate-400">Tính toán theo tốc độ gió Windy/ECMWF kết hợp Đường cong công suất chuẩn Goldwind 4 MW.</p>
                                     </div>
-                                    <div class="flex space-x-2">
-                                        <button onclick="fetchLiveWindForecast()" id="btn-fetch-wind" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition flex items-center">
+                                    <div class="flex flex-wrap gap-2">
+                                        <button onclick="fetchLiveWindForecast()" id="btn-fetch-wind" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
                                             <i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> Cập nhật gió trực tuyến
                                         </button>
-                                        <button onclick="exportForecastExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition flex items-center">
-                                            <i class="fa-solid fa-file-excel mr-1.5"></i> Xuất Excel (A2/A0)
+                                        <button onclick="exportForecastExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
+                                            <i class="fa-solid fa-file-excel mr-1.5"></i> Xuất Excel dự báo
                                         </button>
                                     </div>
                                 </div>
 
-                                <!-- Thanh chọn kỳ dự báo & Nạp file Windy thủ công -->
+                                <!-- Khu vực upload file Đường cong công suất Excel (MỚI) -->
+                                <div class="p-3.5 rounded-lg bg-amber-950/25 border border-amber-500/40 flex flex-wrap justify-between items-center gap-3">
+                                    <div class="space-y-0.5">
+                                        <div class="text-xs font-bold text-amber-300 flex items-center">
+                                            <i class="fa-solid fa-wave-square mr-1.5"></i> Đường cong công suất (Power Curve Excel)
+                                        </div>
+                                        <div class="text-[11px] text-slate-300" id="power-curve-status-text">
+                                            Đang dùng đường cong tiêu chuẩn Goldwind 4.0 MW mặc định (3–25 m/s).
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <button onclick="downloadSamplePowerCurve()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-[11px] text-slate-300 transition" title="Tải file Excel mẫu để xem định dạng cột">
+                                            <i class="fa-solid fa-download mr-1"></i> File mẫu
+                                        </button>
+                                        <label class="cursor-pointer bg-amber-600 hover:bg-amber-500 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center">
+                                            <i class="fa-solid fa-file-excel mr-1.5"></i>
+                                            <span id="power-curve-file-label">Upload Power Curve (.xlsx)</span>
+                                            <input type="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="handlePowerCurveUpload(this)">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Thanh chọn kỳ dự báo (D, D+1, D+2, W+1) & Nạp file gió Windy -->
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/80 p-3.5 rounded-lg border border-slate-700">
                                     <div>
                                         <label class="block text-[11px] text-slate-400 mb-1">Chọn kỳ dự báo (Chu kỳ 30 phút)</label>
                                         <select id="forecast-horizon" onchange="renderForecastView()" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-white font-semibold">
+                                            <option value="D0" selected>Ngày D (Hôm nay - 48 chu kỳ 30p)</option>
                                             <option value="D1">Ngày D+1 (Ngày mai - 48 chu kỳ 30p)</option>
                                             <option value="D2">Ngày D+2 (Ngày mốt - 48 chu kỳ 30p)</option>
                                             <option value="W1">Tuần W+1 (7 ngày tới - 336 chu kỳ 30p)</option>
@@ -188,8 +210,8 @@
                                         <input type="number" id="forecast-avail-wtg" value="12" min="1" max="12" onchange="recalculateForecastFromWind()" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-emerald-400 font-bold">
                                     </div>
                                     <div>
-                                        <label class="block text-[11px] text-slate-400 mb-1">Hoặc nạp file CSV/Excel xuất từ Windy</label>
-                                        <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-amber-300 flex items-center justify-center truncate">
+                                        <label class="block text-[11px] text-slate-400 mb-1">Hoặc nạp file gió CSV/Excel từ Windy</label>
+                                        <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-sky-300 flex items-center justify-center truncate">
                                             <i class="fa-solid fa-upload mr-1.5"></i>
                                             <span id="windy-file-label">Nạp file gió Windy...</span>
                                             <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleWindyFileUpload(this)">
@@ -199,9 +221,7 @@
                             </div>
 
                             <!-- Chỉ số tổng hợp kỳ dự báo -->
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="forecast-kpi-cards">
-                                <!-- Render via JS -->
-                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="forecast-kpi-cards"></div>
                         </div>
                     </div>
 
@@ -227,9 +247,7 @@
                                             <th class="p-2">Sản lượng (MWh)</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="forecast-table-body" class="divide-y divide-slate-800 text-slate-200">
-                                        <!-- Render via JS -->
-                                    </tbody>
+                                    <tbody id="forecast-table-body" class="divide-y divide-slate-800 text-slate-200"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -241,7 +259,7 @@
                     <div class="card p-5 flex flex-wrap justify-between items-center gap-4">
                         <div>
                             <h2 class="text-base font-bold text-white">Đánh giá chất lượng 12 Turbines (Dữ liệu SCADA 3 tháng - Chu kỳ 10 phút)</h2>
-                            <p class="text-xs text-slate-400">Căn cứ tốc độ gió, sản lượng phát thực tế và đường cong công suất tiêu chuẩn Goldwind 4.0 MW.</p>
+                            <p class="text-xs text-slate-400">Căn cứ tốc độ gió, sản lượng phát thực tế và đường cong công suất tiêu chuẩn Goldwind 4.0 MW (hoặc file Power Curve bạn đã upload).</p>
                         </div>
                         <div class="flex items-center space-x-3">
                             <label class="cursor-pointer bg-slate-700 hover:bg-slate-600 text-xs px-4 py-2 rounded-lg border border-slate-500 transition">
@@ -278,13 +296,13 @@
                 </div>
             </section>
 
-            <!-- ==================== MỤC 2: CHATBOT VẬN HÀNH ==================== -->
+            <!-- ==================== MỤC 2: CHATBOT VẬN HÀNH (TRẢ LỜI TRỰC TIẾP) ==================== -->
             <section id="main-chatbot" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="card p-5 space-y-4">
                     <h2 class="text-base font-bold text-sky-400 flex items-center">
                         <i class="fa-solid fa-folder-open mr-2"></i> Kho tài liệu Nhà máy
                     </h2>
-                    <p class="text-xs text-slate-400">Nạp tài liệu PDF, Word, Excel của NMĐG V1-2 để kết hợp với kiến thức từ Google đưa ra kết quả đúng thực tế nhà máy.</p>
+                    <p class="text-xs text-slate-400">Nạp tài liệu PDF, Word, Excel của NMĐG V1-2. Khi đặt câu hỏi, Chatbot sẽ trích xuất trực tiếp từ tài liệu nội bộ hoặc nguồn dữ liệu trực tuyến ngay tại khung chat.</p>
                     
                     <label class="border-2 border-dashed border-slate-600 hover:border-sky-500 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-slate-800/40">
                         <i class="fa-solid fa-cloud-arrow-up text-2xl text-sky-400 mb-2"></i>
@@ -310,7 +328,7 @@
                             <span class="font-bold text-sm">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
                         </div>
                         <span class="text-[11px] bg-emerald-950 border border-emerald-500/40 px-2.5 py-1 rounded text-emerald-300">
-                            <i class="fa-solid fa-globe mr-1"></i> Tài liệu Nhà máy + Google Search
+                            <i class="fa-solid fa-bolt mr-1"></i> Trả lời trực tiếp từ Tài liệu & Dữ liệu mạng
                         </span>
                     </div>
 
@@ -319,13 +337,13 @@
                             <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
                             <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-1.5">
                                 <p>Xin chào kỹ sư vận hành! Tôi là trợ lý kỹ thuật của <strong>NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW)</strong>.</p>
-                                <p class="text-xs text-slate-400">Hãy nạp tài liệu nhà máy ở cột bên trái hoặc đặt câu hỏi vận hành bên dưới để tra cứu kết hợp tài liệu nội bộ và Google.</p>
+                                <p class="text-xs text-slate-400">Hãy nhập câu hỏi bên dưới, hệ thống sẽ tự động tra cứu trong tài liệu bạn đã tải lên hoặc tìm kiếm kiến thức trực tuyến và trả lời trực tiếp ngay tại đây.</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="p-4 border-t border-slate-700 flex space-x-2">
-                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Nhập câu hỏi vận hành tại đây..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
+                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" placeholder="Nhập câu hỏi vận hành tại đây (VD: Máy biến áp là gì?)..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
                         <button onclick="sendChat()" class="bg-sky-600 hover:bg-sky-500 px-5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center space-x-1">
                             <span>Gửi</span>
                             <i class="fa-solid fa-paper-plane text-xs"></i>
@@ -334,9 +352,8 @@
                 </div>
             </section>
 
-            <!-- ==================== MỤC 3: PHÂN TÍCH SỰ CỐ (ẢNH NHIỆT + RELAY SIEMENS/ABB) ==================== -->
+            <!-- ==================== MỤC 3: PHÂN TÍCH SỰ CỐ ==================== -->
             <section id="main-faults" class="hidden space-y-6">
-                <!-- Sub-navigation for Fault Analysis -->
                 <div class="flex flex-wrap gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 w-fit">
                     <button onclick="switchSubTab('faults', 'thermal')" id="subbtn-faults-thermal" class="subtab-active px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-temperature-high text-amber-400"></i>
@@ -429,7 +446,6 @@
 
                 <!-- SUB-TAB 3.2: PHÂN TÍCH FILE SỰ CỐ RELAY SIEMENS / ABB -->
                 <div id="sub-faults-relay" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Cột trái: Nạp file sự cố & Chọn hãng Rơ-le -->
                     <div class="card p-5 space-y-4">
                         <h2 class="text-base font-bold text-rose-400 flex items-center">
                             <i class="fa-solid fa-file-waveform mr-2"></i> Nạp bản ghi sự cố Rơ-le
@@ -482,7 +498,6 @@
                         </button>
                     </div>
 
-                    <!-- Cột phải: Kết quả chẩn đoán sự cố rơ-le -->
                     <div class="card p-5 lg:col-span-2 flex flex-col justify-between space-y-4">
                         <div id="relay-analysis-output" class="space-y-4">
                             <div class="p-4 rounded-lg bg-slate-900/90 border border-slate-700 text-xs text-slate-300 space-y-2">
@@ -491,7 +506,7 @@
                                 <ul class="list-disc list-inside space-y-1 text-slate-400">
                                     <li><strong>Chức năng bảo vệ tác động (ANSI Code):</strong> Quá dòng cắt nhanh (50/50N), quá dòng có thời gian (51/51N), quá dòng chạm đất có hướng (67N), bảo vệ khoảng cách (21), so lệch máy biến áp (87T), kém áp/quá áp (27/59), tần số (81U/81O)...</li>
                                     <li><strong>Pha sự cố & Giá trị dòng/áp:</strong> Bóc tách pha bị sự cố ($L1/A, L2/B, L3/C, N/G$), biên độ dòng ngắn mạch ($I_{k}$), điện áp sụt giảm và thời gian tác động cắt máy cắt (ms).</li>
-                                    <li><strong>Quy trình xử lý vận hành:</strong> Đưa ra checklist kiểm tra hiện trường (cáp ngầm 35kV, đầu cáp, sứ đỡ, tủ tua-bin Goldwind) trước khi xin đóng điện lại.</li>
+                                    <li><strong>Quy trình xử lý vận hành:</strong> Đưa ra checklist kiểm tra hiện trường trước khi xin đóng điện lại.</li>
                                 </ul>
                             </div>
                         </div>
@@ -583,47 +598,119 @@
             }
         }
 
-        // ==================== 2. DỰ BÁO CÔNG SUẤT WINDY (D+1, D+2, W+1 - CHU KỲ 30 PHÚT) ====================
-        const STANDARD_WIND = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-        const STANDARD_POWER = [120, 380, 790, 1380, 2150, 3050, 3750, 3980, 4000, 4000, 4000, 4000];
+        // ==================== 2. ĐƯỜNG CONG CÔNG SUẤT & DỰ BÁO WINDY (D, D+1, D+2, W+1) ====================
+        let activePowerCurveTable = [
+            { ws: 0, kw: 0 }, { ws: 2.5, kw: 0 }, { ws: 3, kw: 120 }, { ws: 4, kw: 380 },
+            { ws: 5, kw: 790 }, { ws: 6, kw: 1380 }, { ws: 7, kw: 2150 }, { ws: 8, kw: 3050 },
+            { ws: 9, kw: 3750 }, { ws: 10, kw: 3980 }, { ws: 11, kw: 4000 }, { ws: 12, kw: 4000 },
+            { ws: 15, kw: 4000 }, { ws: 20, kw: 4000 }, { ws: 25, kw: 4000 }, { ws: 25.1, kw: 0 }
+        ];
 
         function getExpectedGoldwindPower(ws) {
-            if (ws < 2.8 || ws > 25) return 0;
-            if (ws >= 11) return 4000;
-            const idx = Math.floor(ws) - 3;
-            if (idx < 0) return Math.round((ws / 3) * 120);
-            const frac = ws - Math.floor(ws);
-            const p1 = STANDARD_POWER[idx] || 0;
-            const p2 = STANDARD_POWER[idx + 1] || 4000;
-            return p1 + frac * (p2 - p1);
+            const table = activePowerCurveTable;
+            if (!table || table.length === 0) return 0;
+            if (ws < table[0].ws || ws > table[table.length - 1].ws) return 0;
+            for (let i = 0; i < table.length - 1; i++) {
+                const p1 = table[i];
+                const p2 = table[i + 1];
+                if (ws >= p1.ws && ws <= p2.ws) {
+                    if (p2.ws === p1.ws) return p1.kw;
+                    const ratio = (ws - p1.ws) / (p2.ws - p1.ws);
+                    return p1.kw + ratio * (p2.kw - p1.kw);
+                }
+            }
+            return 0;
         }
 
-        let forecastSeries30Min = []; // Lưu 384 chu kỳ 30 phút (8 ngày: hôm nay + 7 ngày tới)
+        // Tải file Excel mẫu đường cong công suất chuẩn Goldwind 4MW
+        function downloadSamplePowerCurve() {
+            const sampleRows = [
+                { "Wind_Speed_ms": 0.0, "Power_kW": 0 },
+                { "Wind_Speed_ms": 2.5, "Power_kW": 0 },
+                { "Wind_Speed_ms": 3.0, "Power_kW": 120 },
+                { "Wind_Speed_ms": 4.0, "Power_kW": 380 },
+                { "Wind_Speed_ms": 5.0, "Power_kW": 790 },
+                { "Wind_Speed_ms": 6.0, "Power_kW": 1380 },
+                { "Wind_Speed_ms": 7.0, "Power_kW": 2150 },
+                { "Wind_Speed_ms": 8.0, "Power_kW": 3050 },
+                { "Wind_Speed_ms": 9.0, "Power_kW": 3750 },
+                { "Wind_Speed_ms": 10.0, "Power_kW": 3980 },
+                { "Wind_Speed_ms": 11.0, "Power_kW": 4000 },
+                { "Wind_Speed_ms": 12.0, "Power_kW": 4000 },
+                { "Wind_Speed_ms": 15.0, "Power_kW": 4000 },
+                { "Wind_Speed_ms": 20.0, "Power_kW": 4000 },
+                { "Wind_Speed_ms": 25.0, "Power_kW": 4000 },
+                { "Wind_Speed_ms": 25.5, "Power_kW": 0 }
+            ];
+            const ws = XLSX.utils.json_to_sheet(sampleRows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "PowerCurve_Goldwind4MW");
+            XLSX.writeFile(wb, "Mau_DuongCongCongSuat_Goldwind4MW.xlsx");
+        }
+
+        // Upload file Excel đường cong công suất thật của nhà máy
+        async function handlePowerCurveUpload(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            try {
+                const buffer = await file.arrayBuffer();
+                const wb = XLSX.read(buffer, { type: 'array' });
+                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                if (!rows || rows.length === 0) throw new Error("File Excel trống.");
+
+                const parsedPoints = [];
+                rows.forEach(r => {
+                    const keys = Object.keys(r);
+                    const wKey = keys.find(k => /wind|gio|ws|toc/i.test(k)) || keys[0];
+                    const pKey = keys.find(k => /power|kw|mw|cong/i.test(k)) || keys[1];
+                    const ws = parseFloat(r[wKey]);
+                    let kw = parseFloat(r[pKey]);
+                    if (!isNaN(ws) && !isNaN(kw)) {
+                        // Nếu cột công suất đơn vị là MW (<= 10) thì đổi sang kW
+                        if (kw > 0 && kw <= 10 && /mw/i.test(pKey)) kw = kw * 1000;
+                        parsedPoints.push({ ws, kw });
+                    }
+                });
+
+                if (parsedPoints.length < 3) throw new Error("Không tìm thấy đủ cặp cột Tốc độ gió và Công suất.");
+                parsedPoints.sort((a, b) => a.ws - b.ws);
+                activePowerCurveTable = parsedPoints;
+
+                document.getElementById('power-curve-file-label').innerText = file.name;
+                document.getElementById('power-curve-status-text').innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i>Đã nạp ${parsedPoints.length} điểm từ file "${file.name}"</span>`;
+                
+                renderForecastView();
+                renderTurbines();
+                selectTurbine(selectedTurbineIndex);
+            } catch (err) {
+                alert("Lỗi đọc file Đường cong công suất: " + err.message);
+            }
+        }
+
+        let forecastSeries30Min = []; // Lưu 384 chu kỳ 30 phút (8 ngày: Ngày D hôm nay + 7 ngày tới)
         let forecastChartInstance = null;
 
-        // Khởi tạo dữ liệu gió mặc định đặc trưng gió mùa tại bờ biển Cồn Tàu - Trường Long Hòa
+        // Khởi tạo dữ liệu gió mặc định bắt đầu từ 00:00 Ngày D (Hôm nay)
         function generateDefaultWindSeries() {
             const now = new Date();
-            const startTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+            const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
             const series = [];
-            for (let i = 0; i < 336; i++) { // 7 ngày * 48 chu kỳ 30 phút
-                const t = new Date(startTomorrow.getTime() + i * 30 * 60000);
+            for (let i = 0; i < 384; i++) { // 8 ngày * 48 chu kỳ 30 phút
+                const t = new Date(startToday.getTime() + i * 30 * 60000);
                 const hour = t.getHours() + t.getMinutes() / 60;
-                // Gió biển Trà Vinh thường mạnh vào chiều & tối (13h-22h), dịu nhẹ sáng sớm
                 const diurnal = Math.sin((hour - 8) * Math.PI / 12) * 1.8;
                 const synoptic = Math.sin(i / 35) * 1.4;
                 const wind10m = Math.max(2.5, Math.min(13.5, 6.8 + diurnal + synoptic));
-                // Quy đổi lên độ cao Hub 110m: V_hub = V_10m * (110/10)^0.14 (~1.398)
                 const windHub = parseFloat((wind10m * 1.38).toFixed(2));
                 series.push({ time: t, windHub: windHub });
             }
             forecastSeries30Min = series;
         }
 
-        // Lấy dữ liệu gió thực tế trực tuyến (ECMWF / GFS tương đương Windy) tại tọa độ NMĐG V1-2 (9.660, 106.560)
+        // Lấy dữ liệu gió thực tế trực tuyến bắt đầu từ 00:00 Ngày D (Hôm nay)
         async function fetchLiveWindForecast() {
             const btn = document.getElementById('btn-fetch-wind');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang tải gió Windy/ECMWF...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang tải gió...';
             try {
                 const url = "https://api.open-meteo.com/v1/forecast?latitude=9.660&longitude=106.560&hourly=wind_speed_10m,wind_speed_100m&wind_speed_unit=ms&timezone=Asia%2FHo_Chi_Minh&forecast_days=9";
                 const res = await fetch(url);
@@ -631,37 +718,35 @@
                 if (!data.hourly || !data.hourly.time) throw new Error("Không lấy được dữ liệu gió");
 
                 const now = new Date();
-                const startTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+                const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
                 const times = data.hourly.time;
                 const ws100 = data.hourly.wind_speed_100m || data.hourly.wind_speed_10m.map(v => v * 1.38);
 
                 const newSeries = [];
                 for (let idx = 0; idx < times.length - 1; idx++) {
                     const t0 = new Date(times[idx]);
-                    if (t0 < startTomorrow) continue;
-                    if (newSeries.length >= 336) break;
+                    if (t0 < startToday) continue;
+                    if (newSeries.length >= 384) break;
 
                     const w0 = ws100[idx];
                     const w1 = ws100[idx + 1] ?? w0;
-                    // Nội suy tuyến tính từ chu kỳ 1 giờ sang 2 chu kỳ 30 phút (:00 và :30)
                     newSeries.push({ time: t0, windHub: parseFloat(w0.toFixed(2)) });
                     newSeries.push({ time: new Date(t0.getTime() + 30 * 60000), windHub: parseFloat(((w0 + w1) / 2).toFixed(2)) });
                 }
 
                 if (newSeries.length > 0) {
                     forecastSeries30Min = newSeries;
-                    document.getElementById('forecast-source-note').innerText = "Nguồn dữ liệu: Cập nhật trực tuyến mô hình ECMWF/GFS (100m Hub) tại tọa độ NMĐG V1-2 Trà Vinh";
+                    document.getElementById('forecast-source-note').innerText = "Nguồn dữ liệu: Cập nhật trực tuyến mô hình ECMWF/GFS (100m Hub) từ 00:00 Ngày D";
                     renderForecastView();
-                    alert(`Đã cập nhật thành công ${newSeries.length} chu kỳ dự báo 30 phút (D+1, D+2, W+1) từ mô hình gió thời gian thực!`);
+                    alert(`Đã cập nhật thành công ${newSeries.length} chu kỳ dự báo 30 phút (Ngày D, D+1, D+2, W+1)!`);
                 }
             } catch (e) {
-                alert("Không thể kết nối máy chủ thời tiết trực tuyến (" + e.message + "). Hệ thống đang sử dụng đường đặc tính gió mùa chuẩn Cồn Tàu hoặc file Windy bạn tải lên.");
+                alert("Không thể kết nối máy chủ thời tiết trực tuyến (" + e.message + "). Hệ thống đang sử dụng dữ liệu chuẩn hoặc file Windy tải lên.");
             } finally {
                 btn.innerHTML = '<i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> Cập nhật gió trực tuyến';
             }
         }
 
-        // Nạp file CSV/Excel tải từ Windy
         async function handleWindyFileUpload(input) {
             if (!input.files || !input.files[0]) return;
             const file = input.files[0];
@@ -673,14 +758,13 @@
                 if (rows.length > 0) {
                     const parsed = [];
                     const now = new Date();
-                    const baseT = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+                    const baseT = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
                     rows.forEach((r, idx) => {
                         const keys = Object.keys(r);
                         const wKey = keys.find(k => /wind|gio|ws|speed/i.test(k));
                         const tKey = keys.find(k => /time|date|ngay|gio/i.test(k));
                         if (wKey && !isNaN(parseFloat(r[wKey]))) {
                             let ws = parseFloat(r[wKey]);
-                            // Nếu file Windy là gió bề mặt 10m thì nhân hệ số độ cao Hub
                             if (ws < 15 && /10m/i.test(wKey)) ws = ws * 1.38;
                             const dt = tKey ? new Date(r[tKey]) : new Date(baseT.getTime() + idx * 30 * 60000);
                             parsed.push({ time: isNaN(dt.getTime()) ? new Date(baseT.getTime() + idx * 30 * 60000) : dt, windHub: parseFloat(ws.toFixed(2)) });
@@ -708,15 +792,18 @@
 
             let sliceData = [];
             let horizonLabel = "";
-            if (horizon === 'D1') {
+            if (horizon === 'D0') {
                 sliceData = forecastSeries30Min.slice(0, 48);
-                horizonLabel = "Ngày D+1 (48 chu kỳ 30 phút)";
-            } else if (horizon === 'D2') {
+                horizonLabel = "Ngày D - Hôm nay (48 chu kỳ 30 phút)";
+            } else if (horizon === 'D1') {
                 sliceData = forecastSeries30Min.slice(48, 96);
-                horizonLabel = "Ngày D+2 (48 chu kỳ 30 phút)";
+                horizonLabel = "Ngày D+1 - Ngày mai (48 chu kỳ 30 phút)";
+            } else if (horizon === 'D2') {
+                sliceData = forecastSeries30Min.slice(96, 144);
+                horizonLabel = "Ngày D+2 - Ngày mốt (48 chu kỳ 30 phút)";
             } else {
-                sliceData = forecastSeries30Min.slice(0, 336);
-                horizonLabel = "Tuần W+1 (7 ngày - 336 chu kỳ 30 phút)";
+                sliceData = forecastSeries30Min.slice(48, 384);
+                horizonLabel = "Tuần W+1 - 7 ngày tới (336 chu kỳ 30 phút)";
             }
 
             let totalEnergyMWh = 0;
@@ -725,7 +812,6 @@
 
             const computed = sliceData.map(item => {
                 const pSingleKW = getExpectedGoldwindPower(item.windHub);
-                // Tổn thất nội bộ lưới 35kV + MBA (khoảng 2.5%)
                 const plantPowerMW = parseFloat(((pSingleKW * availWtg * 0.975) / 1000).toFixed(2));
                 const energy30MinMWh = parseFloat((plantPowerMW * 0.5).toFixed(2));
 
@@ -771,7 +857,6 @@
 
             document.getElementById('forecast-chart-title').innerText = `Biểu đồ Dự báo Công suất (MW) & Tốc độ gió (m/s) - ${horizonLabel}`;
 
-            // Render bảng 30 phút
             const tbody = document.getElementById('forecast-table-body');
             tbody.innerHTML = computed.map(r => `
                 <tr class="hover:bg-slate-800/70">
@@ -782,7 +867,6 @@
                 </tr>
             `).join('');
 
-            // Render biểu đồ
             const ctx = document.getElementById('forecastChart').getContext('2d');
             if (forecastChartInstance) forecastChartInstance.destroy();
             forecastChartInstance = new Chart(ctx, {
@@ -845,6 +929,7 @@
         }
 
         // ==================== 2.2 ĐÁNH GIÁ CHẤT LƯỢNG 12 TURBINES ====================
+        const STANDARD_WIND = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
         let turbinesData = [
             { id: 'WTG01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', samples: 12960, actualCurve: null, note: 'Tua-bin vận hành ổn định, bám sát đường cong công suất Goldwind 4MW.' },
             { id: 'WTG02', score: 94, status: 'good', dev: '-1.5%', temp: '65.1 °C', pitch: '0.12°', samples: 12960, actualCurve: null, note: 'Hiệu suất phát đạt chuẩn.' },
@@ -932,7 +1017,8 @@
         function updateChart(wtg) {
             const ctx = document.getElementById('powerCurveChart').getContext('2d');
             const factor = wtg.score / 100;
-            const actualPower = wtg.actualCurve || STANDARD_POWER.map(p => Math.round(p * factor));
+            const stdCurve = STANDARD_WIND.map(w => Math.round(getExpectedGoldwindPower(w)));
+            const actualPower = wtg.actualCurve || stdCurve.map(p => Math.round(p * factor));
 
             if (powerChart) powerChart.destroy();
             powerChart = new Chart(ctx, {
@@ -940,7 +1026,7 @@
                 data: {
                     labels: STANDARD_WIND.map(w => w + ' m/s'),
                     datasets: [
-                        { label: 'Đường cong chuẩn Goldwind 4MW (kW)', data: STANDARD_POWER, borderColor: '#38bdf8', borderDash: [5, 5], tension: 0.3, fill: false },
+                        { label: 'Đường cong chuẩn Goldwind 4MW (kW)', data: stdCurve, borderColor: '#38bdf8', borderDash: [5, 5], tension: 0.3, fill: false },
                         { label: `Công suất thực tế ${wtg.id} (kW)`, data: actualPower, borderColor: wtg.status === 'crit' ? '#f43f5e' : (wtg.status === 'warn' ? '#f59e0b' : '#10b981'), backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.3, fill: true, spanGaps: true }
                     ]
                 },
@@ -1075,7 +1161,7 @@
                     const tempPenalty = avgTemp > 75 ? (avgTemp - 75) * 1.5 : 0;
                     let healthScore = Math.round(Math.min(100, Math.max(40, perfRatio * 100 - tempPenalty)));
                     let status = healthScore > 85 ? 'good' : (healthScore >= 70 ? 'warn' : 'crit');
-                    const curve = s.bins.map((b, idx) => b.cnt > 0 ? Math.round(b.sum / b.cnt) : Math.round(STANDARD_POWER[idx] * perfRatio));
+                    const curve = s.bins.map((b, idx) => b.cnt > 0 ? Math.round(b.sum / b.cnt) : Math.round(getExpectedGoldwindPower(STANDARD_WIND[idx]) * perfRatio));
                     const note = status === 'good'
                         ? `Phân tích từ ${s.count.toLocaleString()} mẫu SCADA: Bám sát đường cong chuẩn Goldwind 4MW.`
                         : (status === 'warn'
@@ -1098,7 +1184,7 @@
             }
         }
 
-        // ==================== 3. CHATBOX VẬN HÀNH ====================
+        // ==================== 3. CHATBOX VẬN HÀNH (TRẢ LỜI TRỰC TIẾP - KHÔNG MỞ LINK) ====================
         async function handleDocUpload(input) {
             const list = document.getElementById('doc-list');
             const emptyMsg = document.getElementById('empty-doc-msg');
@@ -1140,46 +1226,75 @@
             }
         }
 
-        async function fetchLiveWebSummary(query) {
+        // Truy vấn trực tiếp nội dung đầy đủ từ Bách khoa trực tuyến (Wikipedia VI & EN) và hiển thị ngay trong khung chat
+        async function fetchDirectKnowledgeAnswer(query) {
+            const cleanQuery = query.replace(/\?|là gì|như thế nào|cách|quy trình/gi, "").trim() || query;
+            
+            // 1. Tìm kiếm trên Wikipedia Tiếng Việt trước
             try {
-                const searchUrl = `https://vi.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`;
-                const res = await fetch(searchUrl);
-                const data = await res.json();
-                if (data.query && data.query.search && data.query.search.length > 0) {
-                    const topResult = data.query.search[0];
-                    const snippet = topResult.snippet.replace(/<\/?[^>]+(>|$)/g, "");
-                    return `<div class="p-3 bg-slate-900/90 rounded-lg border border-emerald-500/40 text-xs space-y-1.5">
-                        <div class="text-emerald-400 font-semibold"><i class="fa-solid fa-globe mr-1"></i> Kết quả tra cứu trực tuyến (${topResult.title}):</div>
-                        <p class="text-slate-200 leading-relaxed">${snippet}...</p>
-                    </div>`;
+                const searchUrlVi = `https://vi.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json&origin=*`;
+                const resVi = await fetch(searchUrlVi);
+                const dataVi = await resVi.json();
+                if (dataVi.query && dataVi.query.search && dataVi.query.search.length > 0) {
+                    const topTitle = dataVi.query.search[0].title;
+                    const extractUrlVi = `https://vi.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(topTitle)}&format=json&origin=*`;
+                    const extRes = await fetch(extractUrlVi);
+                    const extData = await extRes.json();
+                    const pages = extData.query?.pages;
+                    if (pages) {
+                        const pageId = Object.keys(pages)[0];
+                        const fullText = pages[pageId]?.extract;
+                        if (fullText && fullText.trim().length > 20) {
+                            return `<div class="space-y-2 text-slate-200 leading-relaxed">
+                                <div class="text-xs font-bold text-sky-400"><i class="fa-solid fa-book-open mr-1"></i> Kết quả tra cứu trực tuyến: ${topTitle}</div>
+                                <p class="text-xs">${fullText.replace(/\n/g, "<br>")}</p>
+                            </div>`;
+                        }
+                    }
                 }
             } catch (e) {}
-            return "";
+
+            // 2. Nếu tiếng Việt không có, tìm trên Wikipedia Tiếng Anh (hữu ích cho thuật ngữ kỹ thuật Goldwind/IEC/Relay)
+            try {
+                const searchUrlEn = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json&origin=*`;
+                const resEn = await fetch(searchUrlEn);
+                const dataEn = await resEn.json();
+                if (dataEn.query && dataEn.query.search && dataEn.query.search.length > 0) {
+                    const topTitle = dataEn.query.search[0].title;
+                    const extractUrlEn = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(topTitle)}&format=json&origin=*`;
+                    const extRes = await fetch(extractUrlEn);
+                    const extData = await extRes.json();
+                    const pages = extData.query?.pages;
+                    if (pages) {
+                        const pageId = Object.keys(pages)[0];
+                        const fullText = pages[pageId]?.extract;
+                        if (fullText && fullText.trim().length > 20) {
+                            return `<div class="space-y-2 text-slate-200 leading-relaxed">
+                                <div class="text-xs font-bold text-sky-400"><i class="fa-solid fa-book-open mr-1"></i> Technical Reference (${topTitle}):</div>
+                                <p class="text-xs">${fullText.replace(/\n/g, "<br>")}</p>
+                            </div>`;
+                        }
+                    }
+                }
+            } catch (e) {}
+
+            return `<p class="text-xs text-slate-300">Chưa tìm thấy mục từ trùng khớp trực tuyến cho câu hỏi này. Bạn hãy thử đặt câu hỏi ngắn gọn hơn hoặc nạp tài liệu PDF/Word/Excel liên quan của NMĐG V1-2 vào cột bên trái để hệ thống trích xuất.</p>`;
         }
 
-        function searchLocalAndFallback(query) {
+        function searchInternalDocs(query) {
+            if (!plantKnowledgeBase || plantKnowledgeBase.trim().length === 0) return "";
             const q = query.toLowerCase();
-            let localSnippet = "";
-            if (plantKnowledgeBase.trim().length > 0) {
-                const lines = plantKnowledgeBase.split(/\n+/).filter(l => l.trim().length > 10);
-                const keywords = q.split(/\s+/).filter(w => w.length > 2);
-                const matched = lines.filter(line => keywords.some(kw => line.toLowerCase().includes(kw))).slice(0, 6);
-                if (matched.length > 0) {
-                    localSnippet = `<div class="p-2.5 bg-slate-900/90 rounded border border-sky-500/40 text-xs space-y-1">
-                        <div class="text-sky-400 font-semibold"><i class="fa-solid fa-file-lines mr-1"></i> Trích xuất từ tài liệu nội bộ NMĐG V1-2:</div>
-                        <p class="text-slate-300 italic">"...${matched.join(" ... ")}..."</p>
-                    </div>`;
-                }
-            }
-            const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query + " kỹ thuật điện")}`;
-            return `${localSnippet}
-                <div id="live-web-box-${Date.now()}" class="text-xs text-slate-300">Đang tổng hợp dữ liệu trực tuyến...</div>
-                <div class="pt-2">
-                    <a href="${googleSearchUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg transition">
-                        <i class="fa-brands fa-google"></i>
-                        <span>Mở kết quả tìm kiếm "${query}" trực tiếp trên Google</span>
-                    </a>
-                </div>`;
+            const lines = plantKnowledgeBase.split(/\n+/).filter(l => l.trim().length > 10);
+            const keywords = q.split(/\s+/).filter(w => w.length > 2 && !["là", "gì", "của", "và", "các", "những", "cho", "tôi"].includes(w));
+            if (keywords.length === 0) return "";
+
+            const matched = lines.filter(line => keywords.some(kw => line.toLowerCase().includes(kw))).slice(0, 8);
+            if (matched.length === 0) return "";
+
+            return `<div class="p-3 bg-slate-900/95 rounded-lg border border-sky-500/50 text-xs space-y-1.5 mb-2">
+                <div class="text-sky-400 font-bold"><i class="fa-solid fa-file-lines mr-1"></i> Trích xuất trực tiếp từ Tài liệu nội bộ NMĐG V1-2:</div>
+                <div class="text-slate-200 space-y-1 leading-relaxed">${matched.map(m => `<p>• ${m}</p>`).join("")}</div>
+            </div>`;
         }
 
         async function sendChat() {
@@ -1192,31 +1307,55 @@
             input.value = '';
 
             const loadingId = "loading-" + Date.now();
-            box.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-xs text-slate-300">Đang tra cứu dữ liệu...</div></div>`;
+            box.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-xs text-slate-300">Đang tra cứu tài liệu nội bộ và dữ liệu trực tuyến...</div></div>`;
             box.scrollTop = box.scrollHeight;
 
             try {
-                if (!GEMINI_API_KEY || !GEMINI_API_KEY.startsWith("AIza")) throw new Error("Fallback");
-                const systemPrompt = `Bạn là Trợ lý Kỹ thuật Vận hành của Nhà máy Điện gió V1-2 Trà Vinh (48 MW, 12 tua-bin Goldwind 4 MW). Ưu tiên thông tin từ TÀI LIỆU NỘI BỘ dưới đây, kết hợp tìm kiếm Google để trả lời chính xác bằng tiếng Việt.\n\nTÀI LIỆU NỘI BỘ:\n${plantKnowledgeBase.substring(0, 100000)}`;
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ system_instruction: { parts: [{ text: systemPrompt }] }, contents: [{ role: "user", parts: [{ text: msg }] }], tools: [{ google_search: {} }] })
-                });
-                const data = await response.json();
-                document.getElementById(loadingId)?.remove();
-                if (!response.ok || data.error) throw new Error("API Error");
+                // Nếu có API Key Google AI Studio chuẩn thì gọi Gemini + Google Search trực tiếp
+                if (GEMINI_API_KEY && GEMINI_API_KEY.startsWith("AIza")) {
+                    const systemPrompt = `Bạn là Trợ lý Kỹ thuật Vận hành của Nhà máy Điện gió V1-2 Trà Vinh (48 MW, 12 tua-bin Goldwind 4 MW). Ưu tiên thông tin từ TÀI LIỆU NỘI BỘ dưới đây, kết hợp tìm kiếm Google để trả lời trực tiếp, đầy đủ, chính xác bằng tiếng Việt.\n\nTÀI LIỆU NỘI BỘ:\n${plantKnowledgeBase.substring(0, 100000)}`;
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ system_instruction: { parts: [{ text: systemPrompt }] }, contents: [{ role: "user", parts: [{ text: msg }] }], tools: [{ google_search: {} }] })
+                    });
+                    const data = await response.json();
+                    if (!response.ok || data.error) throw new Error("API Error");
 
-                const candidate = data.candidates?.[0];
-                const replyText = candidate?.content?.parts?.map(p => p.text).join("") || "";
-                const formattedReply = replyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\*\*(.*?)\*\*/g, "<strong class='text-white'>$1</strong>").replace(/\n/g, "<br>");
-                box.innerHTML += `<div class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200"><div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-brands fa-google mr-1"></i> Nguồn: Tài liệu NMĐG V1-2 + Google Search</div><div>${formattedReply}</div></div></div>`;
+                    document.getElementById(loadingId)?.remove();
+                    const candidate = data.candidates?.[0];
+                    const replyText = candidate?.content?.parts?.map(p => p.text).join("") || "";
+                    const formattedReply = replyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\*\*(.*?)\*\*/g, "<strong class='text-white'>$1</strong>").replace(/\n/g, "<br>");
+                    box.innerHTML += `<div class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200"><div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-brands fa-google mr-1"></i> Nguồn: Tài liệu NMĐG V1-2 & Google Search</div><div>${formattedReply}</div></div></div>`;
+                } else {
+                    // Tra cứu trực tiếp từ Tài liệu nội bộ + Kho tri thức trực tuyến và hiển thị ngay kết quả (không mở link Google)
+                    const localResultHtml = searchInternalDocs(msg);
+                    const webResultHtml = await fetchDirectKnowledgeAnswer(msg);
+                    document.getElementById(loadingId)?.remove();
+
+                    box.innerHTML += `
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200">
+                                <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Kết quả tổng hợp trực tiếp</div>
+                                ${localResultHtml}
+                                ${webResultHtml}
+                            </div>
+                        </div>`;
+                }
             } catch (error) {
+                const localResultHtml = searchInternalDocs(msg);
+                const webResultHtml = await fetchDirectKnowledgeAnswer(msg);
                 document.getElementById(loadingId)?.remove();
-                box.innerHTML += `<div class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div><div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200"><div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-globe mr-1"></i> Kết quả từ Kho tài liệu Nhà máy & Tra cứu trực tuyến</div>${searchLocalAndFallback(msg)}</div></div>`;
-                const liveBoxes = box.querySelectorAll('[id^="live-web-box-"]');
-                const lastLiveBox = liveBoxes[liveBoxes.length - 1];
-                if (lastLiveBox) lastLiveBox.innerHTML = await fetchLiveWebSummary(msg);
+                box.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2 text-slate-200">
+                            <div class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Kết quả tổng hợp trực tiếp</div>
+                            ${localResultHtml}
+                            ${webResultHtml}
+                        </div>
+                    </div>`;
             }
             box.scrollTop = box.scrollHeight;
         }
@@ -1419,7 +1558,6 @@ CB 131 & CB 331 TRIPPED`;
                 return;
             }
 
-            // Nhận diện tự động các mã bảo vệ ANSI/IEC phổ biến trên Siemens & ABB
             const rules = [
                 { regex: /87T|PDIF|DIFF/i, code: "87T (Bảo vệ so lệch dọc Máy biến áp)", cause: "Ngắn mạch nội bộ cuộn dây MBA, sứ xuyên 110kV/35kV hoặc vùng bảo vệ giữa biến dòng TI phía 110kV và 35kV.", action: "TUYỆT ĐỐI KHÔNG đóng điện lại MBA. Kiểm tra rơ-le hơi Buchholz, van xả áp lực, thí nghiệm cách điện, tỷ số biến và phân tích khí hòa tan trong dầu (DGA) trước khi vận hành lại." },
                 { regex: /87B|BUS.*DIFF/i, code: "87B (Bảo vệ so lệch Thanh cái)", cause: "Sự cố ngắn mạch trên thanh cái 110kV hoặc 35kV, hoặc hở mạch thứ cấp TI thanh cái.", action: "Cô lập thanh cái sự cố, kiểm tra toàn bộ sứ đỡ, dao cách ly thanh cái và mạch dòng TI trước khi khôi phục." },
@@ -1439,7 +1577,6 @@ CB 131 & CB 331 TRIPPED`;
                 });
             }
 
-            // Trích xuất các thông số số học từ log (Dòng điện, điện áp, thời gian cắt, pha sự cố, khoảng cách)
             const phaseMatch = raw.match(/(?:PHASE|PHA)[\s:]*([L123ABC\-NG\/]+)/i);
             const timeMatch = raw.match(/(\d+(?:\.\d+)?)\s*ms/i);
             const distMatch = raw.match(/(\d+(?:\.\d+)?)\s*km/i);

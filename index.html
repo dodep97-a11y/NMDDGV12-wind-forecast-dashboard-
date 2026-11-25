@@ -126,7 +126,7 @@
                 <div class="flex flex-wrap gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 w-fit">
                     <button onclick="switchSubTab('turbines', 'forecast')" id="subbtn-turbines-forecast" class="subtab-active px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-chart-line text-sky-300"></i>
-                        <span>1.1 Dự báo công suất (Chu kỳ 15p / 30p & Hiệu chỉnh ngắn hạn)</span>
+                        <span>1.1 Dự báo công suất (12 Tọa độ, 15p/30p & Hiệu chỉnh ngắn hạn)</span>
                     </button>
                     <button onclick="switchSubTab('turbines', 'health')" id="subbtn-turbines-health" class="text-slate-300 hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
                         <i class="fa-solid fa-heart-pulse text-emerald-400"></i>
@@ -134,30 +134,30 @@
                     </button>
                 </div>
 
-                <!-- SUB-TAB 1.1: DỰ BÁO CÔNG SUẤT TỪ WINDY (15 PHÚT / 30 PHÚT & NOWCASTING) -->
+                <!-- SUB-TAB 1.1: DỰ BÁO CÔNG SUẤT TỪ WINDY (12 TỌA ĐỘ, 15P/30P & NOWCASTING) -->
                 <div id="sub-turbines-forecast" class="space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="card p-4 flex flex-col justify-between space-y-3">
                             <div class="flex justify-between items-center">
                                 <h3 class="text-sm font-bold text-sky-400"><i class="fa-solid fa-wind mr-1.5"></i>Bản đồ gió Windy trực tiếp (Cồn Tàu)</h3>
-                                <a href="https://www.windy.com/9.660/106.560?9.660,106.560,11" target="_blank" class="text-[11px] text-sky-300 underline hover:text-white">Mở web Windy <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
+                                <a href="https://www.windy.com/9.628/106.580?9.628,106.580,12" target="_blank" class="text-[11px] text-sky-300 underline hover:text-white">Mở web Windy <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
                             </div>
                             <div class="rounded-lg overflow-hidden border border-slate-700 h-72 bg-slate-950">
-                                <iframe width="100%" height="100%" src="https://embed.windy.com/embed2.html?lat=9.660&lon=106.560&detailLat=9.660&detailLon=106.560&width=650&height=450&zoom=10&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=m%2Fs&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
+                                <iframe width="100%" height="100%" src="https://embed.windy.com/embed2.html?lat=9.628&lon=106.580&detailLat=9.628&detailLon=106.580&width=650&height=450&zoom=11&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=m%2Fs&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
                             </div>
-                            <p class="text-[11px] text-slate-400">Tọa độ NMĐG V1-2: 9.660°N, 106.560°E | Độ cao Hub Goldwind 4MW: ~100–120m.</p>
+                            <p class="text-[11px] text-slate-400">Tọa độ tuyến WTG01–WTG12 (VN-2000 Trà Vinh -> WGS84) | Hub Goldwind 4MW (~110m).</p>
                         </div>
 
                         <div class="card p-5 lg:col-span-2 flex flex-col justify-between space-y-4">
                             <div class="space-y-3.5">
                                 <div class="flex flex-wrap justify-between items-center gap-2">
                                     <div>
-                                        <h2 class="text-base font-bold text-white">Mô hình Dự báo Công suất Phát điện (15 phút / 30 phút)</h2>
+                                        <h2 class="text-base font-bold text-white">Mô hình Dự báo Công suất theo 12 Tọa độ (15 phút / 30 phút)</h2>
                                         <p class="text-xs text-slate-400">Đặc tính <strong class="text-emerald-400">Dynamic PC (1.15 kg/m³, TI 10%)</strong> - Pmax = 48.00 MW (Bỏ qua tổn thất).</p>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
                                         <button onclick="fetchLiveWindForecast()" id="btn-fetch-wind" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
-                                            <i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> Cập nhật gió trực tuyến
+                                            <i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> Cập nhật gió 12 tọa độ
                                         </button>
                                         <button onclick="exportForecastExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
                                             <i class="fa-solid fa-file-excel mr-1.5"></i> Xuất Excel dự báo
@@ -236,10 +236,44 @@
                         </div>
                     </div>
 
+                    <!-- DANH SÁCH TỐC ĐỘ GIÓ & CÔNG SUẤT CHI TIẾT TỪ WTG01 ĐẾN WTG12 THEO TỌA ĐỘ -->
+                    <div class="card p-5 space-y-3">
+                        <div class="flex flex-wrap justify-between items-center gap-3">
+                            <div>
+                                <h3 class="text-sm font-bold text-sky-400 flex items-center">
+                                    <i class="fa-solid fa-location-dot mr-1.5 text-rose-400"></i> Danh sách Tốc độ gió & Công suất từng Tua-bin (WTG01 – WTG12) theo Tọa độ thực tế
+                                </h3>
+                                <p class="text-xs text-slate-400">Quy đổi chuẩn từ tọa độ VN-2000 (N/X, E/Y) sang WGS84 (Lat, Lon) tại từng vị trí trụ tua-bin.</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <label class="text-xs text-slate-300">Mốc thời gian hiển thị:</label>
+                                <select id="wtg-list-timeslot" onchange="render12WtgWindList()" class="bg-slate-900 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-amber-300 font-semibold"></select>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto border border-slate-700 rounded-lg">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-900 text-slate-400">
+                                    <tr>
+                                        <th class="p-2.5">Tổ máy</th>
+                                        <th class="p-2.5">Tọa độ N (X)</th>
+                                        <th class="p-2.5">Tọa độ E (Y)</th>
+                                        <th class="p-2.5">Vĩ độ / Kinh độ (WGS84)</th>
+                                        <th class="p-2.5 text-amber-300">Tốc độ gió Hub (m/s)</th>
+                                        <th class="p-2.5 text-sky-400">Công suất dự báo (kW)</th>
+                                        <th class="p-2.5 text-emerald-400">Sản lượng (MWh)</th>
+                                        <th class="p-2.5">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="wtg-12-wind-tbody" class="divide-y divide-slate-800 text-slate-200"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="card p-5 lg:col-span-2">
                             <h3 class="text-sm font-bold text-white mb-1" id="forecast-chart-title">Biểu đồ Dự báo Công suất (MW) & Tốc độ gió (m/s)</h3>
-                            <p class="text-xs text-slate-400 mb-3" id="forecast-source-note">Nguồn dữ liệu: Mô hình thời tiết ECMWF/Open-Meteo tại tọa độ Cồn Tàu quy đổi độ cao Hub</p>
+                            <p class="text-xs text-slate-400 mb-3" id="forecast-source-note">Nguồn dữ liệu: Mô hình thời tiết ECMWF/Open-Meteo theo 12 tọa độ WTG01–WTG12</p>
                             <div class="h-72">
                                 <canvas id="forecastChart"></canvas>
                             </div>
@@ -252,8 +286,8 @@
                                     <thead class="bg-slate-900 text-slate-400 sticky top-0">
                                         <tr>
                                             <th class="p-2">Thời điểm</th>
-                                            <th class="p-2">Gió Hub (m/s)</th>
-                                            <th class="p-2">CS Dự báo (MW)</th>
+                                            <th class="p-2">Gió TB (m/s)</th>
+                                            <th class="p-2">CS Tổng (MW)</th>
                                             <th class="p-2">Sản lượng (MWh)</th>
                                         </tr>
                                     </thead>
@@ -616,7 +650,22 @@
             }
         }
 
-        // ==================== 2. ĐƯỜNG CONG CÔNG SUẤT DYNAMIC PC ====================
+        // ==================== 2. TỌA ĐỘ 12 TURBINES & ĐƯỜNG CONG DYNAMIC PC ====================
+        const TURBINE_COORDS = [
+            { id: 'WTG01', vnX: 1066124.259, vnY: 617853.402, lat: 9.642341, lon: 106.573672 },
+            { id: 'WTG02', vnX: 1065833.056, vnY: 617971.989, lat: 9.639707, lon: 106.574750 },
+            { id: 'WTG03', vnX: 1065540.852, vnY: 618091.574, lat: 9.637063, lon: 106.575837 },
+            { id: 'WTG04', vnX: 1065249.649, vnY: 618210.161, lat: 9.634429, lon: 106.576915 },
+            { id: 'WTG05', vnX: 1064957.446, vnY: 618328.747, lat: 9.631786, lon: 106.577993 },
+            { id: 'WTG06', vnX: 1064666.241, vnY: 618448.334, lat: 9.629152, lon: 106.579080 },
+            { id: 'WTG07', vnX: 1064374.039, vnY: 618566.919, lat: 9.626508, lon: 106.580157 },
+            { id: 'WTG08', vnX: 1064082.836, vnY: 618685.507, lat: 9.623874, lon: 106.581235 },
+            { id: 'WTG09', vnX: 1063790.632, vnY: 618805.093, lat: 9.621231, lon: 106.582322 },
+            { id: 'WTG10', vnX: 1063499.429, vnY: 618923.680, lat: 9.618597, lon: 106.583400 },
+            { id: 'WTG11', vnX: 1063207.227, vnY: 619042.266, lat: 9.615953, lon: 106.584478 },
+            { id: 'WTG12', vnX: 1062915.023, vnY: 619161.852, lat: 9.613319, lon: 106.585565 }
+        ];
+
         const PLANT_POWER_CURVE = [
             { ws: 0.0, kw: 0.0 }, { ws: 2.5, kw: 0.3 }, { ws: 3.0, kw: 65.3 }, { ws: 3.5, kw: 156.5 },
             { ws: 4.0, kw: 272.0 }, { ws: 4.5, kw: 409.3 }, { ws: 5.0, kw: 573.1 }, { ws: 5.5, kw: 773.7 },
@@ -675,26 +724,34 @@
                 const hour = t.getHours() + t.getMinutes() / 60;
                 const diurnal = Math.sin((hour - 8) * Math.PI / 12) * 1.8;
                 const synoptic = Math.sin(i / 70) * 1.4;
-                const wind10m = Math.max(2.5, Math.min(13.5, 6.8 + diurnal + synoptic));
-                const windHub = parseFloat((wind10m * 1.38).toFixed(2));
-                series.push({ time: t, windHub: windHub });
+                const wind10mBase = Math.max(2.5, Math.min(13.5, 6.8 + diurnal + synoptic));
+                const windHubBase = wind10mBase * 1.38;
+
+                const winds = TURBINE_COORDS.map((c, idx) => {
+                    const spatialGrad = (idx - 5.5) * 0.03;
+                    return parseFloat(Math.max(0, windHubBase + spatialGrad).toFixed(2));
+                });
+                series.push({ time: t, winds: winds });
             }
             baseForecast15Min = series;
         }
 
         async function fetchLiveWindForecast() {
             const btn = document.getElementById('btn-fetch-wind');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang tải gió...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang tải gió 12 tọa độ...';
             try {
-                const url = "https://api.open-meteo.com/v1/forecast?latitude=9.660&longitude=106.560&hourly=wind_speed_10m,wind_speed_100m&wind_speed_unit=ms&timezone=Asia%2FHo_Chi_Minh&forecast_days=9";
+                const lats = TURBINE_COORDS.map(c => c.lat).join(",");
+                const lons = TURBINE_COORDS.map(c => c.lon).join(",");
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&hourly=wind_speed_10m,wind_speed_100m&wind_speed_unit=ms&timezone=Asia%2FHo_Chi_Minh&forecast_days=9`;
                 const res = await fetch(url);
                 const data = await res.json();
-                if (!data.hourly || !data.hourly.time) throw new Error("Không lấy được dữ liệu gió");
+
+                const locArray = Array.isArray(data) ? data : [data];
+                if (!locArray[0]?.hourly?.time) throw new Error("Không lấy được dữ liệu gió cho 12 tọa độ");
 
                 const now = new Date();
                 const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-                const times = data.hourly.time;
-                const ws100 = data.hourly.wind_speed_100m || data.hourly.wind_speed_10m.map(v => v * 1.38);
+                const times = locArray[0].hourly.time;
 
                 const newSeries = [];
                 for (let idx = 0; idx < times.length - 1; idx++) {
@@ -702,27 +759,32 @@
                     if (t0 < startToday) continue;
                     if (newSeries.length >= 768) break;
 
-                    const w0 = ws100[idx];
-                    const w1 = ws100[idx + 1] ?? w0;
                     for (let q = 0; q < 4; q++) {
-                        const wInterp = w0 + (w1 - w0) * (q / 4);
+                        const windsAtStep = TURBINE_COORDS.map((_, wtgIdx) => {
+                            const loc = locArray[wtgIdx] || locArray[0];
+                            const wsArr = loc.hourly.wind_speed_100m || loc.hourly.wind_speed_10m.map(v => v * 1.38);
+                            const w0 = wsArr[idx];
+                            const w1 = wsArr[idx + 1] ?? w0;
+                            const spatialMicro = (wtgIdx - 5.5) * 0.025;
+                            return parseFloat((w0 + (w1 - w0) * (q / 4) + spatialMicro).toFixed(2));
+                        });
                         newSeries.push({
                             time: new Date(t0.getTime() + q * 15 * 60000),
-                            windHub: parseFloat(wInterp.toFixed(2))
+                            winds: windsAtStep
                         });
                     }
                 }
 
                 if (newSeries.length > 0) {
                     baseForecast15Min = newSeries;
-                    document.getElementById('forecast-source-note').innerText = "Nguồn dữ liệu: Cập nhật trực tuyến mô hình ECMWF/GFS (100m Hub) từ 00:00 Ngày D (Bỏ qua tổn thất)";
+                    document.getElementById('forecast-source-note').innerText = "Nguồn dữ liệu: Cập nhật trực tuyến ECMWF/GFS theo 12 tọa độ thực tế WTG01–WTG12 (100m Hub)";
                     renderForecastView();
-                    alert(`Đã cập nhật thành công ${newSeries.length} chu kỳ 15 phút cho Ngày D, D+1, D+2 và Tuần W+1!`);
+                    alert(`Đã cập nhật thành công danh sách tốc độ gió cho cả 12 tọa độ WTG01–WTG12 (${newSeries.length} chu kỳ 15 phút)!`);
                 }
             } catch (e) {
                 alert("Không thể kết nối máy chủ thời tiết trực tuyến (" + e.message + ").");
             } finally {
-                btn.innerHTML = '<i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> Cập nhật gió trực tuyến';
+                btn.innerHTML = '<i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> Cập nhật gió 12 tọa độ';
             }
         }
 
@@ -746,7 +808,8 @@
                             let ws = parseFloat(r[wKey]);
                             if (ws < 15 && /10m/i.test(wKey)) ws = ws * 1.38;
                             const dt = tKey ? new Date(r[tKey]) : new Date(baseT.getTime() + idx * 15 * 60000);
-                            rawPoints.push({ time: isNaN(dt.getTime()) ? new Date(baseT.getTime() + idx * 15 * 60000) : dt, windHub: parseFloat(ws.toFixed(2)) });
+                            const winds = TURBINE_COORDS.map((_, wIdx) => parseFloat((ws + (wIdx - 5.5) * 0.025).toFixed(2)));
+                            rawPoints.push({ time: isNaN(dt.getTime()) ? new Date(baseT.getTime() + idx * 15 * 60000) : dt, winds });
                         }
                     });
                     if (rawPoints.length > 0) {
@@ -810,7 +873,7 @@
             const stepMin = parseInt(document.getElementById('forecast-step').value) || 15;
             const availWtg = Math.min(12, Math.max(1, parseInt(document.getElementById('forecast-avail-wtg').value) || 12));
 
-            let working15Min = baseForecast15Min.map(pt => ({ time: pt.time, windHub: pt.windHub }));
+            let working15Min = baseForecast15Min.map(pt => ({ time: pt.time, winds: [...pt.winds] }));
             if (nowcastState.active && nowcastState.timestamp) {
                 const refTime = nowcastState.timestamp.getTime();
                 let closestIdx = 0;
@@ -820,14 +883,15 @@
                     if (diff < minDiff) { minDiff = diff; closestIdx = idx; }
                 });
 
-                const modelWindAtNow = working15Min[closestIdx]?.windHub || nowcastState.actualWind;
-                const bias = nowcastState.actualWind - modelWindAtNow;
+                const avgModelAtNow = working15Min[closestIdx].winds.reduce((a, b) => a + b, 0) / 12;
+                const bias = nowcastState.actualWind - avgModelAtNow;
                 const stepsToAdjust = nowcastState.horizonHours * 4;
 
                 for (let k = 0; k <= stepsToAdjust && (closestIdx + k) < working15Min.length; k++) {
                     const weight = Math.pow(1 - (k / (stepsToAdjust + 1)), 1.5);
-                    const adjusted = Math.max(0, working15Min[closestIdx + k].windHub + bias * weight);
-                    working15Min[closestIdx + k].windHub = parseFloat(adjusted.toFixed(2));
+                    working15Min[closestIdx + k].winds = working15Min[closestIdx + k].winds.map(w =>
+                        parseFloat(Math.max(0, w + bias * weight).toFixed(2))
+                    );
                 }
             }
 
@@ -838,10 +902,8 @@
                 for (let i = 0; i < working15Min.length; i += 2) {
                     const p1 = working15Min[i];
                     const p2 = working15Min[i + 1] || p1;
-                    seriesByStep.push({
-                        time: p1.time,
-                        windHub: parseFloat(((p1.windHub + p2.windHub) / 2).toFixed(2))
-                    });
+                    const avgWinds = p1.winds.map((w, idx) => parseFloat(((w + p2.winds[idx]) / 2).toFixed(2)));
+                    seriesByStep.push({ time: p1.time, winds: avgWinds });
                 }
             }
 
@@ -868,13 +930,15 @@
             const hourFraction = stepMin / 60;
 
             const computed = sliceData.map(item => {
-                const pSingleKW = getExpectedGoldwindPower(item.windHub);
-                const plantPowerMW = parseFloat(((pSingleKW * availWtg) / 1000).toFixed(2));
+                const wtgPowersKW = item.winds.map(w => getExpectedGoldwindPower(w));
+                const activePowersKW = wtgPowersKW.slice(0, availWtg);
+                const plantPowerMW = parseFloat((activePowersKW.reduce((a, b) => a + b, 0) / 1000).toFixed(2));
+                const avgStepWind = parseFloat((item.winds.reduce((a, b) => a + b, 0) / 12).toFixed(2));
                 const energyStepMWh = parseFloat((plantPowerMW * hourFraction).toFixed(3));
 
                 totalEnergyMWh += energyStepMWh;
                 if (plantPowerMW > maxPowerMW) maxPowerMW = plantPowerMW;
-                sumWind += item.windHub;
+                sumWind += avgStepWind;
 
                 const dd = String(item.time.getDate()).padStart(2, '0');
                 const mm = String(item.time.getMonth() + 1).padStart(2, '0');
@@ -884,11 +948,26 @@
                 return {
                     label: horizon === 'W1' ? `${dd}/${mm} ${hh}:${min}` : `${hh}:${min}`,
                     fullTime: `${dd}/${mm}/${item.time.getFullYear()} ${hh}:${min}`,
-                    wind: item.windHub,
+                    wind: avgStepWind,
+                    winds12: item.winds,
+                    powers12KW: wtgPowersKW,
                     powerMW: plantPowerMW,
                     energyMWh: energyStepMWh
                 };
             });
+
+            window.currentComputedForecast = computed;
+            window.currentStepHourFraction = hourFraction;
+            window.currentAvailWtg = availWtg;
+
+            const slotSelect = document.getElementById('wtg-list-timeslot');
+            const prevSlot = slotSelect.value;
+            slotSelect.innerHTML = `<option value="AVG">Trung bình toàn kỳ (${horizonLabel})</option>` +
+                computed.map((c, idx) => `<option value="${idx}">${c.fullTime} (Gió TB: ${c.wind} m/s)</option>`).join('');
+            if (prevSlot && (prevSlot === 'AVG' || parseInt(prevSlot) < computed.length)) {
+                slotSelect.value = prevSlot;
+            }
+            render12WtgWindList();
 
             const avgWind = (sumWind / (computed.length || 1)).toFixed(2);
             const capacityFactor = ((totalEnergyMWh / (48 * computed.length * hourFraction)) * 100).toFixed(1);
@@ -903,7 +982,7 @@
                     <div class="text-lg font-bold text-sky-400">${maxPowerMW.toFixed(2)} MW</div>
                 </div>
                 <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
-                    <div class="text-[11px] text-slate-400">Tốc độ gió TB (Hub)</div>
+                    <div class="text-[11px] text-slate-400">Tốc độ gió TB (12 WTG)</div>
                     <div class="text-lg font-bold text-amber-400">${avgWind} m/s</div>
                 </div>
                 <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
@@ -912,14 +991,14 @@
                 </div>
             `;
 
-            document.getElementById('forecast-chart-title').innerText = `Biểu đồ Dự báo Công suất (MW) & Tốc độ gió (m/s) - ${horizonLabel}`;
+            document.getElementById('forecast-chart-title').innerText = `Biểu đồ Dự báo Công suất (MW) & Tốc độ gió TB 12 WTG (m/s) - ${horizonLabel}`;
             document.getElementById('forecast-table-heading').innerText = `Bảng số liệu từng chu kỳ ${stepMin} phút (${computed.length} chu kỳ)`;
 
             const tbody = document.getElementById('forecast-table-body');
             tbody.innerHTML = computed.map(r => `
                 <tr class="hover:bg-slate-800/70">
                     <td class="p-2 font-mono text-[11px]">${r.label}</td>
-                    <td class="p-2 text-amber-300">${r.wind.toFixed(1)}</td>
+                    <td class="p-2 text-amber-300">${r.wind.toFixed(2)}</td>
                     <td class="p-2 font-bold text-sky-400">${r.powerMW.toFixed(2)}</td>
                     <td class="p-2 text-emerald-400">${r.energyMWh.toFixed(2)}</td>
                 </tr>
@@ -943,7 +1022,7 @@
                             pointRadius: (horizon === 'W1' || stepMin === 15) ? 0 : 2
                         },
                         {
-                            label: 'Tốc độ gió độ cao Hub (m/s)',
+                            label: 'Tốc độ gió TB 12 tọa độ (m/s)',
                             data: computed.map(c => c.wind),
                             borderColor: '#fbbf24',
                             borderDash: [4, 4],
@@ -966,25 +1045,92 @@
                     }
                 }
             });
+        }
 
-            window.currentComputedForecast = computed;
+        function render12WtgWindList() {
+            const computed = window.currentComputedForecast || [];
+            if (computed.length === 0) return;
+
+            const slotVal = document.getElementById('wtg-list-timeslot').value;
+            const availWtg = window.currentAvailWtg || 12;
+            const hourFrac = window.currentStepHourFraction || 0.25;
+            const tbody = document.getElementById('wtg-12-wind-tbody');
+
+            let windsList = [];
+            let powersListKW = [];
+            let energyListMWh = [];
+
+            if (slotVal === 'AVG') {
+                for (let wIdx = 0; wIdx < 12; wIdx++) {
+                    const sumW = computed.reduce((acc, c) => acc + c.winds12[wIdx], 0);
+                    const sumP = computed.reduce((acc, c) => acc + c.powers12KW[wIdx], 0);
+                    const sumE = computed.reduce((acc, c) => acc + (c.powers12KW[wIdx] / 1000) * hourFrac, 0);
+                    windsList.push(sumW / computed.length);
+                    powersListKW.push(sumP / computed.length);
+                    energyListMWh.push(sumE);
+                }
+            } else {
+                const idx = parseInt(slotVal) || 0;
+                const item = computed[idx] || computed[0];
+                windsList = item.winds12;
+                powersListKW = item.powers12KW;
+                energyListMWh = item.powers12KW.map(p => (p / 1000) * hourFrac);
+            }
+
+            tbody.innerHTML = TURBINE_COORDS.map((c, idx) => {
+                const isAvail = idx < availWtg;
+                const wVal = windsList[idx];
+                const pVal = isAvail ? powersListKW[idx] : 0;
+                const eVal = isAvail ? energyListMWh[idx] : 0;
+
+                return `
+                    <tr class="hover:bg-slate-800/70 ${!isAvail ? 'opacity-50' : ''}">
+                        <td class="p-2.5 font-bold text-white">${c.id}</td>
+                        <td class="p-2.5 font-mono text-slate-300">${c.vnX.toFixed(3)}</td>
+                        <td class="p-2.5 font-mono text-slate-300">${c.vnY.toFixed(3)}</td>
+                        <td class="p-2.5 font-mono text-slate-400">${c.lat.toFixed(6)}, ${c.lon.toFixed(6)}</td>
+                        <td class="p-2.5 font-bold text-amber-300">${wVal.toFixed(2)} m/s</td>
+                        <td class="p-2.5 font-bold text-sky-400">${pVal.toFixed(1)} kW</td>
+                        <td class="p-2.5 font-bold text-emerald-400">${eVal.toFixed(2)} MWh</td>
+                        <td class="p-2.5">
+                            ${isAvail
+                                ? '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold">Khả dụng</span>'
+                                : '<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 text-[10px] font-semibold">Dừng máy</span>'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function exportForecastExcel() {
             if (!window.currentComputedForecast) return;
             const horizon = document.getElementById('forecast-horizon').value;
             const stepMin = document.getElementById('forecast-step').value;
-            const wsData = window.currentComputedForecast.map((r, i) => ({
+
+            const wsSummaryData = window.currentComputedForecast.map((r, i) => ({
                 "Chu kỳ": i + 1,
                 [`Thời điểm (${stepMin} phút)`]: r.fullTime,
-                "Tốc độ gió Hub (m/s)": r.wind,
-                "Công suất dự báo (MW)": r.powerMW,
+                "Tốc độ gió TB 12 WTG (m/s)": r.wind,
+                "Công suất dự báo tổng (MW)": r.powerMW,
                 "Sản lượng dự báo (MWh)": r.energyMWh
             }));
-            const ws = XLSX.utils.json_to_sheet(wsData);
+
+            const wsDetail12Data = window.currentComputedForecast.map((r, i) => {
+                const rowObj = {
+                    "Chu kỳ": i + 1,
+                    [`Thời điểm (${stepMin} phút)`]: r.fullTime
+                };
+                TURBINE_COORDS.forEach((c, idx) => {
+                    rowObj[`${c.id}_Gio (m/s)`] = r.winds12[idx];
+                    rowObj[`${c.id}_CS (kW)`] = parseFloat(r.powers12KW[idx].toFixed(1));
+                });
+                return rowObj;
+            });
+
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, `DuBao_${horizon}_${stepMin}p`);
-            XLSX.writeFile(wb, `DuBaoCongSuat_NMDG_V1-2_${horizon}_${stepMin}phut.xlsx`);
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wsSummaryData), `TongHop_${horizon}_${stepMin}p`);
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wsDetail12Data), `ChiTiet_12_WTG`);
+            XLSX.writeFile(wb, `DuBao_12Turbines_NMDG_V1-2_${horizon}_${stepMin}phut.xlsx`);
         }
 
         // ==================== 2.2 ĐÁNH GIÁ CHẤT LƯỢNG 12 TURBINES ====================

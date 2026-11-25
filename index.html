@@ -157,7 +157,7 @@
                                 <div class="flex flex-wrap justify-between items-center gap-2">
                                     <div>
                                         <h2 class="text-base font-bold text-white">Mô hình Dự báo Công suất Phát điện (Chu kỳ 30 phút)</h2>
-                                        <p class="text-xs text-slate-400">Tính toán theo tốc độ gió Windy/ECMWF kết hợp bảng đặc tính <strong class="text-emerald-400">Dynamic PC (Air density 1.15 kg/m³, TI 10%)</strong>.</p>
+                                        <p class="text-xs text-slate-400">Tính toán theo tốc độ gió Windy/ECMWF kết hợp bảng đặc tính <strong class="text-emerald-400">Dynamic PC (Air density 1.15 kg/m³, TI 10%)</strong> - Bỏ qua tổn thất.</p>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
                                         <button onclick="fetchLiveWindForecast()" id="btn-fetch-wind" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
@@ -170,8 +170,8 @@
                                 </div>
 
                                 <div class="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/30 flex flex-wrap justify-between items-center gap-2 text-xs">
-                                    <span class="text-emerald-300 font-semibold"><i class="fa-solid fa-circle-check mr-1.5"></i>Đã tích hợp Đường cong công suất chuẩn NMĐG V1-2 (Table 1 Dynamic PC: 2.5 – 24.0 m/s, Pmax = 4000 kW)</span>
-                                    <span class="text-[11px] text-slate-400">Mật độ không khí: 1.15 kg/m³ | TI: 10%</span>
+                                    <span class="text-emerald-300 font-semibold"><i class="fa-solid fa-circle-check mr-1.5"></i>Đường cong công suất chuẩn NMĐG V1-2 (Table 1 Dynamic PC: 2.5 – 24.0 m/s, Pmax = 48.00 MW)</span>
+                                    <span class="text-[11px] text-slate-400">Mật độ không khí: 1.15 kg/m³ | Tổn thất: 0%</span>
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/80 p-3.5 rounded-lg border border-slate-700">
@@ -575,7 +575,7 @@
             }
         }
 
-        // ==================== 2. ĐƯỜNG CONG CÔNG SUẤT DYNAMIC PC (CỐ ĐỊNH THEO BẢNG NHÀ MÁY) ====================
+        // ==================== 2. ĐƯỜNG CONG CÔNG SUẤT DYNAMIC PC (BỎ QUA TỔN THẤT -> PMAX = 48 MW) ====================
         // Table 1 Dynamic PC (Air density 1.15 kg/m³, Turbulence intensity 10%)
         const PLANT_POWER_CURVE = [
             { ws: 0.0, kw: 0.0 },
@@ -688,7 +688,7 @@
 
                 if (newSeries.length > 0) {
                     forecastSeries30Min = newSeries;
-                    document.getElementById('forecast-source-note').innerText = "Nguồn dữ liệu: Cập nhật trực tuyến mô hình ECMWF/GFS (100m Hub) từ 00:00 Ngày D";
+                    document.getElementById('forecast-source-note').innerText = "Nguồn dữ liệu: Cập nhật trực tuyến mô hình ECMWF/GFS (100m Hub) từ 00:00 Ngày D (Bỏ qua tổn thất)";
                     renderForecastView();
                     alert(`Đã cập nhật thành công ${newSeries.length} chu kỳ dự báo 30 phút (Ngày D, D+1, D+2, W+1)!`);
                 }
@@ -724,7 +724,7 @@
                     });
                     if (parsed.length > 0) {
                         forecastSeries30Min = parsed;
-                        document.getElementById('forecast-source-note').innerText = `Nguồn dữ liệu: File Windy tải lên (${file.name} - ${parsed.length} chu kỳ)`;
+                        document.getElementById('forecast-source-note').innerText = `Nguồn dữ liệu: File Windy tải lên (${file.name} - ${parsed.length} chu kỳ, Bỏ qua tổn thất)`;
                         renderForecastView();
                     }
                 }
@@ -764,7 +764,8 @@
 
             const computed = sliceData.map(item => {
                 const pSingleKW = getExpectedGoldwindPower(item.windHub);
-                const plantPowerMW = parseFloat(((pSingleKW * availWtg * 0.975) / 1000).toFixed(2));
+                // Bỏ qua tổn thất (hệ số 1.0) -> 12 tua-bin x 4000 kW = 48.00 MW
+                const plantPowerMW = parseFloat(((pSingleKW * availWtg) / 1000).toFixed(2));
                 const energy30MinMWh = parseFloat((plantPowerMW * 0.5).toFixed(2));
 
                 totalEnergyMWh += energy30MinMWh;

@@ -53,7 +53,7 @@
                     <label data-i18n="login_pass_label" class="block text-xs font-semibold uppercase text-[#62A7EA] mb-1.5">Mật khẩu bảo mật</label>
                     <div class="relative">
                         <input type="password" id="login-password" required autocomplete="current-password" data-i18n-ph="login_pass_ph" placeholder="Nhập mật khẩu..." class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg pl-4 pr-10 py-2.5 text-sm text-white focus:outline-none focus:border-[#F2EA1E]">
-                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#62A7EA] hover:text-[#F2EA1E]"><i id="eye-icon" class="fa-solid fa-eye text-xs"></i></button>
+                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.4 flex items-center text-[#62A7EA] hover:text-[#F2EA1E]"><i id="eye-icon" class="fa-solid fa-eye text-xs"></i></button>
                     </div>
                 </div>
                 <div id="login-error" class="hidden p-3 rounded-lg bg-rose-950/80 border border-rose-500/60 text-rose-200 text-xs">
@@ -71,7 +71,7 @@
 
     <!-- ==================== 2. HỆ THỐNG CHÍNH ==================== -->
     <div id="app-container" class="hidden min-h-screen flex flex-col">
-        <header class="bg-[#07112e] border-b border-[#62A7EA]/30 px-6 py-3.5 flex flex-wrap justify-between items-center sticky top-0 z-40">
+        <header class="bg-[#07112e] border-b border-[#62A7EA]/30 px-6 py-3.4 flex flex-wrap justify-between items-center sticky top-0 z-40">
             <div class="flex items-center space-x-3">
                 <div class="bg-[#62A7EA] p-2.5 rounded-lg text-[#0C1B48]"><i class="fa-solid fa-wind text-2xl animate-pulse"></i></div>
                 <h1 class="text-xl font-extrabold tracking-wide text-white">TTTV_NMĐG <span class="text-[#F2EA1E]">V1-2</span> <span class="text-[#62A7EA]">TRÀ VINH</span></h1>
@@ -92,16 +92,16 @@
         </header>
 
         <nav class="bg-[#09163d] px-6 flex space-x-2 border-b border-[#62A7EA]/30 overflow-x-auto">
-            <button onclick="switchMainTab('turbines')" id="btn-main-turbines" class="tab-active px-5 py-3.5 text-sm font-bold flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchMainTab('turbines')" id="btn-main-turbines" class="tab-active px-5 py-3.4 text-sm font-bold flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-fan"></i><span data-i18n="tab_turbines">1. Turbines (Dự báo & Đánh giá chất lượng)</span>
             </button>
-            <button onclick="switchMainTab('chatbot')" id="btn-main-chatbot" class="text-slate-200 hover:bg-[#122663] px-5 py-3.5 text-sm font-bold flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchMainTab('chatbot')" id="btn-main-chatbot" class="text-slate-200 hover:bg-[#122663] px-5 py-3.4 text-sm font-bold flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-robot text-[#62A7EA]"></i><span data-i18n="tab_chatbot">2. Chatbot Vận hành</span>
             </button>
-            <button onclick="switchMainTab('faults')" id="btn-main-faults" class="text-slate-200 hover:bg-[#122663] px-5 py-3.5 text-sm font-bold flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchMainTab('faults')" id="btn-main-faults" class="text-slate-200 hover:bg-[#122663] px-5 py-3.4 text-sm font-bold flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-gears text-[#F2EA1E]"></i><span data-i18n="tab_ops_analysis">3. Phân tích vận hành</span>
             </button>
-            <button onclick="switchMainTab('ptt')" id="btn-main-ptt" class="text-slate-200 hover:bg-[#122663] px-5 py-3.5 text-sm font-bold flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchMainTab('ptt')" id="btn-main-ptt" class="text-slate-200 hover:bg-[#122663] px-5 py-3.4 text-sm font-bold flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-file-signature text-[#62A7EA]"></i><span>4. Viết phiếu thao tác</span>
             </button>
         </nav>
@@ -133,7 +133,7 @@
                         </div>
 
                         <div class="card p-5 lg:col-span-2 flex flex-col justify-between space-y-4">
-                            <div class="space-y-3.5">
+                            <div class="space-y-3.4">
                                 <div class="flex flex-wrap justify-between items-center gap-2">
                                     <h2 data-i18n="forecast_model_title" class="text-base font-bold text-white">Dự báo & Lưu trữ Lịch sử gió 12 Tọa độ</h2>
                                     <div class="flex flex-wrap gap-2">
@@ -184,7 +184,7 @@
                                     </div>
                                 </div>
 
-                                <div class="p-3.5 rounded-lg bg-[#07112e]/90 border border-[#F2EA1E]/40 space-y-2.5">
+                                <div class="p-3.4 rounded-lg bg-[#07112e]/90 border border-[#F2EA1E]/40 space-y-2.5">
                                     <div class="flex flex-wrap justify-between items-center gap-2">
                                         <div class="text-xs font-bold text-[#F2EA1E] flex items-center">
                                             <i class="fa-solid fa-sliders mr-1.5"></i> <span data-i18n="nowcast_title">Hiệu chỉnh ngắn hạn (Nowcasting Ngày D)</span>
@@ -352,7 +352,7 @@
                     <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm">
                         <div class="flex items-start space-x-3">
                             <div class="bg-[#62A7EA] text-[#0C1B48] p-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-[#07112e]/90 p-3.5 rounded-lg border border-[#62A7EA]/30 max-w-2xl space-y-2">
+                            <div class="bg-[#07112e]/90 p-3.4 rounded-lg border border-[#62A7EA]/30 max-w-2xl space-y-2">
                                 <p data-i18n="chat_welcome">Xin chào kỹ sư vận hành! Tôi là trợ lý kỹ thuật của NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW: WT01–WT23).</p>
                                 <div class="flex flex-wrap gap-1.5 pt-1">
                                     <button onclick="askQuickQuestion('Nguyên nhân và cách xử lý khi Relay 27-2 tác động tại NMĐG V1-2?')" class="text-[11px] px-2.5 py-1 bg-[#0C1B48] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/50 rounded-full text-[#F2EA1E] font-semibold">Relay 27-2?</button>
@@ -384,7 +384,7 @@
                         <i class="fa-solid fa-desktop text-[#F2EA1E]"></i><span data-i18n="subtab_logic">3.3 HMI Toàn Trạm 110kV/35kV & Kiểm tra Logic</span>
                     </button>
                     <button onclick="switchSubTab('faults', 'faultsim')" id="subbtn-faults-faultsim" class="text-slate-200 hover:bg-[#122663] px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2">
-                        <i class="fa-solid fa-bolt-lightning text-[#F2EA1E]"></i><span>3.5 Giả lập sự cố Relay (CV 3992 / 1638 / 1639)</span>
+                        <i class="fa-solid fa-bolt-lightning text-[#F2EA1E]"></i><span>3.4 Giả lập sự cố Relay</span>
                     </button>
                 </div>
 
@@ -539,14 +539,14 @@
                         </div>
 
                         <!-- THANH LIÊN KẾT CÔNG SUẤT DỰ BÁO & CÀI ĐẶT TẦN SỐ / ÁP 35kV / HÚT PHÁT Q -->
-                        <div class="p-3.5 rounded-xl bg-[#0a1433] border border-[#62A7EA]/50 space-y-3 text-xs">
+                        <div class="p-3.4 rounded-xl bg-[#0a1433] border border-[#62A7EA]/50 space-y-3 text-xs">
                             <div class="flex flex-wrap justify-between items-center gap-2 border-b border-[#62A7EA]/25 pb-2">
                                 <div class="font-extrabold text-[#F2EA1E] flex items-center">
                                     <i class="fa-solid fa-plug-circle-bolt mr-1.5"></i>Liên kết Công suất Dự báo &amp; Cài đặt Tần số / Điện áp 35kV / Hút phát Q
                                 </div>
                                 <div class="flex flex-wrap items-center gap-2">
                                     <label class="flex items-center space-x-1.5 bg-[#07112e] px-2.5 py-1 rounded border border-[#62A7EA]/40 cursor-pointer">
-                                        <input type="checkbox" id="hmi-link-forecast" onchange="toggleForecastScadaLink(this.checked)" class="w-3.5 h-3.5 accent-[#F2EA1E]">
+                                        <input type="checkbox" id="hmi-link-forecast" onchange="toggleForecastScadaLink(this.checked)" class="w-3.4 h-3.4 accent-[#F2EA1E]">
                                         <span class="text-[#62A7EA] font-bold">Link P từ Dự báo</span>
                                     </label>
                                     <select id="hmi-forecast-slot" onchange="applyForecastPowerToHmi()" class="bg-[#07112e] border border-[#62A7EA]/50 rounded px-2 py-1 text-[11px] text-[#F2EA1E] font-mono">
@@ -572,8 +572,8 @@
                                 </div>
 
                                 <div class="bg-[#07112e] p-2.5 rounded-lg border border-[#62A7EA]/30 space-y-1">
-                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold">Hút / Phát Q nhà máy (MVAr):</span><span id="lbl-grid-qset" class="font-mono font-bold text-emerald-300">-3.54 MVAr (Hút)</span></div>
-                                    <input type="range" id="sim-grid-qset" min="-18.0" max="18.0" step="0.1" value="-3.54" oninput="updateGridSimParams()" class="w-full accent-emerald-400">
+                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold">Hút / Phát Q nhà máy (MVAr):</span><span id="lbl-grid-qset" class="font-mono font-bold text-emerald-300">-3.44 MVAr (Hút)</span></div>
+                                    <input type="range" id="sim-grid-qset" min="-18.0" max="18.0" step="0.1" value="-3.44" oninput="updateGridSimParams()" class="w-full accent-emerald-400">
                                     <div class="flex justify-between text-[10px] text-slate-400 font-mono"><span>-18 Hút Q</span><span>0</span><span>+18 Phát Q</span></div>
                                 </div>
 
@@ -659,7 +659,7 @@
                     <div id="t1-logic-explanation-panel" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
                 </div>
 
-                <!-- SUB-TAB 3.5: GIẢ LẬP BẢO VỆ NHÀ MÁY V1-2 TRÀ VINH (ĐZ 171 | MBA T1/T2 | C11 | C31 | XT 371 | XT 373) -->
+                <!-- SUB-TAB 3.4: GIẢ LẬP BẢO VỆ NHÀ MÁY V1-2 TRÀ VINH (ĐZ 171 | MBA T1/T2 | C11 | C31 | XT 371 | XT 373) -->
                 <div id="sub-faults-faultsim" class="hidden space-y-5">
                     <!-- Thanh điều khiển kiểu tủ vận hành nhà máy -->
                     <div class="p-4 rounded-xl bg-[#050b1d] border-2 border-[#62A7EA]/50 shadow-lg flex flex-wrap justify-between items-center gap-3">
@@ -765,7 +765,7 @@
                 </div>
 
                 <!-- Banner kết quả kiểm tra trình tự thao tác -->
-                <div id="ptt-validation-banner" class="hidden p-3.5 rounded-lg bg-[#07112e] border border-[#62A7EA]/50 text-xs"></div>
+                <div id="ptt-validation-banner" class="hidden p-3.4 rounded-lg bg-[#07112e] border border-[#62A7EA]/50 text-xs"></div>
 
                 <!-- PHẦN 1: THÔNG TIN CHUNG CỦA PHIẾU THAO TÁC (THEO ĐÚNG BIỂU MẪU CÔNG TY CỔ PHẦN ĐIỆN GIÓ TRƯỜNG THÀNH TRÀ VINH) -->
                 <div class="card p-5 space-y-4">
@@ -1134,14 +1134,14 @@
         ];
 
         const PLANT_POWER_CURVE = [
-            { ws: 0.0, kw: 0.0 }, { ws: 2.5, kw: 0.3 }, { ws: 3.0, kw: 65.3 }, { ws: 3.5, kw: 156.5 },
+            { ws: 0.0, kw: 0.0 }, { ws: 2.5, kw: 0.3 }, { ws: 3.0, kw: 65.3 }, { ws: 3.4, kw: 156.5 },
             { ws: 4.0, kw: 272.0 }, { ws: 4.5, kw: 409.3 }, { ws: 5.0, kw: 573.1 }, { ws: 5.5, kw: 773.7 },
             { ws: 6.0, kw: 1013 }, { ws: 6.5, kw: 1293 }, { ws: 7.0, kw: 1619 }, { ws: 7.5, kw: 1989 },
             { ws: 8.0, kw: 2401 }, { ws: 8.5, kw: 2836 }, { ws: 9.0, kw: 3280 }, { ws: 9.5, kw: 3608 },
             { ws: 10.0, kw: 3867 }, { ws: 10.5, kw: 3993 }, { ws: 11.0, kw: 4000 }, { ws: 18.5, kw: 4000 },
             { ws: 19.0, kw: 3987 }, { ws: 19.5, kw: 3931 }, { ws: 20.0, kw: 3789 }, { ws: 20.5, kw: 3641 },
             { ws: 21.0, kw: 3472 }, { ws: 21.5, kw: 3245 }, { ws: 22.0, kw: 3008 }, { ws: 22.5, kw: 2696 },
-            { ws: 23.0, kw: 2342 }, { ws: 23.5, kw: 2051 }, { ws: 24.0, kw: 1866 }, { ws: 24.1, kw: 0.0 }
+            { ws: 23.0, kw: 2342 }, { ws: 23.4, kw: 2051 }, { ws: 24.0, kw: 1866 }, { ws: 24.1, kw: 0.0 }
         ];
 
         function getExpectedGoldwindPower(ws) {
@@ -1208,7 +1208,7 @@
                 const hour = t.getHours() + t.getMinutes() / 60;
                 const diurnal = Math.sin((hour - 8) * Math.PI / 12) * 1.8;
                 const synoptic = Math.sin(i / 75) * 1.5;
-                const windHubBase = Math.max(2.5, Math.min(13.5, 6.8 + diurnal + synoptic)) * 1.38;
+                const windHubBase = Math.max(2.5, Math.min(13.4, 6.8 + diurnal + synoptic)) * 1.38;
                 const winds = TURBINE_COORDS.map((_, idx) => parseFloat(Math.max(0, windHubBase + (idx - 5.5) * 0.03).toFixed(2)));
                 series.push({ time: t, winds });
             }
@@ -1514,18 +1514,18 @@
         // ==================== 2.2 ĐÁNH GIÁ CHẤT LƯỢNG 12 TURBINES (WT01..WT23) ====================
         const CHART_WIND_AXIS = [2.5, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24];
         let turbinesData = [
-            { id: 'WT01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Feeder 371).' },
-            { id: 'WT03', score: 94, status: 'good', dev: '-1.5%', temp: '65.1 °C', pitch: '0.12°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Feeder 371).' },
-            { id: 'WT05', score: 78, status: 'warn', dev: '-5.8%', temp: '73.2 °C', pitch: '0.85°', samples: 12960, actualCurve: null, note: 'Pitch angle deviation & bearing temp slightly high (Feeder 371).' },
-            { id: 'WT07', score: 95, status: 'good', dev: '-1.1%', temp: '63.8 °C', pitch: '0.10°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Feeder 373).' },
-            { id: 'WT09', score: 92, status: 'good', dev: '-2.0%', temp: '66.0 °C', pitch: '0.18°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Feeder 373).' },
-            { id: 'WT11', score: 65, status: 'crit', dev: '-9.4%', temp: '81.5 °C', pitch: '1.40°', samples: 12960, actualCurve: null, note: 'WARNING: Power drop >9% at 10m/s, high generator bearing temp (Feeder 373).' },
-            { id: 'WT13', score: 97, status: 'good', dev: '-0.8%', temp: '62.9 °C', pitch: '0.09°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Feeder 375).' },
-            { id: 'WT15', score: 91, status: 'good', dev: '-2.3%', temp: '66.4 °C', pitch: '0.20°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Feeder 375).' },
-            { id: 'WT17', score: 82, status: 'warn', dev: '-4.9%', temp: '71.0 °C', pitch: '0.45°', samples: 12960, actualCurve: null, note: 'Slight derating at high ambient temp (Feeder 375).' },
-            { id: 'WT19', score: 95, status: 'good', dev: '-1.3%', temp: '64.2 °C', pitch: '0.14°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Feeder 377).' },
-            { id: 'WT21', score: 93, status: 'good', dev: '-1.7%', temp: '65.5 °C', pitch: '0.16°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Feeder 377).' },
-            { id: 'WT23', score: 94, status: 'good', dev: '-1.4%', temp: '64.8 °C', pitch: '0.11°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Feeder 377).' }
+            { id: 'WT01', score: 96, status: 'good', dev: '-1.2%', temp: '64.5 °C', pitch: '0.15°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Xuất tuyến 371).' },
+            { id: 'WT03', score: 94, status: 'good', dev: '-1.5%', temp: '65.1 °C', pitch: '0.12°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Xuất tuyến 371).' },
+            { id: 'WT05', score: 78, status: 'warn', dev: '-5.8%', temp: '73.2 °C', pitch: '0.85°', samples: 12960, actualCurve: null, note: 'Pitch angle deviation & bearing temp slightly high (Xuất tuyến 371).' },
+            { id: 'WT07', score: 95, status: 'good', dev: '-1.1%', temp: '63.8 °C', pitch: '0.10°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Xuất tuyến 371).' },
+            { id: 'WT09', score: 92, status: 'good', dev: '-2.0%', temp: '66.0 °C', pitch: '0.18°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Xuất tuyến 371).' },
+            { id: 'WT11', score: 65, status: 'crit', dev: '-9.4%', temp: '81.5 °C', pitch: '1.40°', samples: 12960, actualCurve: null, note: 'WARNING: Power drop >9% at 10m/s, high generator bearing temp (Xuất tuyến 371).' },
+            { id: 'WT13', score: 97, status: 'good', dev: '-0.8%', temp: '62.9 °C', pitch: '0.09°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Xuất tuyến 373).' },
+            { id: 'WT15', score: 91, status: 'good', dev: '-2.3%', temp: '66.4 °C', pitch: '0.20°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Xuất tuyến 373).' },
+            { id: 'WT17', score: 82, status: 'warn', dev: '-4.9%', temp: '71.0 °C', pitch: '0.45°', samples: 12960, actualCurve: null, note: 'Slight derating at high ambient temp (Xuất tuyến 373).' },
+            { id: 'WT19', score: 95, status: 'good', dev: '-1.3%', temp: '64.2 °C', pitch: '0.14°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Xuất tuyến 373).' },
+            { id: 'WT21', score: 93, status: 'good', dev: '-1.7%', temp: '65.5 °C', pitch: '0.16°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Xuất tuyến 373).' },
+            { id: 'WT23', score: 94, status: 'good', dev: '-1.4%', temp: '64.8 °C', pitch: '0.11°', samples: 12960, actualCurve: null, note: 'Dynamic PC 4MW OK (Xuất tuyến 373).' }
         ];
 
         let powerChart = null, isInitialized = false, uploadedScadaFile = null, selectedTurbineIndex = 0;
@@ -1547,7 +1547,7 @@
                 const badge = wtg.status === 'crit' ? 'bg-rose-500/25 text-rose-300' : (wtg.status === 'warn' ? 'bg-[#F2EA1E]/20 text-[#F2EA1E]' : 'bg-[#62A7EA]/20 text-[#62A7EA]');
                 const icon = wtg.status === 'crit' ? 'text-rose-400' : (wtg.status === 'warn' ? 'text-[#F2EA1E]' : 'text-[#62A7EA]');
                 return `
-                    <div onclick="selectTurbine(${index})" class="card p-3.5 cursor-pointer border ${border} hover:border-[#F2EA1E] transition">
+                    <div onclick="selectTurbine(${index})" class="card p-3.4 cursor-pointer border ${border} hover:border-[#F2EA1E] transition">
                         <div class="flex justify-between items-center mb-2"><span class="font-bold text-sm text-white">${wtg.id}</span><i class="fa-solid fa-fan ${icon}"></i></div>
                         <div class="text-2xl font-bold text-[#F2EA1E] mb-1">${wtg.score}%</div>
                         <div class="flex justify-between items-center text-[11px]"><span class="text-slate-300">4.0 MW</span><span class="px-2 py-0.5 rounded ${badge} font-semibold">${wtg.status === 'good' ? t('status_good') : (wtg.status === 'warn' ? t('status_warn') : t('status_crit'))}</span></div>
@@ -1655,7 +1655,7 @@
         // ==================== 3. CHATBOX VẬN HÀNH ====================
         let knowledgeChunks = [];
         const BUILTIN_PLANT_KB = [
-            { source: "NMĐG V1-2 Trà Vinh (QĐ 3120/QĐ-ĐĐMN)", text: "NMĐG V1-2 Trà Vinh: 48 MW (12 x 4.0 MW Goldwind: WT01, WT03, WT05 [XT 371]; WT07, WT09, WT11 [XT 373]; WT13, WT15, WT17 [XT 375]; WT19, WT21, WT23 [XT 377]). MBA T1: 63MVA 115±9x1.78%/35kV (MC 131, MC 331). Tự dùng TD31: 250kVA 35/0.4kV." },
+            { source: "NMĐG V1-2 Trà Vinh (QĐ 3120/QĐ-ĐĐMN)", text: "NMĐG V1-2 Trà Vinh: 48 MW (12 x 4.0 MW Goldwind: WT01, 03, 05, 07, 09, 11 [Xuất tuyến 371]; WT23, 21, 19, 17, 15, 13 [Xuất tuyến 373]; XT 375 & 377 [Dự phòng]). MBA T1: 63MVA 115±9x1.78%/35kV (MC 131, MC 331). Tự dùng TD31: 250kVA 35/0.4kV." },
             { source: "Relay 27 & LVRT (TT 39/2015/TT-BCT)", text: "Relay 27 (27-1, 27-2, PTUV): Undervoltage / LVRT protection. Causes: 110kV/220kV grid fault in Duyen Hai - Tra Vinh area or VT secondary MCB trip (60FL). Action: Check Uab, Ubc, Uca on SCADA, inspect VT MCB, coordinate with A2/A0 to restore." },
             { source: "Relay 59 & 59N (35kV / 110kV)", text: "Relay 59 (59-1, 59-2, PTOV): Overvoltage protection caused by excess capacitive reactive power (+Q) from 35kV underground cables during low wind. Action: Switch PPC to Voltage Control / inductive cosφ (-Q). Relay 59N (3U0): Single-phase earth fault on 35kV underground cable or RMU T-plug connector." },
             { source: "Transformer T1 63MVA (87T / Buchholz)", text: "Transformer T1 115/35kV 63MVA protection: Differential 87T, Overcurrent 50/51, Buchholz gas relay, OLTC oil surge. Never re-energize transformer after 87T or Buchholz trip before insulation resistance, turns ratio, and DGA oil tests." }
@@ -1773,7 +1773,7 @@
         function askQuickQuestion(text) { document.getElementById('chat-input').value = text; sendChat(); }
 
         function clearChatHistory() {
-            document.getElementById('chat-messages').innerHTML = `<div class="flex items-start space-x-3"><div class="bg-[#62A7EA] text-[#0C1B48] p-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-robot"></i></div><div class="bg-[#07112e]/90 p-3.5 rounded-lg border border-[#62A7EA]/30 max-w-2xl text-xs text-slate-100">${t('chat_welcome')}</div></div>`;
+            document.getElementById('chat-messages').innerHTML = `<div class="flex items-start space-x-3"><div class="bg-[#62A7EA] text-[#0C1B48] p-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-robot"></i></div><div class="bg-[#07112e]/90 p-3.4 rounded-lg border border-[#62A7EA]/30 max-w-2xl text-xs text-slate-100">${t('chat_welcome')}</div></div>`;
         }
 
         async function sendChat() {
@@ -1793,7 +1793,7 @@
             document.getElementById(loadingId)?.remove();
 
             let localHtml = topChunks.length > 0 ? `<div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/50 text-xs space-y-2.5">${topChunks.map(c => `<div class="pl-2.5 border-l-2 border-[#F2EA1E] space-y-1"><div class="text-[11px] text-[#F2EA1E] font-semibold">[${c.source}]</div><p class="text-slate-100 leading-relaxed">${highlightTokens(c.text, tokens)}</p></div>`).join("")}</div>` : "";
-            box.innerHTML += `<div class="flex items-start space-x-3"><div class="bg-[#62A7EA] text-[#0C1B48] p-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-robot"></i></div><div class="bg-[#0C1B48] p-3.5 rounded-lg border border-[#62A7EA]/40 max-w-2xl space-y-2.5 text-slate-100">${localHtml}${webHtml}${(!localHtml && !webHtml) ? `<p class="text-xs text-slate-300">No matching records found for "${safeMsg}".</p>` : ''}</div></div>`;
+            box.innerHTML += `<div class="flex items-start space-x-3"><div class="bg-[#62A7EA] text-[#0C1B48] p-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-robot"></i></div><div class="bg-[#0C1B48] p-3.4 rounded-lg border border-[#62A7EA]/40 max-w-2xl space-y-2.5 text-slate-100">${localHtml}${webHtml}${(!localHtml && !webHtml) ? `<p class="text-xs text-slate-300">No matching records found for "${safeMsg}".</p>` : ''}</div></div>`;
             box.scrollTop = box.scrollHeight;
         }
 
@@ -1886,7 +1886,7 @@
                     <p class="text-sm text-white mt-2"><strong>${equip} - ${volt}</strong></p>
                     <p class="text-xs text-slate-300 mt-1">T1 = ${t1}°C | T2 = ${t2}°C</p>
                 </div>
-                <div class="space-y-2 text-xs text-slate-200 p-3.5 bg-[#07112e]/70 rounded-lg border border-[#62A7EA]/20"><p>${action}</p></div>
+                <div class="space-y-2 text-xs text-slate-200 p-3.4 bg-[#07112e]/70 rounded-lg border border-[#62A7EA]/20"><p>${action}</p></div>
             `;
         }
 
@@ -1947,7 +1947,7 @@
                     </div>
                     <div class="bg-[#0C1B48] p-2.5 rounded border border-[#62A7EA]/30 text-xs"><strong class="text-[#F2EA1E] font-mono">${voltMatches ? voltMatches.slice(0, 7).join(" | ") : "-"}</strong></div>
                 </div>
-                <div class="space-y-3 text-xs">${matchedRules.map(m => `<div class="p-3.5 bg-[#07112e]/90 rounded-lg border border-[#62A7EA]/30 space-y-2"><div class="font-bold text-[#62A7EA] text-sm">${m.code}</div><p class="text-slate-200 leading-relaxed">${m.cause}</p><div class="text-white leading-relaxed pl-2 border-l-2 border-[#F2EA1E] whitespace-pre-line">${m.action}</div></div>`).join('')}</div>
+                <div class="space-y-3 text-xs">${matchedRules.map(m => `<div class="p-3.4 bg-[#07112e]/90 rounded-lg border border-[#62A7EA]/30 space-y-2"><div class="font-bold text-[#62A7EA] text-sm">${m.code}</div><p class="text-slate-200 leading-relaxed">${m.cause}</p><div class="text-white leading-relaxed pl-2 border-l-2 border-[#F2EA1E] whitespace-pre-line">${m.action}</div></div>`).join('')}</div>
             `;
         }
 
@@ -2010,9 +2010,9 @@
             return `
                 <g class="svg-node" onclick="toggleT1Signal('${key}')">
                     <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="${active ? 1.8 : 1}"/>
-                    <text x="${x + 6}" y="${y + h/2 + 3.5}" fill="${textCol}" font-size="9.3" font-weight="${active ? '700' : '500'}" font-family="Segoe UI, sans-serif">${label}</text>
+                    <text x="${x + 6}" y="${y + h/2 + 3.4}" fill="${textCol}" font-size="9.3" font-weight="${active ? '700' : '500'}" font-family="Segoe UI, sans-serif">${label}</text>
                     <rect x="${x + w - 22}" y="${y + 3}" width="18" height="${h - 6}" rx="3" fill="${badgeFill}"/>
-                    <text x="${x + w - 13}" y="${y + h/2 + 3.5}" fill="${badgeText}" font-size="9.5" font-weight="800" text-anchor="middle" font-family="monospace">${active ? '1' : '0'}</text>
+                    <text x="${x + w - 13}" y="${y + h/2 + 3.4}" fill="${badgeText}" font-size="9.5" font-weight="800" text-anchor="middle" font-family="monospace">${active ? '1' : '0'}</text>
                 </g>
             `;
         }
@@ -2038,7 +2038,7 @@
             if (invertBubble) {
                 const pts = points.trim().split(/\s+/);
                 const last = pts[pts.length - 1].split(",");
-                bubble = `<circle cx="${parseFloat(last[0]) - 4}" cy="${parseFloat(last[1])}" r="3.5" fill="#0C1B48" stroke="${col}" stroke-width="1.6"/>`;
+                bubble = `<circle cx="${parseFloat(last[0]) - 4}" cy="${parseFloat(last[1])}" r="3.4" fill="#0C1B48" stroke="${col}" stroke-width="1.6"/>`;
             }
             return `<polyline points="${points}" fill="none" stroke="${col}" stroke-width="${width}" stroke-linejoin="round"/>${bubble}`;
         }
@@ -3114,7 +3114,7 @@
             linkForecast: false,
             freqHz: 50.13,
             u35SetKv: 34.78,
-            qSetMvar: -3.54,
+            qSetMvar: -3.44,
             pSetMw: 18.36,
             // Phía 110kV - Ngăn 171
             d171_76: false, d171_7: true, d171_75: false, cb171: true, d171_15: false, d171_1: true,
@@ -3193,7 +3193,7 @@
         function updateGridSimParams() {
             const fVal = parseFloat(document.getElementById('sim-grid-freq')?.value || 50.13);
             const u35Val = parseFloat(document.getElementById('sim-grid-u35set')?.value || 34.78);
-            const qVal = parseFloat(document.getElementById('sim-grid-qset')?.value || -3.54);
+            const qVal = parseFloat(document.getElementById('sim-grid-qset')?.value || -3.44);
             const pVal = parseFloat(document.getElementById('sim-grid-pset')?.value || 18.36);
 
             HMI_STATE.freqHz = fVal;
@@ -3215,12 +3215,12 @@
             HMI_STATE.linkForecast = false;
             HMI_STATE.freqHz = 50.13;
             HMI_STATE.u35SetKv = 34.78;
-            HMI_STATE.qSetMvar = -3.54;
+            HMI_STATE.qSetMvar = -3.44;
             HMI_STATE.pSetMw = 18.36;
             if (document.getElementById('hmi-link-forecast')) document.getElementById('hmi-link-forecast').checked = false;
             if (document.getElementById('sim-grid-freq')) document.getElementById('sim-grid-freq').value = 50.13;
             if (document.getElementById('sim-grid-u35set')) document.getElementById('sim-grid-u35set').value = 34.78;
-            if (document.getElementById('sim-grid-qset')) document.getElementById('sim-grid-qset').value = -3.54;
+            if (document.getElementById('sim-grid-qset')) document.getElementById('sim-grid-qset').value = -3.44;
             if (document.getElementById('sim-grid-pset')) document.getElementById('sim-grid-pset').value = 18.36;
             updateGridSimParams();
             addHmiLog('Khôi phục thông số tần số, điện áp 35kV, hút/phát Q và công suất P về trạng thái chuẩn.', true);
@@ -3523,13 +3523,13 @@
             }
 
             // Ảnh hưởng của Q (MVAr), U_35kV đặt, tần số f (Hz) và nấc OLTC lên CẢ điện áp 35kV lẫn điện áp lưới 110kV
-            const qDelta35 = c31Live ? ((s.qSetMvar + 3.54) * 0.16) : 0;
+            const qDelta35 = c31Live ? ((s.qSetMvar + 3.44) * 0.16) : 0;
             const pDelta35 = c31Live ? ((s.pSetMw - 18.36) * 0.025) : 0;
             const tapDelta35 = (9 - s.tapPos) * 0.55;
             const u35Clamp = c31Live ? Math.max(15.0, Math.min(45.0, s.u35SetKv + qDelta35 + pDelta35 + tapDelta35)) : 0.00;
 
             // Điện áp lưới 110kV biến thiên khi thay đổi Q, U_35kV hoặc tần số f (hệ số điều chỉnh tần số - áp)
-            const qGridDelta110 = (s.qSetMvar + 3.54) * 0.35;
+            const qGridDelta110 = (s.qSetMvar + 3.44) * 0.35;
             const u35GridDelta110 = (s.u35SetKv - 34.78) * 0.85;
             const freqGridDelta110 = (s.freqHz - 50.13) * 1.60;
             const u110GridBase = 116.77 + qGridDelta110 + u35GridDelta110 + freqGridDelta110;
@@ -3817,10 +3817,10 @@
                 <rect x="998" y="574" width="14" height="14" rx="2" fill="#22c55e"/><text x="1020" y="585" fill="#f8fafc" font-size="10" font-weight="700">Thiết bị MỞ (0)</text>
                 ${svgPadlock(1000, 597, true)}<text x="1020" y="607" fill="#86efac" font-size="10" font-weight="700">Mở khóa liên động</text>
                 ${svgPadlock(1000, 619, false)}<text x="1020" y="629" fill="#fde047" font-size="10" font-weight="700">Đang khóa liên động</text>
-                <text x="998" y="654" fill="#94a3b8" font-size="9.5">• XT 371: WT01, 03, 05</text>
-                <text x="998" y="667" fill="#94a3b8" font-size="9.5">• XT 373: WT07, 09, 11</text>
-                <text x="998" y="680" fill="#94a3b8" font-size="9.5">• XT 375: WT13, 15, 17</text>
-                <text x="998" y="693" fill="#94a3b8" font-size="9.5">• XT 377: WT19, 21, 23</text>
+                <text x="998" y="654" fill="#94a3b8" font-size="9.5">• Xuất tuyến 371: WT01, 03, 05, 07, 09, 11</text>
+                <text x="998" y="667" fill="#94a3b8" font-size="9.5">• Xuất tuyến 373: WT23, 21, 19, 17, 15, 13</text>
+                <text x="998" y="680" fill="#94a3b8" font-size="9.5">• XT 375 &amp; 377: Dự phòng</text>
+                
             </svg>`;
 
             wrapper.innerHTML = svg;
@@ -4071,10 +4071,10 @@
             }
 
             if (errors.length === 0) {
-                banner.className = "p-3.5 rounded-lg bg-emerald-950/80 border border-emerald-500 text-xs text-emerald-200";
+                banner.className = "p-3.4 rounded-lg bg-emerald-950/80 border border-emerald-500 text-xs text-emerald-200";
                 banner.innerHTML = `<i class="fa-solid fa-circle-check text-[#F2EA1E] mr-2"></i><strong>TRÌNH TỰ PHIẾU THAO TÁC HỢP LỆ (${currentPttSteps.length} bước):</strong> Tuân thủ đúng quy trình thao tác (TT 44/2014/TT-BCT) và toàn bộ mạch khóa liên động ngăn 171 / MBA T1 / 35kV.`;
             } else {
-                banner.className = "p-3.5 rounded-lg bg-rose-950/90 border border-rose-500 text-xs text-rose-200 space-y-1";
+                banner.className = "p-3.4 rounded-lg bg-rose-950/90 border border-rose-500 text-xs text-rose-200 space-y-1";
                 banner.innerHTML = `<div class="font-bold text-rose-300"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i>PHÁT HIỆN LỖI TRÌNH TỰ / VI PHẠM LIÊN ĐỘNG:</div><ul class="list-disc list-inside">${errors.map(e => `<li>${e}</li>`).join('')}</ul>`;
             }
         }
@@ -4193,7 +4193,7 @@
             i_hi_67: 2.80, t_hi_67: 0.70,
             i0p_67n: 0.30, td_67n: 0.50,
             i0_hi_67n: 4.20, t0_hi_67n: 0.50,
-            u_low_27: 73.5, t_low_27: 2.00,
+            u_low_27: 73.4, t_low_27: 2.00,
             u_ov1_59: 137.0, t_ov1_59: 1.00,
             u_ov2_59: 168.5, t_ov2_59: 0.10,
             deadtime_79: 1.50,
@@ -4202,7 +4202,7 @@
             idiff_87t: 0.30, idiff_fast_87t: 10.0,
             ref_thresh: 0.30, ref_mode_trip: false,
             t1_hv_51_1: 8.60, t1_hv_51_1_delay: 0.10,
-            t1_hv_51_2: 1.20, t1_hv_51_2_delay: 3.50,
+            t1_hv_51_2: 1.20, t1_hv_51_2_delay: 3.40,
             t1_hv_49_warn: 0.87, t1_hv_49_delay: 5.00,
             t1_hv_59_2: 131.50, t1_hv_59_2_delay: 3.00,
             t1_lv_35_51_1: 1.00, t1_lv_35_51_1_delay: 0.50,
@@ -4442,7 +4442,7 @@
                     </div>
                     <div class="bg-[#08122e] p-3 rounded-lg border border-[#62A7EA]/30 space-y-1">
                         <div class="flex justify-between"><span class="text-[#62A7EA]">Tần số 35kV (Hz):</span><span id="lbl-xt-f" class="font-mono font-bold text-[#F2EA1E]">50.0 Hz</span></div>
-                        <input type="range" id="sim-xt-f" min="44.5" max="53.5" step="0.1" value="50.0" oninput="runActiveFaultSim()" class="w-full accent-[#F2EA1E]">
+                        <input type="range" id="sim-xt-f" min="44.5" max="53.4" step="0.1" value="50.0" oninput="runActiveFaultSim()" class="w-full accent-[#F2EA1E]">
                     </div>
                 `;
                 togglesBox.innerHTML = `<div class="text-[11px] text-slate-300">Xuất tuyến <strong>${tag}</strong> (${wtgList}) — Cắt <strong>MC ${tag}</strong>.</div>`;
@@ -4557,7 +4557,7 @@
         function calcIecVeryInvTime(ratio, td) {
             if (ratio <= 1.0 || td <= 0) return null;
             const denom = ratio - 1.0;
-            return denom <= 0.001 ? 99.9 : parseFloat((td * (13.5 / denom)).toFixed(2));
+            return denom <= 0.001 ? 99.9 : parseFloat((td * (13.4 / denom)).toFixed(2));
         }
 
         function runActiveFaultSim() {
@@ -4784,7 +4784,7 @@
             const mcOpenState = trippedMcs.size > 0;
 
             visualBox.innerHTML = `
-                <div class="p-3.5 rounded-xl border ${hasTrip ? 'bg-rose-950/70 border-rose-500' : 'bg-[#08122e] border-emerald-500/50'} space-y-2.5">
+                <div class="p-3.4 rounded-xl border ${hasTrip ? 'bg-rose-950/70 border-rose-500' : 'bg-[#08122e] border-emerald-500/50'} space-y-2.5">
                     <div class="flex items-center justify-between gap-2">
                         <div>
                             <div class="text-xs uppercase font-extrabold ${hasTrip ? 'text-rose-300' : 'text-emerald-300'}">${simTitle}</div>

@@ -1654,44 +1654,86 @@
             `;
         }
 
-        // ==================== 4.3 KIỂM TRA ĐIỀU KIỆN LOGIC & LIÊN ĐỘNG NHÀ MÁY ĐIỆN GIÓ ====================
+        // ==================== 4.3 KIỂM TRA ĐIỀU KIỆN LOGIC THEO SƠ ĐỒ 04/NMĐGV1-2TV.ĐĐMN ====================
         const PLANT_LOGIC_SIGNALS = [
-            { id: "CB_52_OPEN", label: "Máy cắt 52 đang MỞ (52b = 1)", state: true },
-            { id: "DS_89_OPEN", label: "Dao cách ly 89 đang MỞ (89b = 1)", state: true },
-            { id: "ES_89E_OPEN", label: "Dao tiếp địa 89E đang MỞ (89Eb = 1)", state: true },
-            { id: "NO_LINE_VOLT", label: "Đường dây / Thanh cái KHÔNG có điện áp (U = 0)", state: true },
-            { id: "SYNC_25_OK", label: "Rơ-le Hòa đồng bộ Synchrocheck 25 ĐẠT (25 = 1)", state: true },
-            { id: "LOCKOUT_86_TRIP", label: "Rơ-le khóa 86 Lockout TÁC ĐỘNG (86 = 1)", state: false },
-            { id: "GRID_VOLT_OK", label: "Điện áp lưới 110kV/35kV ổn định (0.9–1.1 Un)", state: true },
-            { id: "WIND_IN_RANGE", label: "Tốc độ gió trong dải phát (2.5 – 24.0 m/s)", state: true },
-            { id: "PPC_ENABLE", label: "Lệnh cho phép phát từ PPC / SCADA (PPC = 1)", state: true },
-            { id: "WTG_NO_FAULT", label: "Tua-bin Goldwind không có lỗi nội bộ (Ready = 1)", state: true }
+            // Phía 110kV - Ngăn 171 & Ngăn 131 (Quyền điều khiển A2)
+            { id: "MC_171_OPEN", label: "[110kV] Máy cắt 171 MỞ (171 = 0)", state: false },
+            { id: "DCL_171_1_OPEN", label: "[110kV] DCL 171-1 MỞ (171-1 = 0)", state: false },
+            { id: "DCL_171_7_OPEN", label: "[110kV] DCL 171-7 MỞ (171-7 = 0)", state: false },
+            { id: "DTD_171_15_OPEN", label: "[110kV] DTĐ 171-15 MỞ (171-15 = 0)", state: true },
+            { id: "DTD_171_75_OPEN", label: "[110kV] DTĐ 171-75 MỞ (171-75 = 0)", state: true },
+            { id: "DTD_171_76_OPEN", label: "[110kV] DTĐ 171-76 MỞ (171-76 = 0)", state: true },
+            { id: "MC_131_OPEN", label: "[110kV] Máy cắt tổng MBA T1 (131) MỞ", state: false },
+            { id: "DCL_131_1_OPEN", label: "[110kV] DCL 131-1 MỞ", state: false },
+            { id: "DCL_131_3_OPEN", label: "[110kV] DCL 131-3 MỞ", state: false },
+            { id: "DTD_131_14_15_OPEN", label: "[110kV] DTĐ 131-14 & 131-15 MỞ", state: true },
+            { id: "DTD_131_35_38_OPEN", label: "[110kV] DTĐ 131-35 & 131-38 MỞ", state: true },
+            // Phía 35kV - Ngăn 331, C31, Tự dùng TD31 & Xuất tuyến 371-377
+            { id: "MC_331_OPEN", label: "[35kV] Máy cắt tổng 331 (Quyền A2) MỞ", state: false },
+            { id: "DTD_331_38_OPEN", label: "[35kV] DTĐ 331-38 (Quyền A2) MỞ", state: true },
+            { id: "DTD_C31_14_OPEN", label: "[35kV] DTĐ Thanh cái C31-14 MỞ", state: true },
+            { id: "XT_371_377_OPEN", label: "[35kV] Các MC xuất tuyến 371, 373, 375, 377 MỞ", state: false },
+            { id: "DTD_37X_76_OPEN", label: "[35kV] Các DTĐ xuất tuyến 371-76..377-76 MỞ", state: true },
+            { id: "TD31_1_OPEN", label: "[35kV] DCL Tự dùng TD31-1 MỞ", state: false },
+            { id: "TD31_18_OPEN", label: "[35kV] DTĐ Tự dùng TD31-18 MỞ", state: true },
+            // Điều kiện bảo vệ, hòa đồng bộ & lưới
+            { id: "NO_VOLT_C11", label: "[Đo lường] Thanh cái C11 (TUC11) KHÔNG điện áp", state: false },
+            { id: "NO_VOLT_C31", label: "[Đo lường] Thanh cái C31 (TUC31) KHÔNG điện áp", state: false },
+            { id: "SYNC_25_OK", label: "[Bảo vệ] Hòa đồng bộ Synchrocheck 25 ĐẠT (25 = 1)", state: true },
+            { id: "LOCKOUT_86_TRIP", label: "[Bảo vệ] Rơ-le khóa 86T / 86 Lockout TÁC ĐỘNG", state: false },
+            { id: "WTG_RMU_READY", label: "[Tua-bin] RMU 3301..3323 & MC 6001..6023 Sẵn sàng", state: true }
         ];
 
         function resetLogicInputs() {
-            PLANT_LOGIC_SIGNALS.forEach(s => { s.state = s.id !== "LOCKOUT_86_TRIP"; });
+            // Mặc định đưa về trạng thái đang vận hành bình thường phát lưới 48MW
+            const openDefaults = new Set([
+                "DTD_171_15_OPEN", "DTD_171_75_OPEN", "DTD_171_76_OPEN",
+                "DTD_131_14_15_OPEN", "DTD_131_35_38_OPEN",
+                "DTD_331_38_OPEN", "DTD_C31_14_OPEN", "DTD_37X_76_OPEN", "TD31_18_OPEN",
+                "SYNC_25_OK", "WTG_RMU_READY"
+            ]);
+            PLANT_LOGIC_SIGNALS.forEach(s => { s.state = openDefaults.has(s.id); });
             renderLogicSimulator();
         }
 
         function toggleLogicSignal(id) {
             const sig = PLANT_LOGIC_SIGNALS.find(s => s.id === id);
-            if (sig) { sig.state = !sig.state; document.getElementById('logic-preset-select').value = 'custom'; renderLogicSimulator(); }
+            if (sig) {
+                sig.state = !sig.state;
+                document.getElementById('logic-preset-select').value = 'custom';
+                renderLogicSimulator();
+            }
         }
 
         function loadLogicPreset() {
             const preset = document.getElementById('logic-preset-select').value;
             if (preset === 'close_52_171') {
-                document.getElementById('gate-in-a').value = 'ES_89E_OPEN'; document.getElementById('gate-in-b').value = 'SYNC_25_OK';
-                document.getElementById('gate-type-1').value = 'AND'; document.getElementById('gate-type-2').value = 'AND_NOT'; document.getElementById('gate-in-c').value = 'LOCKOUT_86_TRIP';
+                // Đóng MC 131/171: Các DTĐ liên quan mở AND Synchrocheck 25 đạt AND NOT 86 Lockout
+                document.getElementById('gate-in-a').value = 'DTD_131_14_15_OPEN';
+                document.getElementById('gate-in-b').value = 'SYNC_25_OK';
+                document.getElementById('gate-type-1').value = 'AND';
+                document.getElementById('gate-type-2').value = 'AND_NOT';
+                document.getElementById('gate-in-c').value = 'LOCKOUT_86_TRIP';
             } else if (preset === 'close_89e') {
-                document.getElementById('gate-in-a').value = 'CB_52_OPEN'; document.getElementById('gate-in-b').value = 'DS_89_OPEN';
-                document.getElementById('gate-type-1').value = 'AND'; document.getElementById('gate-type-2').value = 'AND'; document.getElementById('gate-in-c').value = 'NO_LINE_VOLT';
+                // Đóng DTĐ thanh cái C31-14: MC 331 mở AND Các MC 371..377 mở AND Không điện áp TUC31
+                document.getElementById('gate-in-a').value = 'MC_331_OPEN';
+                document.getElementById('gate-in-b').value = 'XT_371_377_OPEN';
+                document.getElementById('gate-type-1').value = 'AND';
+                document.getElementById('gate-type-2').value = 'AND';
+                document.getElementById('gate-in-c').value = 'NO_VOLT_C31';
             } else if (preset === 'wtg_start') {
-                document.getElementById('gate-in-a').value = 'GRID_VOLT_OK'; document.getElementById('gate-in-b').value = 'WIND_IN_RANGE';
-                document.getElementById('gate-type-1').value = 'AND'; document.getElementById('gate-type-2').value = 'AND'; document.getElementById('gate-in-c').value = 'PPC_ENABLE';
+                // Hòa lưới 12 Tua-bin WT01..WT23 (lẻ): RMU 3301..3323 sẵn sàng AND DTĐ 371-76..377-76 mở AND NOT 86 Lockout
+                document.getElementById('gate-in-a').value = 'WTG_RMU_READY';
+                document.getElementById('gate-in-b').value = 'DTD_37X_76_OPEN';
+                document.getElementById('gate-type-1').value = 'AND';
+                document.getElementById('gate-type-2').value = 'AND_NOT';
+                document.getElementById('gate-in-c').value = 'LOCKOUT_86_TRIP';
             } else if (preset === 'trip_86') {
-                document.getElementById('gate-in-a').value = 'LOCKOUT_86_TRIP'; document.getElementById('gate-in-b').value = 'GRID_VOLT_OK';
-                document.getElementById('gate-type-1').value = 'OR'; document.getElementById('gate-type-2').value = 'BYPASS';
+                // Kiểm tra khóa 86T hoặc mất điều kiện đóng 331
+                document.getElementById('gate-in-a').value = 'LOCKOUT_86_TRIP';
+                document.getElementById('gate-in-b').value = 'DTD_331_38_OPEN';
+                document.getElementById('gate-type-1').value = 'AND_NOT';
+                document.getElementById('gate-type-2').value = 'BYPASS';
             }
             evaluateLogicCircuit();
         }
@@ -1700,9 +1742,9 @@
             const container = document.getElementById('logic-device-inputs');
             if (!container) return;
             container.innerHTML = PLANT_LOGIC_SIGNALS.map(s => `
-                <div onclick="toggleLogicSignal('${s.id}')" class="flex items-center justify-between p-2.5 rounded-lg bg-[#07112e] border ${s.state ? 'border-[#62A7EA]/60' : 'border-slate-700'} cursor-pointer hover:border-[#F2EA1E] transition">
-                    <span class="text-slate-100 pr-2">${s.label}</span>
-                    <span class="px-2.5 py-0.5 rounded font-mono font-bold text-[11px] ${s.state ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-slate-800 text-slate-400'}">${s.state ? '1 (TRUE)' : '0 (FALSE)'}</span>
+                <div onclick="toggleLogicSignal('${s.id}')" class="flex items-center justify-between p-2 rounded-lg bg-[#07112e] border ${s.state ? 'border-[#62A7EA]/60' : 'border-slate-700'} cursor-pointer hover:border-[#F2EA1E] transition">
+                    <span class="text-slate-100 pr-2 text-[11px]">${s.label}</span>
+                    <span class="px-2 py-0.5 rounded font-mono font-bold text-[10px] whitespace-nowrap ${s.state ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-slate-800 text-slate-400'}">${s.state ? '1 (MỞ/ĐẠT)' : '0 (ĐÓNG/KHÓA)'}</span>
                 </div>
             `).join('');
 
@@ -1730,6 +1772,7 @@
             else if (g1 === 'NOR') out1 = !(A || B);
             else if (g1 === 'XOR') out1 = (A !== B);
             else if (g1 === 'NOT_A') out1 = !A;
+            else if (g1 === 'AND_NOT') out1 = A && (!B);
 
             let finalOut = out1, formulaStr = `${g1}(A=${A ? 1 : 0}, B=${B ? 1 : 0}) = ${out1 ? 1 : 0}`;
             if (g2 === 'AND') { finalOut = out1 && C; formulaStr += `  ➜  AND (C=${C ? 1 : 0})`; }
@@ -1741,7 +1784,7 @@
             resBox.innerHTML = `
                 <div class="flex justify-between items-center">
                     <span class="text-xs font-bold uppercase text-[#62A7EA]">Đầu ra Logic (Output Q):</span>
-                    <span class="px-3 py-1 rounded text-sm font-extrabold ${finalOut ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-rose-600 text-white'}">${finalOut ? '1 — CHO PHÉP / THỎA MÃN' : '0 — KHÓA LIÊN ĐỘNG / KHÔNG ĐẠT'}</span>
+                    <span class="px-3 py-1 rounded text-sm font-extrabold ${finalOut ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-rose-600 text-white'}">${finalOut ? '1 — CHO PHÉP THAO TÁC' : '0 — KHÓA LIÊN ĐỘNG'}</span>
                 </div>
                 <div class="text-xs font-mono text-slate-200 bg-[#0C1B48] p-2.5 rounded border border-[#62A7EA]/30">Biểu thức: ${formulaStr}  ⇒  <strong>Q = ${finalOut ? '1' : '0'}</strong></div>
             `;
@@ -1750,15 +1793,36 @@
         function renderPlantInterlockSummary() {
             const getVal = id => !!PLANT_LOGIC_SIGNALS.find(s => s.id === id)?.state;
             const checks = [
-                { name: "1. Liên động đóng Máy cắt 52 (52 Close Interlock)", cond: "89E Mở (1) AND Synchrocheck 25 Đạt (1) AND NOT 86 Lockout (0)", ok: getVal("ES_89E_OPEN") && getVal("SYNC_25_OK") && !getVal("LOCKOUT_86_TRIP") },
-                { name: "2. Liên động đóng Dao tiếp địa 89E (Earthing Switch)", cond: "MC 52 Mở (1) AND DCL 89 Mở (1) AND Không điện áp (1)", ok: getVal("CB_52_OPEN") && getVal("DS_89_OPEN") && getVal("NO_LINE_VOLT") },
-                { name: "3. Liên động hòa lưới Tua-bin Goldwind 4MW", cond: "Lưới ổn định (1) AND Gió 2.5–24m/s (1) AND PPC Enable (1) AND Ready (1)", ok: getVal("GRID_VOLT_OK") && getVal("WIND_IN_RANGE") && getVal("PPC_ENABLE") && getVal("WTG_NO_FAULT") },
-                { name: "4. Trạng thái mạch Cắt sự cố (86 Lockout Status)", cond: "86 Lockout = 0 (Bình thường) | 86 Lockout = 1 (Khóa cắt toàn bộ)", ok: !getVal("LOCKOUT_86_TRIP") }
+                {
+                    name: "1. Liên động đóng MC 171 (ĐZ đi NMĐG Hàn Quốc Trà Vinh) [A2]",
+                    cond: "DTĐ 171-15 (1) AND DTĐ 171-75 (1) AND DTĐ 171-76 (1) AND Sync 25 (1) AND NOT 86",
+                    ok: getVal("DTD_171_15_OPEN") && getVal("DTD_171_75_OPEN") && getVal("DTD_171_76_OPEN") && getVal("SYNC_25_OK") && !getVal("LOCKOUT_86_TRIP")
+                },
+                {
+                    name: "2. Liên động đóng MC 131 & 331 (MBA T1 63MVA) [A2]",
+                    cond: "DTĐ 131-14/15 (1) AND DTĐ 131-35/38 (1) AND DTĐ 331-38 (1) AND DTĐ C31-14 (1) AND NOT 86",
+                    ok: getVal("DTD_131_14_15_OPEN") && getVal("DTD_131_35_38_OPEN") && getVal("DTD_331_38_OPEN") && getVal("DTD_C31_14_OPEN") && !getVal("LOCKOUT_86_TRIP")
+                },
+                {
+                    name: "3. Liên động đóng DTĐ Thanh cái C31-14 & 331-38 (Tiếp địa 35kV)",
+                    cond: "MC 331 MỞ (1) AND MC 371..377 MỞ (1) AND DCL TD31-1 MỞ (1) AND TUC31 = 0V (1)",
+                    ok: getVal("MC_331_OPEN") && getVal("XT_371_377_OPEN") && getVal("TD31_1_OPEN") && getVal("NO_VOLT_C31")
+                },
+                {
+                    name: "4. Liên động đóng DTĐ 131-14 (Tiếp địa Thanh cái C11 - 110kV)",
+                    cond: "MC 171 MỞ (1) AND DCL 171-1 MỞ (1) AND MC 131 MỞ (1) AND DCL 131-1 MỞ (1) AND TUC11 = 0V (1)",
+                    ok: getVal("MC_171_OPEN") && getVal("DCL_171_1_OPEN") && getVal("MC_131_OPEN") && getVal("DCL_131_1_OPEN") && getVal("NO_VOLT_C11")
+                },
+                {
+                    name: "5. Liên động hòa lưới 4 Xuất tuyến 371, 373, 375, 377 (WT01–WT23) [Trưởng ca]",
+                    cond: "DTĐ 371-76..377-76 MỞ (1) AND RMU 3301..3323 & MC 6001..6023 Ready (1) AND NOT 86",
+                    ok: getVal("DTD_37X_76_OPEN") && getVal("WTG_RMU_READY") && !getVal("LOCKOUT_86_TRIP")
+                }
             ];
             document.getElementById('plant-interlock-checks').innerHTML = checks.map(c => `
                 <div class="p-3 rounded-lg bg-[#07112e] border ${c.ok ? 'border-[#62A7EA]/50' : 'border-rose-500/70'} space-y-1">
-                    <div class="flex justify-between items-center gap-2"><strong class="text-white">${c.name}</strong><span class="px-2 py-0.5 rounded text-[10px] font-bold whitespace-nowrap ${c.ok ? 'bg-[#62A7EA] text-[#0C1B48]' : 'bg-rose-600 text-white'}">${c.ok ? 'ĐẠT (1)' : 'KHÓA (0)'}</span></div>
-                    <div class="text-[11px] font-mono text-[#F2EA1E]">${c.cond}</div>
+                    <div class="flex justify-between items-center gap-2"><strong class="text-white text-[11px]">${c.name}</strong><span class="px-2 py-0.5 rounded text-[10px] font-bold whitespace-nowrap ${c.ok ? 'bg-[#62A7EA] text-[#0C1B48]' : 'bg-rose-600 text-white'}">${c.ok ? 'ĐẠT (1)' : 'KHÓA (0)'}</span></div>
+                    <div class="text-[10px] font-mono text-[#F2EA1E]">${c.cond}</div>
                 </div>
             `).join('');
         }

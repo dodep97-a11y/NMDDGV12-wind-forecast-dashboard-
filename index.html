@@ -12,14 +12,25 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .card { background-color: #1e293b; border: 1px solid #334155; border-radius: 0.75rem; }
-        .tab-active { background-color: #0284c7; color: white; border-bottom: 3px solid #38bdf8; }
-        .subtab-active { background-color: #0369a1; color: white; border: 1px solid #38bdf8; }
-        .lang-active { background-color: #0284c7; color: white; border-color: #38bdf8; }
+        :root {
+            --navy-deep: #07112e;
+            --navy-main: #0C1B48;
+            --navy-card: #122663;
+            --sky-brand: #62A7EA;
+            --yellow-accent: #F2EA1E;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--navy-main); color: #f8fafc; }
+        .card { background-color: rgba(18, 38, 99, 0.85); border: 1px solid rgba(98, 167, 234, 0.28); border-radius: 0.75rem; backdrop-filter: blur(6px); }
+        .tab-active { background-color: #62A7EA; color: #0C1B48; border-bottom: 3px solid #F2EA1E; font-weight: 800; }
+        .subtab-active { background-color: #62A7EA; color: #0C1B48; border: 1px solid #F2EA1E; font-weight: 700; }
+        .lang-active { background-color: #F2EA1E; color: #0C1B48; border-color: #F2EA1E; font-weight: 800; }
+        .btn-accent-yellow { background-color: #F2EA1E; color: #0C1B48; font-weight: 700; }
+        .btn-accent-yellow:hover { background-color: #e5dd12; }
+        .btn-brand-sky { background-color: #62A7EA; color: #0C1B48; font-weight: 700; }
+        .btn-brand-sky:hover { background-color: #7ab7f5; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #07112e; }
+        ::-webkit-scrollbar-thumb { background: #62A7EA; border-radius: 3px; }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-6px); }
@@ -31,16 +42,16 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- ==================== 1. MÀN HÌNH ĐĂNG NHẬP ==================== -->
-    <div id="login-screen" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
-        <div id="login-card" class="card w-full max-w-md p-8 shadow-2xl border-slate-700/80 space-y-6">
+    <div id="login-screen" class="fixed inset-0 z-50 bg-[#07112e] flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#122663] via-[#0C1B48] to-[#050c24]">
+        <div id="login-card" class="card w-full max-w-md p-8 shadow-2xl border-[#62A7EA]/40 space-y-6">
             <div class="flex justify-end space-x-1">
-                <button type="button" onclick="setLanguage('vi')" class="lang-btn-vi px-2.5 py-1 text-[11px] font-bold rounded border border-slate-600 bg-slate-800 text-slate-300 transition">VI</button>
-                <button type="button" onclick="setLanguage('en')" class="lang-btn-en px-2.5 py-1 text-[11px] font-bold rounded border border-slate-600 bg-slate-800 text-slate-300 transition">EN</button>
-                <button type="button" onclick="setLanguage('th')" class="lang-btn-th px-2.5 py-1 text-[11px] font-bold rounded border border-slate-600 bg-slate-800 text-slate-300 transition">TH</button>
+                <button type="button" onclick="setLanguage('vi')" class="lang-btn-vi px-2.5 py-1 text-[11px] font-bold rounded border border-[#62A7EA]/40 bg-[#0C1B48] text-slate-200 transition">VI</button>
+                <button type="button" onclick="setLanguage('en')" class="lang-btn-en px-2.5 py-1 text-[11px] font-bold rounded border border-[#62A7EA]/40 bg-[#0C1B48] text-slate-200 transition">EN</button>
+                <button type="button" onclick="setLanguage('th')" class="lang-btn-th px-2.5 py-1 text-[11px] font-bold rounded border border-[#62A7EA]/40 bg-[#0C1B48] text-slate-200 transition">TH</button>
             </div>
 
             <div class="text-center space-y-2">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-400 mb-2">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#62A7EA]/15 border border-[#62A7EA]/50 text-[#F2EA1E] mb-2 shadow-lg shadow-[#07112e]">
                     <i class="fa-solid fa-wind text-3xl animate-pulse"></i>
                 </div>
                 <h1 class="text-2xl font-bold tracking-wide text-white">TTTV_NMĐG V1-2 TRÀ VINH</h1>
@@ -48,37 +59,37 @@
 
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label data-i18n="login_user_label" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Tài khoản vận hành</label>
+                    <label data-i18n="login_user_label" class="block text-xs font-semibold uppercase tracking-wider text-[#62A7EA] mb-1.5">Tài khoản vận hành</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-user"></i></span>
-                        <input type="text" id="login-username" required autocomplete="username" data-i18n-ph="login_user_ph" placeholder="Nhập tài khoản..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#62A7EA]"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="login-username" required autocomplete="username" data-i18n-ph="login_user_ph" placeholder="Nhập tài khoản..." class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#F2EA1E] transition">
                     </div>
                 </div>
 
                 <div>
-                    <label data-i18n="login_pass_label" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Mật khẩu bảo mật</label>
+                    <label data-i18n="login_pass_label" class="block text-xs font-semibold uppercase tracking-wider text-[#62A7EA] mb-1.5">Mật khẩu bảo mật</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="login-password" required autocomplete="current-password" data-i18n-ph="login_pass_ph" placeholder="Nhập mật khẩu..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:border-sky-500 transition">
-                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#62A7EA]"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="login-password" required autocomplete="current-password" data-i18n-ph="login_pass_ph" placeholder="Nhập mật khẩu..." class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:border-[#F2EA1E] transition">
+                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#62A7EA] hover:text-[#F2EA1E]">
                             <i id="eye-icon" class="fa-solid fa-eye text-xs"></i>
                         </button>
                     </div>
                 </div>
 
-                <div id="login-error" class="hidden p-3 rounded-lg bg-rose-950/70 border border-rose-500/50 text-rose-300 text-xs flex items-center">
-                    <i class="fa-solid fa-triangle-exclamation mr-2 text-rose-400"></i>
+                <div id="login-error" class="hidden p-3 rounded-lg bg-rose-950/80 border border-rose-500/60 text-rose-200 text-xs flex items-center">
+                    <i class="fa-solid fa-triangle-exclamation mr-2 text-[#F2EA1E]"></i>
                     <span data-i18n="login_err">Sai tài khoản hoặc mật khẩu. Vui lòng kiểm tra lại!</span>
                 </div>
 
-                <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold py-2.5 rounded-lg text-sm transition shadow-lg shadow-sky-900/30 flex items-center justify-center space-x-2">
+                <button type="submit" class="w-full btn-accent-yellow py-2.5 rounded-lg text-sm transition shadow-lg shadow-[#07112e]/60 flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-right-to-bracket"></i>
                     <span data-i18n="login_btn">Đăng nhập hệ thống</span>
                 </button>
             </form>
 
-            <div class="pt-4 border-t border-slate-800 text-center text-[11px] text-slate-500">
-                <p><span data-i18n="designed_by">Thiết kế bởi:</span> <span class="text-sky-400 font-medium">Dep Do</span></p>
+            <div class="pt-4 border-t border-[#62A7EA]/20 text-center text-[11px] text-slate-300">
+                <p><span data-i18n="designed_by">Thiết kế bởi:</span> <span class="text-[#F2EA1E] font-semibold">Dep Do</span></p>
             </div>
         </div>
     </div>
@@ -86,45 +97,45 @@
     <!-- ==================== 2. GIAO DIỆN HỆ THỐNG CHÍNH ==================== -->
     <div id="app-container" class="hidden min-h-screen flex flex-col">
         <!-- HEADER -->
-        <header class="bg-slate-900 border-b border-slate-700 px-6 py-3.5 flex flex-wrap justify-between items-center sticky top-0 z-40">
+        <header class="bg-[#07112e] border-b border-[#62A7EA]/30 px-6 py-3.5 flex flex-wrap justify-between items-center sticky top-0 z-40 shadow-md">
             <div class="flex items-center space-x-3">
-                <div class="bg-sky-500 p-2.5 rounded-lg text-white">
+                <div class="bg-[#62A7EA] p-2.5 rounded-lg text-[#0C1B48] shadow">
                     <i class="fa-solid fa-wind text-2xl animate-pulse"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-wide text-sky-400">TTTV_NMĐG V1-2 TRÀ VINH</h1>
+                    <h1 class="text-xl font-extrabold tracking-wide text-white">TTTV_NMĐG <span class="text-[#F2EA1E]">V1-2</span> <span class="text-[#62A7EA]">TRÀ VINH</span></h1>
                 </div>
             </div>
             <div class="flex items-center space-x-3 mt-2 md:mt-0">
                 <!-- Bộ chuyển đổi 3 ngôn ngữ -->
-                <div class="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700 space-x-1">
+                <div class="flex items-center bg-[#0C1B48] p-1 rounded-lg border border-[#62A7EA]/40 space-x-1">
                     <button type="button" onclick="setLanguage('vi')" class="lang-btn-vi px-2.5 py-1 text-xs font-bold rounded transition">VI</button>
                     <button type="button" onclick="setLanguage('en')" class="lang-btn-en px-2.5 py-1 text-xs font-bold rounded transition">EN</button>
                     <button type="button" onclick="setLanguage('th')" class="lang-btn-th px-2.5 py-1 text-xs font-bold rounded transition">TH</button>
                 </div>
 
-                <span class="px-3 py-1 bg-emerald-900/50 border border-emerald-500/50 text-emerald-400 text-xs rounded-full flex items-center">
-                    <span class="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-ping"></span> nmdgv12travinh
+                <span class="px-3 py-1 bg-[#122663] border border-[#62A7EA]/50 text-[#F2EA1E] text-xs font-semibold rounded-full flex items-center">
+                    <span class="w-2 h-2 bg-[#F2EA1E] rounded-full mr-2 animate-ping"></span> nmdgv12travinh
                 </span>
-                <button onclick="handleLogout()" class="px-3 py-1.5 bg-slate-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-300 border border-slate-600 hover:border-rose-500/50 text-xs rounded-lg transition flex items-center space-x-1.5">
-                    <i class="fa-solid fa-power-off"></i>
+                <button onclick="handleLogout()" class="px-3 py-1.5 bg-[#122663] hover:bg-rose-900/70 text-slate-200 hover:text-white border border-[#62A7EA]/40 hover:border-rose-400 text-xs rounded-lg transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-power-off text-[#F2EA1E]"></i>
                     <span data-i18n="logout_btn">Đăng xuất</span>
                 </button>
             </div>
         </header>
 
         <!-- MAIN NAVIGATION TABS -->
-        <nav class="bg-slate-800/80 px-6 flex space-x-2 border-b border-slate-700 overflow-x-auto">
+        <nav class="bg-[#09163d] px-6 flex space-x-2 border-b border-[#62A7EA]/30 overflow-x-auto">
             <button onclick="switchMainTab('turbines')" id="btn-main-turbines" class="tab-active px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
                 <i class="fa-solid fa-fan"></i>
                 <span data-i18n="tab_turbines">1. Turbines (Dự báo & Đánh giá chất lượng)</span>
             </button>
-            <button onclick="switchMainTab('chatbot')" id="btn-main-chatbot" class="text-slate-300 hover:bg-slate-700 px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
-                <i class="fa-solid fa-robot"></i>
+            <button onclick="switchMainTab('chatbot')" id="btn-main-chatbot" class="text-slate-200 hover:bg-[#122663] px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-robot text-[#62A7EA]"></i>
                 <span data-i18n="tab_chatbot">2. Chatbot Vận hành (Tài liệu + Tra cứu mở)</span>
             </button>
-            <button onclick="switchMainTab('faults')" id="btn-main-faults" class="text-slate-300 hover:bg-slate-700 px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
-                <i class="fa-solid fa-bolt-lightning"></i>
+            <button onclick="switchMainTab('faults')" id="btn-main-faults" class="text-slate-200 hover:bg-[#122663] px-5 py-3.5 text-sm font-bold transition flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-bolt-lightning text-[#F2EA1E]"></i>
                 <span data-i18n="tab_faults">3. Phân tích sự cố (Ảnh nhiệt & Relay 27/59)</span>
             </button>
         </nav>
@@ -134,13 +145,13 @@
 
             <!-- ==================== MỤC 1: TURBINES ==================== -->
             <section id="main-turbines" class="space-y-6">
-                <div class="flex flex-wrap gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 w-fit">
+                <div class="flex flex-wrap gap-2 bg-[#07112e]/90 p-2 rounded-xl border border-[#62A7EA]/30 w-fit">
                     <button onclick="switchSubTab('turbines', 'forecast')" id="subbtn-turbines-forecast" class="subtab-active px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
-                        <i class="fa-solid fa-chart-line text-sky-300"></i>
+                        <i class="fa-solid fa-chart-line"></i>
                         <span data-i18n="subtab_forecast">1.1 Dự báo công suất (12 Tọa độ, 15p/30p & Hiệu chỉnh ngắn hạn)</span>
                     </button>
-                    <button onclick="switchSubTab('turbines', 'health')" id="subbtn-turbines-health" class="text-slate-300 hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
-                        <i class="fa-solid fa-heart-pulse text-emerald-400"></i>
+                    <button onclick="switchSubTab('turbines', 'health')" id="subbtn-turbines-health" class="text-slate-200 hover:bg-[#122663] px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
+                        <i class="fa-solid fa-heart-pulse text-[#F2EA1E]"></i>
                         <span data-i18n="subtab_health">1.2 Đánh giá chất lượng 12 Turbines (Dynamic PC 4MW)</span>
                     </button>
                 </div>
@@ -150,10 +161,10 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="card p-4 flex flex-col justify-between space-y-3">
                             <div class="flex justify-between items-center">
-                                <h3 class="text-sm font-bold text-sky-400"><i class="fa-solid fa-wind mr-1.5"></i><span data-i18n="windy_map_title">Bản đồ gió Windy trực tiếp</span></h3>
-                                <a href="https://www.windy.com/9.628/106.580?9.628,106.580,12" target="_blank" class="text-[11px] text-sky-300 underline hover:text-white"><span data-i18n="open_windy">Mở web Windy</span> <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
+                                <h3 class="text-sm font-bold text-[#62A7EA]"><i class="fa-solid fa-wind mr-1.5 text-[#F2EA1E]"></i><span data-i18n="windy_map_title">Bản đồ gió Windy trực tiếp</span></h3>
+                                <a href="https://www.windy.com/9.628/106.580?9.628,106.580,12" target="_blank" class="text-[11px] text-[#F2EA1E] underline hover:text-white"><span data-i18n="open_windy">Mở web Windy</span> <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
                             </div>
-                            <div class="rounded-lg overflow-hidden border border-slate-700 h-72 bg-slate-950">
+                            <div class="rounded-lg overflow-hidden border border-[#62A7EA]/40 h-72 bg-[#07112e]">
                                 <iframe width="100%" height="100%" src="https://embed.windy.com/embed2.html?lat=9.628&lon=106.580&detailLat=9.628&detailLon=106.580&width=650&height=450&zoom=11&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=m%2Fs&metricTemp=%C2%B0C&radarRange=-1" frameborder="0"></iframe>
                             </div>
                         </div>
@@ -165,19 +176,19 @@
                                         <h2 data-i18n="forecast_model_title" class="text-base font-bold text-white">Mô hình Dự báo Công suất theo 12 Tọa độ (15 phút / 30 phút)</h2>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
-                                        <button onclick="fetchLiveWindForecast()" id="btn-fetch-wind" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
+                                        <button onclick="fetchLiveWindForecast()" id="btn-fetch-wind" class="btn-brand-sky text-xs px-3 py-2 rounded-lg transition flex items-center shadow">
                                             <i class="fa-solid fa-cloud-sun-rain mr-1.5"></i> <span data-i18n="btn_update_wind">Cập nhật gió 12 tọa độ</span>
                                         </button>
-                                        <button onclick="exportForecastExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center">
+                                        <button onclick="exportForecastExcel()" class="btn-accent-yellow text-xs px-3 py-2 rounded-lg transition flex items-center shadow">
                                             <i class="fa-solid fa-file-excel mr-1.5"></i> <span data-i18n="btn_export_excel">Xuất Excel dự báo</span>
                                         </button>
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 bg-slate-900/80 p-3 rounded-lg border border-slate-700">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 bg-[#07112e]/85 p-3 rounded-lg border border-[#62A7EA]/30">
                                     <div>
-                                        <label data-i18n="lbl_horizon" class="block text-[11px] text-slate-400 mb-1">Kỳ dự báo</label>
-                                        <select id="forecast-horizon" onchange="renderForecastView()" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold">
+                                        <label data-i18n="lbl_horizon" class="block text-[11px] text-[#62A7EA] mb-1">Kỳ dự báo</label>
+                                        <select id="forecast-horizon" onchange="renderForecastView()" class="w-full bg-[#0C1B48] border border-[#62A7EA]/40 rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold focus:border-[#F2EA1E] focus:outline-none">
                                             <option value="D0" selected data-i18n="opt_d0">Ngày D (Hôm nay)</option>
                                             <option value="D1" data-i18n="opt_d1">Ngày D+1 (Ngày mai)</option>
                                             <option value="D2" data-i18n="opt_d2">Ngày D+2 (Ngày mốt)</option>
@@ -185,19 +196,19 @@
                                         </select>
                                     </div>
                                     <div>
-                                        <label data-i18n="lbl_step" class="block text-[11px] text-slate-400 mb-1">Bước chu kỳ thời gian</label>
-                                        <select id="forecast-step" onchange="renderForecastView()" class="w-full bg-slate-800 border border-sky-500/60 rounded-lg px-2.5 py-1.5 text-xs text-sky-300 font-bold">
+                                        <label data-i18n="lbl_step" class="block text-[11px] text-[#62A7EA] mb-1">Bước chu kỳ thời gian</label>
+                                        <select id="forecast-step" onchange="renderForecastView()" class="w-full bg-[#0C1B48] border border-[#62A7EA]/60 rounded-lg px-2.5 py-1.5 text-xs text-[#62A7EA] font-bold focus:border-[#F2EA1E] focus:outline-none">
                                             <option value="15" selected data-i18n="opt_15m">Chu kỳ 15 phút (96 điểm/ngày)</option>
                                             <option value="30" data-i18n="opt_30m">Chu kỳ 30 phút (48 điểm/ngày)</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label data-i18n="lbl_avail_wtg" class="block text-[11px] text-slate-400 mb-1">Số tua-bin khả dụng</label>
-                                        <input type="number" id="forecast-avail-wtg" value="12" min="1" max="12" onchange="renderForecastView()" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-emerald-400 font-bold">
+                                        <label data-i18n="lbl_avail_wtg" class="block text-[11px] text-[#62A7EA] mb-1">Số tua-bin khả dụng</label>
+                                        <input type="number" id="forecast-avail-wtg" value="12" min="1" max="12" onchange="renderForecastView()" class="w-full bg-[#0C1B48] border border-[#62A7EA]/40 rounded-lg px-2.5 py-1.5 text-xs text-[#F2EA1E] font-bold focus:border-[#F2EA1E] focus:outline-none">
                                     </div>
                                     <div>
-                                        <label data-i18n="lbl_windy_file" class="block text-[11px] text-slate-400 mb-1">Nạp file gió Windy</label>
-                                        <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-amber-300 flex items-center justify-center truncate">
+                                        <label data-i18n="lbl_windy_file" class="block text-[11px] text-[#62A7EA] mb-1">Nạp file gió Windy</label>
+                                        <label class="cursor-pointer bg-[#0C1B48] hover:bg-[#122663] border border-[#62A7EA]/40 rounded-lg px-2.5 py-1.5 text-xs text-[#F2EA1E] flex items-center justify-center truncate">
                                             <i class="fa-solid fa-upload mr-1.5"></i>
                                             <span id="windy-file-label" data-i18n="choose_file">Chọn file...</span>
                                             <input type="file" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleWindyFileUpload(this)">
@@ -205,35 +216,35 @@
                                     </div>
                                 </div>
 
-                                <div class="p-3.5 rounded-lg bg-amber-950/25 border border-amber-500/40 space-y-2.5">
+                                <div class="p-3.5 rounded-lg bg-[#07112e]/90 border border-[#F2EA1E]/40 space-y-2.5">
                                     <div class="flex flex-wrap justify-between items-center gap-2">
-                                        <div class="text-xs font-bold text-amber-300 flex items-center">
+                                        <div class="text-xs font-bold text-[#F2EA1E] flex items-center">
                                             <i class="fa-solid fa-sliders mr-1.5"></i> <span data-i18n="nowcast_title">Hiệu chỉnh ngắn hạn (Nowcasting từ số liệu SCADA thực tế Ngày D)</span>
                                         </div>
-                                        <span id="nowcast-badge" class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-600" data-i18n="nowcast_inactive">Chưa hiệu chỉnh</span>
+                                        <span id="nowcast-badge" class="text-[11px] px-2 py-0.5 rounded bg-[#0C1B48] text-slate-300 border border-[#62A7EA]/40" data-i18n="nowcast_inactive">Chưa hiệu chỉnh</span>
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 items-end">
                                         <div>
-                                            <label data-i18n="lbl_nowcast_wind" class="block text-[11px] text-slate-300 mb-1">Gió Hub thực tế hiện tại (m/s)</label>
-                                            <input type="number" id="nowcast-wind" step="0.1" min="0" max="30" placeholder="8.5" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-amber-300 font-bold">
+                                            <label data-i18n="lbl_nowcast_wind" class="block text-[11px] text-slate-200 mb-1">Gió Hub thực tế hiện tại (m/s)</label>
+                                            <input type="number" id="nowcast-wind" step="0.1" min="0" max="30" placeholder="8.5" class="w-full bg-[#0C1B48] border border-[#62A7EA]/40 rounded-lg px-2.5 py-1.5 text-xs text-[#F2EA1E] font-bold focus:border-[#F2EA1E] focus:outline-none">
                                         </div>
                                         <div>
-                                            <label data-i18n="lbl_nowcast_power" class="block text-[11px] text-slate-300 mb-1">Hoặc CS phát thực tế (MW)</label>
-                                            <input type="number" id="nowcast-power" step="0.1" min="0" max="48" placeholder="34.0" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-sky-300 font-bold">
+                                            <label data-i18n="lbl_nowcast_power" class="block text-[11px] text-slate-200 mb-1">Hoặc CS phát thực tế (MW)</label>
+                                            <input type="number" id="nowcast-power" step="0.1" min="0" max="48" placeholder="34.0" class="w-full bg-[#0C1B48] border border-[#62A7EA]/40 rounded-lg px-2.5 py-1.5 text-xs text-[#62A7EA] font-bold focus:border-[#F2EA1E] focus:outline-none">
                                         </div>
                                         <div>
-                                            <label data-i18n="lbl_nowcast_hours" class="block text-[11px] text-slate-300 mb-1">Thời gian hiệu chỉnh</label>
-                                            <select id="nowcast-hours" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                                            <label data-i18n="lbl_nowcast_hours" class="block text-[11px] text-slate-200 mb-1">Thời gian hiệu chỉnh</label>
+                                            <select id="nowcast-hours" class="w-full bg-[#0C1B48] border border-[#62A7EA]/40 rounded-lg px-2.5 py-1.5 text-xs text-white focus:border-[#F2EA1E] focus:outline-none">
                                                 <option value="2" data-i18n="opt_2h">2 giờ tới</option>
                                                 <option value="4" selected data-i18n="opt_4h">4 giờ tới</option>
                                                 <option value="6" data-i18n="opt_6h">6 giờ tới</option>
                                             </select>
                                         </div>
                                         <div class="flex space-x-1.5">
-                                            <button onclick="applyShortTermNowcast()" data-i18n="btn_apply_nowcast" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold py-1.5 px-2.5 rounded-lg text-xs transition">
+                                            <button onclick="applyShortTermNowcast()" data-i18n="btn_apply_nowcast" class="flex-1 btn-accent-yellow py-1.5 px-2.5 rounded-lg text-xs transition">
                                                 Hiệu chỉnh
                                             </button>
-                                            <button onclick="resetShortTermNowcast()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 py-1.5 px-2.5 rounded-lg text-xs transition">
+                                            <button onclick="resetShortTermNowcast()" class="bg-[#122663] hover:bg-[#1a3585] border border-[#62A7EA]/40 text-slate-200 py-1.5 px-2.5 rounded-lg text-xs transition">
                                                 <i class="fa-solid fa-rotate-left"></i>
                                             </button>
                                         </div>
@@ -249,27 +260,27 @@
                     <div class="card p-5 space-y-3">
                         <div class="flex flex-wrap justify-between items-center gap-3">
                             <div>
-                                <h3 class="text-sm font-bold text-sky-400 flex items-center">
-                                    <i class="fa-solid fa-wind mr-1.5 text-amber-400"></i> <span data-i18n="wtg_list_title">Danh sách Tốc độ gió & Công suất dự báo từng Tua-bin (WTG01 – WTG12)</span>
+                                <h3 class="text-sm font-bold text-[#62A7EA] flex items-center">
+                                    <i class="fa-solid fa-wind mr-1.5 text-[#F2EA1E]"></i> <span data-i18n="wtg_list_title">Danh sách Tốc độ gió & Công suất dự báo từng Tua-bin (WTG01 – WTG12)</span>
                                 </h3>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <label data-i18n="lbl_timeslot" class="text-xs text-slate-300">Mốc thời gian hiển thị:</label>
-                                <select id="wtg-list-timeslot" onchange="render12WtgWindList()" class="bg-slate-900 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-amber-300 font-semibold"></select>
+                                <label data-i18n="lbl_timeslot" class="text-xs text-slate-200">Mốc thời gian hiển thị:</label>
+                                <select id="wtg-list-timeslot" onchange="render12WtgWindList()" class="bg-[#07112e] border border-[#62A7EA]/50 rounded-lg px-3 py-1.5 text-xs text-[#F2EA1E] font-semibold focus:border-[#F2EA1E] focus:outline-none"></select>
                             </div>
                         </div>
 
-                        <div class="overflow-x-auto border border-slate-700 rounded-lg">
+                        <div class="overflow-x-auto border border-[#62A7EA]/30 rounded-lg">
                             <table class="w-full text-left text-xs">
-                                <thead class="bg-slate-900 text-slate-400">
+                                <thead class="bg-[#07112e] text-[#62A7EA]">
                                     <tr>
                                         <th class="p-2.5">WTG</th>
-                                        <th data-i18n="th_wind_speed" class="p-2.5 text-amber-300">Tốc độ gió (m/s)</th>
-                                        <th data-i18n="th_forecast_power_kw" class="p-2.5 text-sky-400">Công suất dự báo (kW)</th>
+                                        <th data-i18n="th_wind_speed" class="p-2.5 text-[#F2EA1E]">Tốc độ gió (m/s)</th>
+                                        <th data-i18n="th_forecast_power_kw" class="p-2.5 text-[#62A7EA]">Công suất dự báo (kW)</th>
                                     </tr>
                                 </thead>
-                                <tbody id="wtg-12-wind-tbody" class="divide-y divide-slate-800 text-slate-200"></tbody>
-                                <tfoot id="wtg-12-wind-tfoot" class="bg-slate-900/90 border-t-2 border-sky-500/40 font-bold text-xs"></tfoot>
+                                <tbody id="wtg-12-wind-tbody" class="divide-y divide-[#62A7EA]/15 text-white"></tbody>
+                                <tfoot id="wtg-12-wind-tfoot" class="bg-[#07112e] border-t-2 border-[#F2EA1E]/60 font-bold text-xs"></tfoot>
                             </table>
                         </div>
                     </div>
@@ -283,18 +294,18 @@
                         </div>
 
                         <div class="card p-5 flex flex-col">
-                            <h3 class="text-sm font-bold text-sky-400 mb-2" id="forecast-table-heading">Bảng số liệu từng chu kỳ 15 phút</h3>
-                            <div class="overflow-y-auto max-h-72 border border-slate-700 rounded-lg">
+                            <h3 class="text-sm font-bold text-[#62A7EA] mb-2" id="forecast-table-heading">Bảng số liệu từng chu kỳ 15 phút</h3>
+                            <div class="overflow-y-auto max-h-72 border border-[#62A7EA]/30 rounded-lg">
                                 <table class="w-full text-left text-xs">
-                                    <thead class="bg-slate-900 text-slate-400 sticky top-0">
+                                    <thead class="bg-[#07112e] text-[#62A7EA] sticky top-0">
                                         <tr>
                                             <th data-i18n="th_time" class="p-2">Thời điểm</th>
-                                            <th data-i18n="th_avg_wind" class="p-2">Gió TB (m/s)</th>
-                                            <th data-i18n="th_total_power" class="p-2">CS Tổng (MW)</th>
-                                            <th data-i18n="th_energy" class="p-2">Sản lượng (MWh)</th>
+                                            <th data-i18n="th_avg_wind" class="p-2 text-[#F2EA1E]">Gió TB (m/s)</th>
+                                            <th data-i18n="th_total_power" class="p-2 text-[#62A7EA]">CS Tổng (MW)</th>
+                                            <th data-i18n="th_energy" class="p-2 text-white">Sản lượng (MWh)</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="forecast-table-body" class="divide-y divide-slate-800 text-slate-200"></tbody>
+                                    <tbody id="forecast-table-body" class="divide-y divide-[#62A7EA]/15 text-slate-100"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -308,34 +319,34 @@
                             <h2 data-i18n="health_title" class="text-base font-bold text-white">Đánh giá chất lượng 12 Turbines (Dữ liệu SCADA 3 tháng - Chu kỳ 10 phút)</h2>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <label class="cursor-pointer bg-slate-700 hover:bg-slate-600 text-xs px-4 py-2 rounded-lg border border-slate-500 transition">
-                                <i class="fa-solid fa-file-excel text-emerald-400 mr-2"></i>
+                            <label class="cursor-pointer bg-[#07112e] hover:bg-[#0C1B48] text-xs px-4 py-2 rounded-lg border border-[#62A7EA]/50 text-[#62A7EA] transition">
+                                <i class="fa-solid fa-file-excel text-[#F2EA1E] mr-2"></i>
                                 <span id="scada-file-name" data-i18n="choose_scada_file">Chọn file dữ liệu SCADA (.CSV/.XLSX)...</span>
                                 <input type="file" id="scada-input" accept=".csv,.xlsx,.xls" class="hidden" onchange="handleScadaUpload(this)">
                             </label>
-                            <button onclick="processScadaData()" id="btn-analyze-scada" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
+                            <button onclick="processScadaData()" id="btn-analyze-scada" class="btn-accent-yellow text-xs px-4 py-2 rounded-lg transition">
                                 <i class="fa-solid fa-play mr-1"></i> <span data-i18n="btn_analyze">Phân tích dữ liệu</span>
                             </button>
                         </div>
                     </div>
 
-                    <div id="scada-summary-banner" class="hidden p-4 rounded-lg bg-emerald-950/60 border border-emerald-500/50 text-xs text-emerald-200"></div>
+                    <div id="scada-summary-banner" class="hidden p-4 rounded-lg bg-[#07112e] border border-[#F2EA1E]/50 text-xs text-[#F2EA1E]"></div>
 
                     <div id="turbine-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="card p-5 lg:col-span-2">
-                            <h3 class="text-sm font-bold mb-4" id="chart-title">Đường cong công suất thực tế vs Dynamic PC 4MW (WTG01)</h3>
+                            <h3 class="text-sm font-bold text-white mb-4" id="chart-title">Đường cong công suất thực tế vs Dynamic PC 4MW (WTG01)</h3>
                             <div class="h-64">
                                 <canvas id="powerCurveChart"></canvas>
                             </div>
                         </div>
                         <div class="card p-5 flex flex-col justify-between">
                             <div>
-                                <h3 class="text-sm font-bold text-sky-400 mb-3" id="detail-wtg-name">Chi tiết đánh giá: WTG01</h3>
+                                <h3 class="text-sm font-bold text-[#F2EA1E] mb-3" id="detail-wtg-name">Chi tiết đánh giá: WTG01</h3>
                                 <ul class="space-y-3 text-xs" id="detail-wtg-metrics"></ul>
                             </div>
-                            <div class="mt-4 p-3 bg-slate-900/80 rounded-lg border border-slate-700 text-xs text-slate-300" id="detail-wtg-recommendation"></div>
+                            <div class="mt-4 p-3 bg-[#07112e]/90 rounded-lg border border-[#62A7EA]/30 text-xs text-slate-200" id="detail-wtg-recommendation"></div>
                         </div>
                     </div>
                 </div>
@@ -345,23 +356,23 @@
             <section id="main-chatbot" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="card p-5 flex flex-col justify-between space-y-4">
                     <div class="space-y-4">
-                        <h2 class="text-base font-bold text-sky-400 flex items-center">
-                            <i class="fa-solid fa-folder-open mr-2"></i> <span data-i18n="doc_repo_title">Kho tài liệu Nhà máy</span>
+                        <h2 class="text-base font-bold text-[#62A7EA] flex items-center">
+                            <i class="fa-solid fa-folder-open mr-2 text-[#F2EA1E]"></i> <span data-i18n="doc_repo_title">Kho tài liệu Nhà máy</span>
                         </h2>
                         
-                        <label class="border-2 border-dashed border-slate-600 hover:border-sky-500 rounded-lg p-5 flex flex-col items-center justify-center cursor-pointer transition bg-slate-800/40">
-                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-sky-400 mb-2"></i>
-                            <span data-i18n="upload_doc_lbl" class="text-xs font-medium text-slate-200">Chọn file PDF, DOCX, XLSX, TXT</span>
+                        <label class="border-2 border-dashed border-[#62A7EA]/60 hover:border-[#F2EA1E] rounded-lg p-5 flex flex-col items-center justify-center cursor-pointer transition bg-[#07112e]/60">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-[#F2EA1E] mb-2"></i>
+                            <span data-i18n="upload_doc_lbl" class="text-xs font-medium text-white">Chọn file PDF, DOCX, XLSX, TXT</span>
                             <input type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" class="hidden" onchange="handleDocUpload(this)">
                         </label>
 
                         <div class="space-y-2">
                             <div class="flex justify-between items-center">
-                                <h3 data-i18n="uploaded_docs_lbl" class="text-xs font-semibold uppercase text-slate-400">Tài liệu đã nạp:</h3>
-                                <span id="doc-chunk-count" class="text-[11px] text-sky-400">0</span>
+                                <h3 data-i18n="uploaded_docs_lbl" class="text-xs font-semibold uppercase text-[#62A7EA]">Tài liệu đã nạp:</h3>
+                                <span id="doc-chunk-count" class="text-[11px] text-[#F2EA1E] font-bold">0</span>
                             </div>
                             <ul id="doc-list" class="space-y-2 text-xs max-h-64 overflow-y-auto">
-                                <li id="empty-doc-msg" class="p-2.5 bg-slate-800/60 rounded flex items-center justify-between border border-slate-700 text-slate-400 italic">
+                                <li id="empty-doc-msg" class="p-2.5 bg-[#07112e]/80 rounded flex items-center justify-between border border-[#62A7EA]/30 text-slate-300 italic">
                                     <span data-i18n="no_manual_file">Chưa nạp file thủ công</span>
                                 </li>
                             </ul>
@@ -370,13 +381,13 @@
                 </div>
 
                 <div class="card lg:col-span-2 flex flex-col h-[600px]">
-                    <div class="p-4 border-b border-slate-700 flex flex-wrap justify-between items-center gap-2">
+                    <div class="p-4 border-b border-[#62A7EA]/30 flex flex-wrap justify-between items-center gap-2 bg-[#07112e]/50 rounded-t-xl">
                         <div class="flex items-center space-x-2">
-                            <i class="fa-solid fa-headset text-sky-400"></i>
-                            <span data-i18n="chatbot_header" class="font-bold text-sm">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
+                            <i class="fa-solid fa-headset text-[#F2EA1E]"></i>
+                            <span data-i18n="chatbot_header" class="font-bold text-sm text-white">Trợ lý Kỹ thuật Vận hành NMĐG V1-2</span>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <button onclick="clearChatHistory()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-[11px] text-slate-300 transition">
+                            <button onclick="clearChatHistory()" class="px-2.5 py-1 bg-[#0C1B48] hover:bg-[#122663] border border-[#62A7EA]/40 rounded text-[11px] text-[#62A7EA] transition">
                                 <i class="fa-solid fa-trash-can mr-1"></i> <span data-i18n="clear_chat">Làm mới chat</span>
                             </button>
                         </div>
@@ -384,21 +395,21 @@
 
                     <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 text-sm">
                         <div class="flex items-start space-x-3">
-                            <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
-                            <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2">
+                            <div class="bg-[#62A7EA] text-[#0C1B48] p-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-[#07112e]/90 p-3.5 rounded-lg border border-[#62A7EA]/30 max-w-2xl space-y-2">
                                 <p data-i18n="chat_welcome">Xin chào kỹ sư vận hành! Tôi là trợ lý kỹ thuật của NMĐG V1-2 Trà Vinh (48 MW - 12 Tua-bin Goldwind 4 MW).</p>
                                 <div class="flex flex-wrap gap-1.5 pt-1">
-                                    <button onclick="askQuickQuestion('Nguyên nhân và cách xử lý khi Relay 27-2 tác động tại NMĐG V1-2?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Relay 27-2?</button>
-                                    <button onclick="askQuickQuestion('Thông số đường cong công suất Dynamic PC của tua-bin Goldwind 4MW tại nhà máy?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Dynamic PC 4MW?</button>
-                                    <button onclick="askQuickQuestion('Xử lý quá áp Relay 59 và chạm đất 59N trên lưới 35kV?')" class="text-[11px] px-2.5 py-1 bg-slate-900 hover:bg-sky-900/60 border border-slate-600 rounded-full text-sky-300 transition">Relay 59 / 59N?</button>
+                                    <button onclick="askQuickQuestion('Nguyên nhân và cách xử lý khi Relay 27-2 tác động tại NMĐG V1-2?')" class="text-[11px] px-2.5 py-1 bg-[#0C1B48] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/50 rounded-full text-[#F2EA1E] font-semibold transition">Relay 27-2?</button>
+                                    <button onclick="askQuickQuestion('Thông số đường cong công suất Dynamic PC của tua-bin Goldwind 4MW tại nhà máy?')" class="text-[11px] px-2.5 py-1 bg-[#0C1B48] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/50 rounded-full text-[#F2EA1E] font-semibold transition">Dynamic PC 4MW?</button>
+                                    <button onclick="askQuickQuestion('Xử lý quá áp Relay 59 và chạm đất 59N trên lưới 35kV?')" class="text-[11px] px-2.5 py-1 bg-[#0C1B48] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/50 rounded-full text-[#F2EA1E] font-semibold transition">Relay 59 / 59N?</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="p-4 border-t border-slate-700 flex space-x-2">
-                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" data-i18n-ph="chat_ph" placeholder="Nhập câu hỏi kỹ thuật hoặc nội dung cần tìm..." class="flex-grow bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500">
-                        <button onclick="sendChat()" class="bg-sky-600 hover:bg-sky-500 px-5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center space-x-1">
+                    <div class="p-4 border-t border-[#62A7EA]/30 flex space-x-2 bg-[#07112e]/40 rounded-b-xl">
+                        <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendChat()" data-i18n-ph="chat_ph" placeholder="Nhập câu hỏi kỹ thuật hoặc nội dung cần tìm..." class="flex-grow bg-[#07112e] border border-[#62A7EA]/40 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#F2EA1E]">
+                        <button onclick="sendChat()" class="btn-accent-yellow px-5 py-2.5 rounded-lg text-sm transition flex items-center space-x-1">
                             <span data-i18n="send_btn">Gửi</span>
                             <i class="fa-solid fa-paper-plane text-xs"></i>
                         </button>
@@ -408,13 +419,13 @@
 
             <!-- ==================== MỤC 3: PHÂN TÍCH SỰ CỐ ==================== -->
             <section id="main-faults" class="hidden space-y-6">
-                <div class="flex flex-wrap gap-2 bg-slate-900/80 p-2 rounded-xl border border-slate-700/80 w-fit">
+                <div class="flex flex-wrap gap-2 bg-[#07112e]/90 p-2 rounded-xl border border-[#62A7EA]/30 w-fit">
                     <button onclick="switchSubTab('faults', 'thermal')" id="subbtn-faults-thermal" class="subtab-active px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
-                        <i class="fa-solid fa-temperature-high text-amber-400"></i>
+                        <i class="fa-solid fa-temperature-high"></i>
                         <span data-i18n="subtab_thermal">3.1 Phân tích ảnh quét nhiệt (35kV / 110kV)</span>
                     </button>
-                    <button onclick="switchSubTab('faults', 'relay')" id="subbtn-faults-relay" class="text-slate-300 hover:bg-slate-800 px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
-                        <i class="fa-solid fa-microchip text-rose-400"></i>
+                    <button onclick="switchSubTab('faults', 'relay')" id="subbtn-faults-relay" class="text-slate-200 hover:bg-[#122663] px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
+                        <i class="fa-solid fa-microchip text-[#F2EA1E]"></i>
                         <span data-i18n="subtab_relay">3.2 Phân tích file sự cố (Relay 27/59 Siemens SIPROTEC, ABB...)</span>
                     </button>
                 </div>
@@ -423,27 +434,27 @@
                 <div id="sub-faults-thermal" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="card p-5 space-y-4">
                         <div class="flex justify-between items-center">
-                            <h2 class="text-base font-bold text-sky-400"><i class="fa-solid fa-camera-retro mr-2"></i><span data-i18n="thermal_title">Quét nhiệt thiết bị 35kV / 110kV</span></h2>
-                            <span class="text-[11px] bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-2.5 py-0.5 rounded-full">OCR</span>
+                            <h2 class="text-base font-bold text-[#62A7EA]"><i class="fa-solid fa-camera-retro mr-2 text-[#F2EA1E]"></i><span data-i18n="thermal_title">Quét nhiệt thiết bị 35kV / 110kV</span></h2>
+                            <span class="text-[11px] bg-[#07112e] border border-[#F2EA1E]/50 text-[#F2EA1E] px-2.5 py-0.5 rounded-full font-bold">OCR</span>
                         </div>
                         
-                        <label class="border-2 border-dashed border-amber-500/60 hover:border-amber-400 rounded-lg p-5 flex flex-col items-center justify-center cursor-pointer transition bg-amber-950/20">
-                            <i class="fa-solid fa-wand-magic-sparkles text-2xl text-amber-400 mb-1.5"></i>
-                            <span data-i18n="upload_thermal_lbl" class="text-xs font-semibold text-amber-200">Tải lên ảnh chụp Camera nhiệt (FLIR / Testo / Hikmicro)</span>
+                        <label class="border-2 border-dashed border-[#F2EA1E]/60 hover:border-[#F2EA1E] rounded-lg p-5 flex flex-col items-center justify-center cursor-pointer transition bg-[#07112e]/60">
+                            <i class="fa-solid fa-wand-magic-sparkles text-2xl text-[#F2EA1E] mb-1.5"></i>
+                            <span data-i18n="upload_thermal_lbl" class="text-xs font-semibold text-white">Tải lên ảnh chụp Camera nhiệt (FLIR / Testo / Hikmicro)</span>
                             <input type="file" accept="image/*" class="hidden" onchange="handleThermalImageUpload(this)">
                         </label>
 
-                        <div id="thermal-ocr-status" class="hidden p-3 rounded-lg bg-sky-950/70 border border-sky-500/40 text-xs text-sky-300 space-y-1.5">
+                        <div id="thermal-ocr-status" class="hidden p-3 rounded-lg bg-[#07112e] border border-[#62A7EA]/40 text-xs text-[#62A7EA] space-y-1.5">
                             <div class="flex items-center justify-between">
                                 <span id="ocr-status-text">OCR...</span>
-                                <span id="ocr-progress-pct" class="font-bold">0%</span>
+                                <span id="ocr-progress-pct" class="font-bold text-[#F2EA1E]">0%</span>
                             </div>
-                            <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                <div id="ocr-progress-bar" class="bg-sky-400 h-1.5 transition-all duration-200" style="width: 0%"></div>
+                            <div class="w-full bg-[#0C1B48] rounded-full h-1.5 overflow-hidden">
+                                <div id="ocr-progress-bar" class="bg-[#F2EA1E] h-1.5 transition-all duration-200" style="width: 0%"></div>
                             </div>
                         </div>
 
-                        <div id="thermal-preview-box" class="hidden rounded-lg overflow-hidden border border-slate-700 bg-black flex justify-center max-h-56">
+                        <div id="thermal-preview-box" class="hidden rounded-lg overflow-hidden border border-[#62A7EA]/40 bg-black flex justify-center max-h-56">
                             <img id="thermal-preview-img" src="" alt="Thermal" class="object-contain max-h-56">
                         </div>
 
@@ -451,15 +462,15 @@
 
                         <div class="grid grid-cols-2 gap-3 text-sm">
                             <div>
-                                <label data-i18n="lbl_voltage" class="block text-xs text-slate-400 mb-1">Cấp điện áp</label>
-                                <select id="th-voltage" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2">
+                                <label data-i18n="lbl_voltage" class="block text-xs text-[#62A7EA] mb-1">Cấp điện áp</label>
+                                <select id="th-voltage" class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg p-2 text-white">
                                     <option value="110kV">110kV</option>
                                     <option value="35kV">35kV</option>
                                 </select>
                             </div>
                             <div>
-                                <label data-i18n="lbl_equip" class="block text-xs text-slate-400 mb-1">Loại thiết bị</label>
-                                <select id="th-equip" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2">
+                                <label data-i18n="lbl_equip" class="block text-xs text-[#62A7EA] mb-1">Loại thiết bị</label>
+                                <select id="th-equip" class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg p-2 text-white">
                                     <option value="MBA">MBA (Transformer)</option>
                                     <option value="MC">MC (Circuit Breaker)</option>
                                     <option value="DCL">DCL (Disconnector)</option>
@@ -469,16 +480,16 @@
                                 </select>
                             </div>
                             <div>
-                                <label data-i18n="lbl_t1" class="block text-xs text-slate-400 mb-1">Nhiệt độ điểm nóng T1 (°C)</label>
-                                <input type="number" id="th-t1" value="68.5" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 font-bold text-amber-400">
+                                <label data-i18n="lbl_t1" class="block text-xs text-[#62A7EA] mb-1">Nhiệt độ điểm nóng T1 (°C)</label>
+                                <input type="number" id="th-t1" value="68.5" step="0.1" class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg p-2 font-bold text-[#F2EA1E]">
                             </div>
                             <div>
-                                <label data-i18n="lbl_t2" class="block text-xs text-slate-400 mb-1">Nhiệt độ đối chiếu T2 (°C)</label>
-                                <input type="number" id="th-t2" value="44.0" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 font-bold text-sky-400">
+                                <label data-i18n="lbl_t2" class="block text-xs text-[#62A7EA] mb-1">Nhiệt độ đối chiếu T2 (°C)</label>
+                                <input type="number" id="th-t2" value="44.0" step="0.1" class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg p-2 font-bold text-[#62A7EA]">
                             </div>
                         </div>
 
-                        <button onclick="analyzeThermal()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2.5 rounded-lg text-sm transition">
+                        <button onclick="analyzeThermal()" class="w-full btn-accent-yellow py-2.5 rounded-lg text-sm transition">
                             <i class="fa-solid fa-magnifying-glass-chart mr-2"></i> <span data-i18n="btn_eval_thermal">Đánh giá rủi ro sự cố & Phương án xử lý</span>
                         </button>
                     </div>
@@ -488,7 +499,7 @@
                             <h2 data-i18n="thermal_result_title" class="text-base font-bold text-white mb-4">Kết quả đánh giá rủi ro & Phương án xử lý</h2>
                             <div id="thermal-result-box" class="space-y-4"></div>
                         </div>
-                        <div class="mt-6 pt-3 border-t border-slate-700 text-[11px] text-slate-400 flex justify-between">
+                        <div class="mt-6 pt-3 border-t border-[#62A7EA]/20 text-[11px] text-[#62A7EA] flex justify-between">
                             <span>IEC 62271 / NETA MTS</span>
                             <span>NMĐG V1-2 Trà Vinh</span>
                         </div>
@@ -498,13 +509,13 @@
                 <!-- SUB-TAB 3.2: PHÂN TÍCH FILE SỰ CỐ RELAY 27 / 59 -->
                 <div id="sub-faults-relay" class="hidden grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="card p-5 space-y-4">
-                        <h2 class="text-base font-bold text-rose-400 flex items-center">
+                        <h2 class="text-base font-bold text-[#F2EA1E] flex items-center">
                             <i class="fa-solid fa-file-waveform mr-2"></i> <span data-i18n="relay_title">Nạp bản ghi sự cố Rơ-le 27 / 59</span>
                         </h2>
 
                         <div>
-                            <label data-i18n="lbl_relay_vendor" class="block text-xs text-slate-400 mb-1">Hãng / Dòng Rơ-le bảo vệ</label>
-                            <select id="relay-vendor" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-xs text-white">
+                            <label data-i18n="lbl_relay_vendor" class="block text-xs text-[#62A7EA] mb-1">Hãng / Dòng Rơ-le bảo vệ</label>
+                            <select id="relay-vendor" class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg p-2 text-xs text-white">
                                 <option value="Siemens SIPROTEC (7SJ85 / 7UT85 / 7SA86)">Siemens SIPROTEC (DIGSI 5 / SIGRA)</option>
                                 <option value="ABB Relion (REF615 / RET670 / RED670)">ABB Relion (PCM600)</option>
                                 <option value="SEL / Schneider">SEL / Schneider MiCOM</option>
@@ -512,8 +523,8 @@
                         </div>
 
                         <div>
-                            <label data-i18n="lbl_relay_bay" class="block text-xs text-slate-400 mb-1">Ngăn lộ / Điểm đo điện áp (TU)</label>
-                            <select id="relay-bay" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 text-xs text-white">
+                            <label data-i18n="lbl_relay_bay" class="block text-xs text-[#62A7EA] mb-1">Ngăn lộ / Điểm đo điện áp (TU)</label>
+                            <select id="relay-bay" class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg p-2 text-xs text-white">
                                 <option value="110kV Busbar C11 / Feeder 171">110kV Busbar C11 / Feeder 171</option>
                                 <option value="35kV Busbar C31 / C32">35kV Busbar C31 / C32</option>
                                 <option value="35kV Feeder 371 / 372 / 373">35kV Feeder 371 / 372 / 373</option>
@@ -521,27 +532,27 @@
                             </select>
                         </div>
 
-                        <label class="border-2 border-dashed border-rose-500/60 hover:border-rose-400 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-rose-950/20">
-                            <i class="fa-solid fa-upload text-2xl text-rose-400 mb-1.5"></i>
-                            <span class="text-xs font-semibold text-rose-200" id="relay-file-name" data-i18n="choose_relay_file">Chọn file Fault Report / COMTRADE (.txt, .csv, .cfg)</span>
+                        <label class="border-2 border-dashed border-[#62A7EA]/60 hover:border-[#F2EA1E] rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer transition bg-[#07112e]/60">
+                            <i class="fa-solid fa-upload text-2xl text-[#F2EA1E] mb-1.5"></i>
+                            <span class="text-xs font-semibold text-white" id="relay-file-name" data-i18n="choose_relay_file">Chọn file Fault Report / COMTRADE (.txt, .csv, .cfg)</span>
                             <input type="file" accept=".txt,.csv,.cfg,.xml,.log,.htm,.html" class="hidden" onchange="handleRelayFileUpload(this)">
                         </label>
 
                         <div class="flex space-x-2">
-                            <button onclick="loadSampleRelayLog('27')" data-i18n="sample_27" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] text-sky-300 py-2 rounded-lg transition">
+                            <button onclick="loadSampleRelayLog('27')" data-i18n="sample_27" class="flex-1 bg-[#07112e] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/50 text-[11px] text-[#62A7EA] font-semibold py-2 rounded-lg transition">
                                 Mẫu Relay 27 (Kém áp)
                             </button>
-                            <button onclick="loadSampleRelayLog('59')" data-i18n="sample_59" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] text-amber-300 py-2 rounded-lg transition">
+                            <button onclick="loadSampleRelayLog('59')" data-i18n="sample_59" class="flex-1 bg-[#07112e] hover:bg-[#F2EA1E] hover:text-[#0C1B48] border border-[#F2EA1E]/50 text-[11px] text-[#F2EA1E] font-semibold py-2 rounded-lg transition">
                                 Mẫu Relay 59/59N (Quá áp)
                             </button>
                         </div>
 
                         <div>
-                            <label data-i18n="lbl_relay_raw" class="block text-xs text-slate-400 mb-1">Nội dung bản ghi sự cố:</label>
-                            <textarea id="relay-raw-text" rows="5" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-[11px] font-mono text-emerald-300 focus:outline-none focus:border-rose-500"></textarea>
+                            <label data-i18n="lbl_relay_raw" class="block text-xs text-[#62A7EA] mb-1">Nội dung bản ghi sự cố:</label>
+                            <textarea id="relay-raw-text" rows="5" class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg p-2.5 text-[11px] font-mono text-[#F2EA1E] focus:outline-none focus:border-[#F2EA1E]"></textarea>
                         </div>
 
-                        <button onclick="analyzeRelayFault()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2.5 rounded-lg text-xs transition flex items-center justify-center space-x-2">
+                        <button onclick="analyzeRelayFault()" class="w-full btn-accent-yellow py-2.5 rounded-lg text-xs transition flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-stethoscope"></i>
                             <span data-i18n="btn_analyze_relay">Phân tích sự cố Relay 27 / 59 & Đề xuất xử lý</span>
                         </button>
@@ -549,17 +560,17 @@
 
                     <div class="card p-5 lg:col-span-2 flex flex-col justify-between space-y-4">
                         <div id="relay-analysis-output" class="space-y-4">
-                            <div class="p-4 rounded-lg bg-slate-900/90 border border-slate-700 text-xs text-slate-300 space-y-2">
-                                <div class="text-sm font-bold text-sky-400"><i class="fa-solid fa-circle-info mr-1.5"></i> <span data-i18n="relay_guide_title">Chẩn đoán chuyên sâu Rơ-le 27 & 59 tại NMĐG V1-2</span></div>
-                                <ul class="list-disc list-inside space-y-1 text-slate-400">
-                                    <li><strong>Relay 27 (27-1 / 27-2 / PTUV):</strong> LVRT / Undervoltage (TT 39/2015/TT-BCT).</li>
-                                    <li><strong>Relay 59 (59-1 / 59-2 / PTOV):</strong> HVRT / Overvoltage (35kV / 110kV).</li>
-                                    <li><strong>Relay 59N / 64G:</strong> Neutral Displacement ($3U_0$).</li>
+                            <div class="p-4 rounded-lg bg-[#07112e]/90 border border-[#62A7EA]/30 text-xs text-slate-200 space-y-2">
+                                <div class="text-sm font-bold text-[#62A7EA]"><i class="fa-solid fa-circle-info mr-1.5 text-[#F2EA1E]"></i> <span data-i18n="relay_guide_title">Chẩn đoán chuyên sâu Rơ-le 27 & 59 tại NMĐG V1-2</span></div>
+                                <ul class="list-disc list-inside space-y-1 text-slate-300">
+                                    <li><strong class="text-[#F2EA1E]">Relay 27 (27-1 / 27-2 / PTUV):</strong> LVRT / Undervoltage (TT 39/2015/TT-BCT).</li>
+                                    <li><strong class="text-[#62A7EA]">Relay 59 (59-1 / 59-2 / PTOV):</strong> HVRT / Overvoltage (35kV / 110kV).</li>
+                                    <li><strong class="text-white">Relay 59N / 64G:</strong> Neutral Displacement ($3U_0$).</li>
                                 </ul>
                             </div>
                         </div>
 
-                        <div class="pt-3 border-t border-slate-700 text-[11px] text-slate-400 flex justify-between">
+                        <div class="pt-3 border-t border-[#62A7EA]/20 text-[11px] text-[#62A7EA] flex justify-between">
                             <span>IEC 61850 / IEEE C37.2 (ANSI 27, 59, 59N)</span>
                             <span>NMĐG V1-2 Trà Vinh</span>
                         </div>
@@ -569,8 +580,8 @@
         </main>
 
         <!-- FOOTER -->
-        <footer class="bg-slate-900 border-t border-slate-800 py-4 px-6 text-center text-xs text-slate-400">
-            <p>© 2026 <strong>TTTV_NMĐG V1-2 Trà Vinh</strong> | <span data-i18n="designed_by">Thiết kế bởi:</span> <strong class="text-sky-400">Dep Do</strong></p>
+        <footer class="bg-[#07112e] border-t border-[#62A7EA]/30 py-4 px-6 text-center text-xs text-slate-300">
+            <p>© 2026 <strong class="text-[#62A7EA]">TTTV_NMĐG V1-2 Trà Vinh</strong> | <span data-i18n="designed_by">Thiết kế bởi:</span> <strong class="text-[#F2EA1E]">Dep Do</strong></p>
         </footer>
     </div>
 
@@ -864,32 +875,28 @@
             currentLang = lang;
             localStorage.setItem("tttv_lang", lang);
 
-            // Cập nhật trạng thái nút VI / EN / TH
             ['vi', 'en', 'th'].forEach(l => {
                 document.querySelectorAll(`.lang-btn-${l}`).forEach(btn => {
                     if (l === lang) {
                         btn.classList.add('lang-active');
-                        btn.classList.remove('text-slate-300', 'bg-slate-800');
+                        btn.classList.remove('text-slate-200', 'bg-[#0C1B48]');
                     } else {
                         btn.classList.remove('lang-active');
-                        btn.classList.add('text-slate-300', 'bg-slate-800');
+                        btn.classList.add('text-slate-200', 'bg-[#0C1B48]');
                     }
                 });
             });
 
-            // Dịch các thẻ văn bản tĩnh
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if (I18N[lang][key]) el.innerText = I18N[lang][key];
             });
 
-            // Dịch các placeholder
             document.querySelectorAll('[data-i18n-ph]').forEach(el => {
                 const key = el.getAttribute('data-i18n-ph');
                 if (I18N[lang][key]) el.placeholder = I18N[lang][key];
             });
 
-            // Cập nhật lại các thành phần động nếu đã khởi tạo
             if (isInitialized) {
                 renderForecastView();
                 renderTurbines();
@@ -1147,7 +1154,7 @@
             const hh = String(nowcastState.timestamp.getHours()).padStart(2, '0');
             const mm = String(nowcastState.timestamp.getMinutes()).padStart(2, '0');
             const badge = document.getElementById('nowcast-badge');
-            badge.className = "text-[11px] px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-semibold";
+            badge.className = "text-[11px] px-2.5 py-0.5 rounded bg-[#0C1B48] text-[#F2EA1E] border border-[#F2EA1E]/60 font-bold";
             badge.innerHTML = `<i class="fa-solid fa-check mr-1"></i>${hh}:${mm} (${targetWind} m/s | ${hours}h)`;
 
             document.getElementById('forecast-horizon').value = 'D0';
@@ -1159,7 +1166,7 @@
             document.getElementById('nowcast-wind').value = "";
             document.getElementById('nowcast-power').value = "";
             const badge = document.getElementById('nowcast-badge');
-            badge.className = "text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-600";
+            badge.className = "text-[11px] px-2 py-0.5 rounded bg-[#0C1B48] text-slate-300 border border-[#62A7EA]/40";
             badge.innerText = t('nowcast_inactive');
             renderForecastView();
         }
@@ -1270,20 +1277,20 @@
             const capacityFactor = ((totalEnergyMWh / (48 * computed.length * hourFraction)) * 100).toFixed(1);
 
             document.getElementById('forecast-kpi-cards').innerHTML = `
-                <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
-                    <div class="text-[11px] text-slate-400">${t('kpi_energy')}</div>
-                    <div class="text-lg font-bold text-emerald-400">${totalEnergyMWh.toFixed(1)} MWh</div>
+                <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30">
+                    <div class="text-[11px] text-[#62A7EA]">${t('kpi_energy')}</div>
+                    <div class="text-lg font-bold text-[#F2EA1E]">${totalEnergyMWh.toFixed(1)} MWh</div>
                 </div>
-                <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
-                    <div class="text-[11px] text-slate-400">${t('kpi_pmax')}</div>
-                    <div class="text-lg font-bold text-sky-400">${maxPowerMW.toFixed(2)} MW</div>
+                <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30">
+                    <div class="text-[11px] text-[#62A7EA]">${t('kpi_pmax')}</div>
+                    <div class="text-lg font-bold text-[#62A7EA]">${maxPowerMW.toFixed(2)} MW</div>
                 </div>
-                <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
-                    <div class="text-[11px] text-slate-400">${t('kpi_wind')}</div>
-                    <div class="text-lg font-bold text-amber-400">${avgWind} m/s</div>
+                <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30">
+                    <div class="text-[11px] text-[#62A7EA]">${t('kpi_wind')}</div>
+                    <div class="text-lg font-bold text-[#F2EA1E]">${avgWind} m/s</div>
                 </div>
-                <div class="p-3 bg-slate-900 rounded-lg border border-slate-700">
-                    <div class="text-[11px] text-slate-400">${t('kpi_cf')}</div>
+                <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30">
+                    <div class="text-[11px] text-[#62A7EA]">${t('kpi_cf')}</div>
                     <div class="text-lg font-bold text-white">${capacityFactor}%</div>
                 </div>
             `;
@@ -1293,11 +1300,11 @@
 
             const tbody = document.getElementById('forecast-table-body');
             tbody.innerHTML = computed.map(r => `
-                <tr class="hover:bg-slate-800/70">
+                <tr class="hover:bg-[#122663]">
                     <td class="p-2 font-mono text-[11px]">${r.label}</td>
-                    <td class="p-2 text-amber-300">${r.wind.toFixed(2)}</td>
-                    <td class="p-2 font-bold text-sky-400">${r.powerMW.toFixed(2)}</td>
-                    <td class="p-2 text-emerald-400">${r.energyMWh.toFixed(2)}</td>
+                    <td class="p-2 text-[#F2EA1E] font-semibold">${r.wind.toFixed(2)}</td>
+                    <td class="p-2 font-bold text-[#62A7EA]">${r.powerMW.toFixed(2)}</td>
+                    <td class="p-2 text-white">${r.energyMWh.toFixed(2)}</td>
                 </tr>
             `).join('');
 
@@ -1311,8 +1318,8 @@
                         {
                             label: 'MW',
                             data: computed.map(c => c.powerMW),
-                            borderColor: '#38bdf8',
-                            backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                            borderColor: '#62A7EA',
+                            backgroundColor: 'rgba(98, 167, 234, 0.2)',
                             yAxisID: 'y',
                             tension: 0.3,
                             fill: true,
@@ -1321,7 +1328,7 @@
                         {
                             label: 'm/s',
                             data: computed.map(c => c.wind),
-                            borderColor: '#fbbf24',
+                            borderColor: '#F2EA1E',
                             borderDash: [4, 4],
                             yAxisID: 'y1',
                             tension: 0.3,
@@ -1334,11 +1341,11 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
-                    plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } },
+                    plugins: { legend: { labels: { color: '#f8fafc', font: { size: 11 } } } },
                     scales: {
-                        x: { ticks: { color: '#94a3b8', maxTicksLimit: 16 }, grid: { color: '#334155' } },
-                        y: { type: 'linear', position: 'left', min: 0, max: 50, ticks: { color: '#38bdf8' }, grid: { color: '#334155' }, title: { display: true, text: 'MW', color: '#38bdf8', font: { size: 10 } } },
-                        y1: { type: 'linear', position: 'right', min: 0, max: 20, ticks: { color: '#fbbf24' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'm/s', color: '#fbbf24', font: { size: 10 } } }
+                        x: { ticks: { color: '#62A7EA', maxTicksLimit: 16 }, grid: { color: 'rgba(98, 167, 234, 0.15)' } },
+                        y: { type: 'linear', position: 'left', min: 0, max: 50, ticks: { color: '#62A7EA' }, grid: { color: 'rgba(98, 167, 234, 0.15)' }, title: { display: true, text: 'MW', color: '#62A7EA', font: { size: 10 } } },
+                        y1: { type: 'linear', position: 'right', min: 0, max: 20, ticks: { color: '#F2EA1E' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'm/s', color: '#F2EA1E', font: { size: 10 } } }
                     }
                 }
             });
@@ -1382,10 +1389,10 @@
                 sumPower12KW += pVal;
 
                 return `
-                    <tr class="hover:bg-slate-800/70 ${!isAvail ? 'opacity-50' : ''}">
+                    <tr class="hover:bg-[#122663] ${!isAvail ? 'opacity-50' : ''}">
                         <td class="p-2.5 font-bold text-white">${c.id}</td>
-                        <td class="p-2.5 font-bold text-amber-300">${wVal.toFixed(2)} m/s</td>
-                        <td class="p-2.5 font-bold text-sky-400">${pVal.toFixed(1)} kW</td>
+                        <td class="p-2.5 font-bold text-[#F2EA1E]">${wVal.toFixed(2)} m/s</td>
+                        <td class="p-2.5 font-bold text-[#62A7EA]">${pVal.toFixed(1)} kW</td>
                     </tr>
                 `;
             }).join('');
@@ -1393,9 +1400,9 @@
             const avgWind12 = sumWind12 / 12;
             tfoot.innerHTML = `
                 <tr>
-                    <td class="p-2.5 text-emerald-400">${t('row_avg_total')}</td>
-                    <td class="p-2.5 text-amber-300">${t('avg_prefix')} ${avgWind12.toFixed(2)} m/s</td>
-                    <td class="p-2.5 text-sky-400">${t('total_prefix')} ${sumPower12KW.toFixed(1)} kW (${(sumPower12KW / 1000).toFixed(2)} MW)</td>
+                    <td class="p-2.5 text-white">${t('row_avg_total')}</td>
+                    <td class="p-2.5 text-[#F2EA1E]">${t('avg_prefix')} ${avgWind12.toFixed(2)} m/s</td>
+                    <td class="p-2.5 text-[#62A7EA]">${t('total_prefix')} ${sumPower12KW.toFixed(1)} kW (${(sumPower12KW / 1000).toFixed(2)} MW)</td>
                 </tr>
             `;
         }
@@ -1468,17 +1475,17 @@
             const grid = document.getElementById('turbine-grid');
             grid.innerHTML = '';
             turbinesData.forEach((wtg, index) => {
-                let borderColor = 'border-emerald-500/50 hover:border-emerald-400';
-                let badgeColor = 'bg-emerald-500/20 text-emerald-400';
-                let iconColor = 'text-emerald-400';
+                let borderColor = 'border-[#62A7EA]/50 hover:border-[#F2EA1E]';
+                let badgeColor = 'bg-[#62A7EA]/20 text-[#62A7EA]';
+                let iconColor = 'text-[#62A7EA]';
 
                 if (wtg.status === 'warn') {
-                    borderColor = 'border-amber-500/50 hover:border-amber-400';
-                    badgeColor = 'bg-amber-500/20 text-amber-400';
-                    iconColor = 'text-amber-400';
+                    borderColor = 'border-[#F2EA1E]/70 hover:border-[#F2EA1E]';
+                    badgeColor = 'bg-[#F2EA1E]/20 text-[#F2EA1E]';
+                    iconColor = 'text-[#F2EA1E]';
                 } else if (wtg.status === 'crit') {
-                    borderColor = 'border-rose-500/70 hover:border-rose-400';
-                    badgeColor = 'bg-rose-500/20 text-rose-400';
+                    borderColor = 'border-rose-500/80 hover:border-rose-400';
+                    badgeColor = 'bg-rose-500/25 text-rose-300';
                     iconColor = 'text-rose-400';
                 }
 
@@ -1488,10 +1495,10 @@
                             <span class="font-bold text-sm text-white">${wtg.id}</span>
                             <i class="fa-solid fa-fan ${iconColor}"></i>
                         </div>
-                        <div class="text-2xl font-bold text-white mb-1">${wtg.score}%</div>
+                        <div class="text-2xl font-bold text-[#F2EA1E] mb-1">${wtg.score}%</div>
                         <div class="flex justify-between items-center text-[11px]">
-                            <span class="text-slate-400">4.0 MW</span>
-                            <span class="px-2 py-0.5 rounded ${badgeColor} font-medium">
+                            <span class="text-slate-300">4.0 MW</span>
+                            <span class="px-2 py-0.5 rounded ${badgeColor} font-semibold">
                                 ${wtg.status === 'good' ? t('status_good') : (wtg.status === 'warn' ? t('status_warn') : t('status_crit'))}
                             </span>
                         </div>
@@ -1506,12 +1513,12 @@
             document.getElementById('chart-title').innerText = `Dynamic PC 4MW vs Actual (${wtg.id})`;
             document.getElementById('detail-wtg-name').innerText = `${wtg.id} (HI)`;
             
-            const colorClass = wtg.status === 'good' ? 'text-emerald-400' : (wtg.status === 'warn' ? 'text-amber-400' : 'text-rose-400');
+            const colorClass = wtg.status === 'good' ? 'text-[#62A7EA]' : (wtg.status === 'warn' ? 'text-[#F2EA1E]' : 'text-rose-400');
             document.getElementById('detail-wtg-metrics').innerHTML = `
-                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">HI:</span><span class="font-bold ${colorClass}">${wtg.score}%</span></li>
-                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Power Curve Dev:</span><span class="text-white">${wtg.dev}</span></li>
-                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Temp:</span><span class="text-white">${wtg.temp}</span></li>
-                <li class="flex justify-between border-b border-slate-700 pb-2"><span class="text-slate-400">Pitch Dev:</span><span class="text-white">${wtg.pitch}</span></li>
+                <li class="flex justify-between border-b border-[#62A7EA]/20 pb-2"><span class="text-[#62A7EA]">HI:</span><span class="font-bold ${colorClass}">${wtg.score}%</span></li>
+                <li class="flex justify-between border-b border-[#62A7EA]/20 pb-2"><span class="text-[#62A7EA]">Power Curve Dev:</span><span class="text-white">${wtg.dev}</span></li>
+                <li class="flex justify-between border-b border-[#62A7EA]/20 pb-2"><span class="text-[#62A7EA]">Temp:</span><span class="text-white">${wtg.temp}</span></li>
+                <li class="flex justify-between border-b border-[#62A7EA]/20 pb-2"><span class="text-[#62A7EA]">Pitch Dev:</span><span class="text-white">${wtg.pitch}</span></li>
             `;
             document.getElementById('detail-wtg-recommendation').innerHTML = `${wtg.note}`;
             updateChart(wtg);
@@ -1529,15 +1536,15 @@
                 data: {
                     labels: CHART_WIND_AXIS.map(w => w + ' m/s'),
                     datasets: [
-                        { label: 'Dynamic PC 4MW (kW)', data: stdCurve, borderColor: '#38bdf8', borderDash: [5, 5], tension: 0.3, fill: false },
-                        { label: `${wtg.id} (kW)`, data: actualPower, borderColor: wtg.status === 'crit' ? '#f43f5e' : (wtg.status === 'warn' ? '#f59e0b' : '#10b981'), backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.3, fill: true, spanGaps: true }
+                        { label: 'Dynamic PC 4MW (kW)', data: stdCurve, borderColor: '#62A7EA', borderDash: [5, 5], tension: 0.3, fill: false },
+                        { label: `${wtg.id} (kW)`, data: actualPower, borderColor: wtg.status === 'crit' ? '#f43f5e' : '#F2EA1E', backgroundColor: 'rgba(242, 234, 30, 0.12)', tension: 0.3, fill: true, spanGaps: true }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } },
-                    scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, max: 4300 } }
+                    plugins: { legend: { labels: { color: '#f8fafc', font: { size: 11 } } } },
+                    scales: { x: { ticks: { color: '#62A7EA' }, grid: { color: 'rgba(98, 167, 234, 0.15)' } }, y: { ticks: { color: '#62A7EA' }, grid: { color: 'rgba(98, 167, 234, 0.15)' }, max: 4300 } }
                 }
             });
         }
@@ -1680,7 +1687,7 @@
 
                 const banner = document.getElementById('scada-summary-banner');
                 banner.classList.remove('hidden');
-                banner.innerHTML = `<span><i class="fa-solid fa-circle-check text-emerald-400 mr-2"></i><strong>${updatedCount}/12 WTG</strong> (${totalRowsProcessed.toLocaleString()} rows)</span>`;
+                banner.innerHTML = `<span><i class="fa-solid fa-circle-check text-[#F2EA1E] mr-2"></i><strong>${updatedCount}/12 WTG</strong> (${totalRowsProcessed.toLocaleString()} rows)</span>`;
                 renderTurbines();
                 selectTurbine(selectedTurbineIndex);
             } catch (e) {
@@ -1733,7 +1740,7 @@
             if (emptyMsg) emptyMsg.remove();
 
             for (let file of input.files) {
-                let icon = 'fa-file-lines text-slate-400';
+                let icon = 'fa-file-lines text-[#62A7EA]';
                 let extractedText = "";
                 try {
                     if (file.name.toLowerCase().endsWith('.pdf')) {
@@ -1746,12 +1753,12 @@
                             extractedText += `\n[P.${i}] ` + content.items.map(item => item.str).join(" ");
                         }
                     } else if (file.name.toLowerCase().match(/\.docx$/)) {
-                        icon = 'fa-file-word text-blue-400';
+                        icon = 'fa-file-word text-[#62A7EA]';
                         const arrayBuffer = await file.arrayBuffer();
                         const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
                         extractedText = result.value;
                     } else if (file.name.toLowerCase().match(/\.xlsx?$/)) {
-                        icon = 'fa-file-excel text-emerald-400';
+                        icon = 'fa-file-excel text-[#F2EA1E]';
                         const arrayBuffer = await file.arrayBuffer();
                         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
                         workbook.SheetNames.forEach(sheetName => {
@@ -1766,7 +1773,7 @@
                     const countEl = document.getElementById('doc-chunk-count');
                     if (countEl) countEl.innerText = `${knowledgeChunks.length}`;
 
-                    list.innerHTML += `<li class="p-2.5 bg-slate-800 rounded flex items-center justify-between border border-emerald-500/50"><span class="truncate pr-2"><i class="fa-solid ${icon} mr-2"></i>${file.name}</span><span class="text-emerald-400 text-[10px] whitespace-nowrap">${newChunks.length}</span></li>`;
+                    list.innerHTML += `<li class="p-2.5 bg-[#07112e] rounded flex items-center justify-between border border-[#62A7EA]/40"><span class="truncate pr-2"><i class="fa-solid ${icon} mr-2"></i>${file.name}</span><span class="text-[#F2EA1E] font-bold text-[10px] whitespace-nowrap">${newChunks.length}</span></li>`;
                 } catch (err) {
                     alert(err.message);
                 }
@@ -1804,7 +1811,7 @@
             tokens.forEach(tok => {
                 if (tok.length >= 2) {
                     const re = new RegExp(`(${tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                    safe = safe.replace(re, '<mark class="bg-amber-500/30 text-amber-200 px-0.5 rounded">$1</mark>');
+                    safe = safe.replace(re, '<mark class="bg-[#F2EA1E]/30 text-[#F2EA1E] px-0.5 rounded font-semibold">$1</mark>');
                 }
             });
             return safe.replace(/\n/g, "<br>");
@@ -1819,8 +1826,8 @@
                 const ddgRes = await fetch(ddgUrl);
                 const ddgData = await ddgRes.json();
                 if (ddgData.AbstractText && ddgData.AbstractText.trim().length > 25) {
-                    resultsHtml += `<div class="p-3 bg-slate-900/90 rounded-lg border border-emerald-500/40 text-xs space-y-1 text-slate-200 leading-relaxed">
-                        <div class="font-bold text-emerald-400"><i class="fa-solid fa-globe mr-1"></i> ${ddgData.Heading || cleanQuery}</div>
+                    resultsHtml += `<div class="p-3 bg-[#07112e]/95 rounded-lg border border-[#F2EA1E]/40 text-xs space-y-1 text-slate-100 leading-relaxed">
+                        <div class="font-bold text-[#F2EA1E]"><i class="fa-solid fa-globe mr-1"></i> ${ddgData.Heading || cleanQuery}</div>
                         <p>${ddgData.AbstractText}</p>
                     </div>`;
                 }
@@ -1843,8 +1850,8 @@
                                 const pageId = Object.keys(pages)[0];
                                 const fullText = pages[pageId]?.extract;
                                 if (fullText && fullText.trim().length > 30) {
-                                    resultsHtml += `<div class="p-3 bg-slate-900/90 rounded-lg border border-sky-500/40 text-xs space-y-1.5 text-slate-200 leading-relaxed">
-                                        <div class="font-bold text-sky-400"><i class="fa-solid fa-book-open mr-1"></i> ${topTitle}</div>
+                                    resultsHtml += `<div class="p-3 bg-[#07112e]/95 rounded-lg border border-[#62A7EA]/40 text-xs space-y-1.5 text-slate-100 leading-relaxed">
+                                        <div class="font-bold text-[#62A7EA]"><i class="fa-solid fa-book-open mr-1"></i> ${topTitle}</div>
                                         <p>${fullText.replace(/\n/g, "<br>")}</p>
                                     </div>`;
                                     break;
@@ -1865,8 +1872,8 @@
         function clearChatHistory() {
             document.getElementById('chat-messages').innerHTML = `
                 <div class="flex items-start space-x-3">
-                    <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
-                    <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl text-xs text-slate-200">
+                    <div class="bg-[#62A7EA] text-[#0C1B48] p-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-[#07112e]/90 p-3.5 rounded-lg border border-[#62A7EA]/30 max-w-2xl text-xs text-slate-100">
                         ${t('chat_welcome')}
                     </div>
                 </div>`;
@@ -1878,11 +1885,11 @@
             if (!msg) return;
             const box = document.getElementById('chat-messages');
             const safeMsg = msg.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            box.innerHTML += `<div class="flex justify-end"><div class="bg-sky-600 text-white p-3 rounded-lg max-w-md shadow">${safeMsg}</div></div>`;
+            box.innerHTML += `<div class="flex justify-end"><div class="bg-[#62A7EA] text-[#0C1B48] font-semibold p-3 rounded-lg max-w-md shadow">${safeMsg}</div></div>`;
             input.value = '';
 
             const loadingId = "loading-" + Date.now();
-            box.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-3"><div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="bg-slate-800 p-3 rounded-lg border border-slate-700 text-xs text-slate-300">...</div></div>`;
+            box.innerHTML += `<div id="${loadingId}" class="flex items-start space-x-3"><div class="bg-[#62A7EA] text-[#0C1B48] p-2 rounded-lg text-xs"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="bg-[#07112e] p-3 rounded-lg border border-[#62A7EA]/30 text-xs text-slate-200">...</div></div>`;
             box.scrollTop = box.scrollHeight;
 
             const { chunks: topChunks, tokens } = retrieveTopRelevantChunks(msg, 3);
@@ -1891,11 +1898,11 @@
 
             let localHtml = "";
             if (topChunks.length > 0) {
-                localHtml = `<div class="p-3 bg-slate-900/95 rounded-lg border border-sky-500/50 text-xs space-y-2.5">
+                localHtml = `<div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/50 text-xs space-y-2.5">
                     ${topChunks.map(c => `
-                        <div class="pl-2.5 border-l-2 border-amber-400/70 space-y-1">
-                            <div class="text-[11px] text-amber-300 font-semibold">[${c.source}]</div>
-                            <p class="text-slate-200 leading-relaxed">${highlightTokens(c.text, tokens)}</p>
+                        <div class="pl-2.5 border-l-2 border-[#F2EA1E] space-y-1">
+                            <div class="text-[11px] text-[#F2EA1E] font-semibold">[${c.source}]</div>
+                            <p class="text-slate-100 leading-relaxed">${highlightTokens(c.text, tokens)}</p>
                         </div>
                     `).join("")}
                 </div>`;
@@ -1903,8 +1910,8 @@
 
             box.innerHTML += `
                 <div class="flex items-start space-x-3">
-                    <div class="bg-sky-600 p-2 rounded-lg text-xs"><i class="fa-solid fa-robot"></i></div>
-                    <div class="bg-slate-800 p-3.5 rounded-lg border border-slate-700 max-w-2xl space-y-2.5 text-slate-200">
+                    <div class="bg-[#62A7EA] text-[#0C1B48] p-2 rounded-lg text-xs font-bold"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-[#0C1B48] p-3.5 rounded-lg border border-[#62A7EA]/40 max-w-2xl space-y-2.5 text-slate-100">
                         ${localHtml}
                         ${webHtml}
                         ${(!localHtml && !webHtml) ? `<p class="text-xs text-slate-300">No matching records found for "${safeMsg}".</p>` : ''}
@@ -1953,7 +1960,7 @@
                 const progressBar = document.getElementById('ocr-progress-bar');
                 const chipsBox = document.getElementById('ocr-detected-chips');
 
-                statusBox.className = "p-3 rounded-lg bg-sky-950/70 border border-sky-500/40 text-xs text-sky-300 space-y-1.5";
+                statusBox.className = "p-3 rounded-lg bg-[#07112e] border border-[#62A7EA]/40 text-xs text-[#62A7EA] space-y-1.5";
                 statusBox.classList.remove('hidden');
                 chipsBox.classList.add('hidden');
 
@@ -1990,22 +1997,22 @@
                     if (uniqueTemps.length >= 2) {
                         document.getElementById('th-t1').value = uniqueTemps[0];
                         document.getElementById('th-t2').value = uniqueTemps[uniqueTemps.length - 1];
-                        statusBox.className = "p-3 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-xs text-emerald-300";
+                        statusBox.className = "p-3 rounded-lg bg-[#07112e] border border-[#F2EA1E]/60 text-xs text-[#F2EA1E]";
                         statusBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i>T1 = ${uniqueTemps[0]}°C | T2 = ${uniqueTemps[uniqueTemps.length - 1]}°C`;
-                        chipsBox.innerHTML = uniqueTemps.map(t => `<button type="button" onclick="applyDetectedTemp(${t})" class="px-2 py-0.5 bg-slate-800 hover:bg-sky-700 border border-slate-600 rounded text-amber-300 font-semibold">${t}°C</button>`).join('');
+                        chipsBox.innerHTML = uniqueTemps.map(t => `<button type="button" onclick="applyDetectedTemp(${t})" class="px-2 py-0.5 bg-[#07112e] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/40 rounded text-[#F2EA1E] font-semibold">${t}°C</button>`).join('');
                         chipsBox.classList.remove('hidden');
                         analyzeThermal();
                     } else if (uniqueTemps.length === 1) {
                         document.getElementById('th-t1').value = uniqueTemps[0];
-                        statusBox.className = "p-3 rounded-lg bg-amber-950/70 border border-amber-500/40 text-xs text-amber-300";
+                        statusBox.className = "p-3 rounded-lg bg-[#07112e] border border-[#F2EA1E]/50 text-xs text-[#F2EA1E]";
                         statusBox.innerHTML = `<i class="fa-solid fa-circle-info mr-1.5"></i>T1 = <strong>${uniqueTemps[0]}°C</strong>`;
                         analyzeThermal();
                     } else {
-                        statusBox.className = "p-3 rounded-lg bg-amber-950/70 border border-amber-500/40 text-xs text-amber-300";
-                        statusBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5"></i>Manual T1/T2`;
+                        statusBox.className = "p-3 rounded-lg bg-[#07112e] border border-[#62A7EA]/40 text-xs text-slate-300";
+                        statusBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1.5 text-[#F2EA1E]"></i>Manual T1/T2`;
                     }
                 } catch (err) {
-                    statusBox.className = "p-3 rounded-lg bg-rose-950/70 border border-rose-500/40 text-xs text-rose-300";
+                    statusBox.className = "p-3 rounded-lg bg-rose-950/80 border border-rose-500/50 text-xs text-rose-200";
                     statusBox.innerHTML = `${err.message}`;
                 }
             };
@@ -2028,33 +2035,33 @@
             const deltaT = (t1 - t2).toFixed(1);
 
             let level = 'Level 1 (Normal)';
-            let color = 'emerald';
+            let badgeStyle = 'border-[#62A7EA]/60 text-[#62A7EA]';
             let action = 'Continue normal operation, routine monthly inspection.';
 
             if (deltaT > 35) {
                 level = 'Level 3 (CRITICAL - Immediate Trip/Isolation)';
-                color = 'rose';
+                badgeStyle = 'border-rose-500 text-rose-400';
                 action = 'Report to Shift Leader & A2/NSMO immediately for emergency isolation and repair.';
             } else if (deltaT > 15) {
                 level = 'Level 2 (HIGH RISK - Severe Overheating)';
-                color = 'amber';
+                badgeStyle = 'border-[#F2EA1E] text-[#F2EA1E]';
                 action = 'Daily thermal check at high load. Schedule outage with A2/NSMO to clean & torque connections.';
             } else if (deltaT >= 5) {
                 level = 'Level 1+ (MODERATE - Slight Heating)';
-                color = 'sky';
+                badgeStyle = 'border-[#62A7EA] text-[#62A7EA]';
                 action = 'Monitor closely during peak wind generation.';
             }
 
             document.getElementById('thermal-result-box').innerHTML = `
-                <div class="p-4 rounded-lg bg-${color}-950/50 border border-${color}-500/50">
+                <div class="p-4 rounded-lg bg-[#07112e] border ${badgeStyle}">
                     <div class="flex justify-between items-center">
-                        <span class="text-xs uppercase font-bold text-${color}-400">${level}</span>
-                        <span class="text-lg font-bold text-${color}-400">ΔT = ${deltaT} °C</span>
+                        <span class="text-xs uppercase font-bold">${level}</span>
+                        <span class="text-lg font-bold text-[#F2EA1E]">ΔT = ${deltaT} °C</span>
                     </div>
-                    <p class="text-sm text-slate-200 mt-2"><strong>${equip} - ${volt}</strong></p>
+                    <p class="text-sm text-white mt-2"><strong>${equip} - ${volt}</strong></p>
                     <p class="text-xs text-slate-300 mt-1">T1 = ${t1}°C | T2 = ${t2}°C</p>
                 </div>
-                <div class="space-y-2 text-xs text-slate-300">
+                <div class="space-y-2 text-xs text-slate-200 p-3.5 bg-[#07112e]/70 rounded-lg border border-[#62A7EA]/20">
                     <p>${action}</p>
                 </div>
             `;
@@ -2157,27 +2164,27 @@ Ua = 22.8 kV | Ub = 22.6 kV | Uc = 22.8 kV | 3U0 = 4.2 kV`;
             const voltSummary = voltMatches ? voltMatches.slice(0, 7).join(" | ") : (pctMatches ? pctMatches.join(" | ") : "-");
 
             output.innerHTML = `
-                <div class="p-4 rounded-lg bg-rose-950/60 border border-rose-500/60 space-y-2.5">
+                <div class="p-4 rounded-lg bg-[#07112e] border border-[#F2EA1E]/60 space-y-2.5">
                     <div class="flex flex-wrap justify-between items-center gap-2">
-                        <span class="text-xs uppercase font-bold text-rose-400"><i class="fa-solid fa-bolt mr-1"></i> ${vendor}</span>
-                        <span class="px-2.5 py-0.5 bg-rose-500/20 border border-rose-400/40 rounded text-xs font-bold text-rose-300">${bay}</span>
+                        <span class="text-xs uppercase font-bold text-[#F2EA1E]"><i class="fa-solid fa-bolt mr-1"></i> ${vendor}</span>
+                        <span class="px-2.5 py-0.5 bg-[#122663] border border-[#62A7EA]/50 rounded text-xs font-bold text-[#62A7EA]">${bay}</span>
                     </div>
                     <div class="text-sm font-bold text-white">${matchedRules.map(m => m.code).join(" + ")}</div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs">
-                        <div class="bg-slate-900/90 p-2.5 rounded border border-slate-700"><span class="text-slate-400 block">Phase:</span><strong class="text-amber-400">${detectedPhase}</strong></div>
-                        <div class="bg-slate-900/90 p-2.5 rounded border border-slate-700"><span class="text-slate-400 block">Trip Time:</span><strong class="text-sky-400">${tripTime}</strong></div>
+                        <div class="bg-[#0C1B48] p-2.5 rounded border border-[#62A7EA]/30"><span class="text-[#62A7EA] block">Phase:</span><strong class="text-[#F2EA1E]">${detectedPhase}</strong></div>
+                        <div class="bg-[#0C1B48] p-2.5 rounded border border-[#62A7EA]/30"><span class="text-[#62A7EA] block">Trip Time:</span><strong class="text-white">${tripTime}</strong></div>
                     </div>
-                    <div class="bg-slate-900/90 p-2.5 rounded border border-slate-700 text-xs">
-                        <strong class="text-emerald-300 font-mono">${voltSummary}</strong>
+                    <div class="bg-[#0C1B48] p-2.5 rounded border border-[#62A7EA]/30 text-xs">
+                        <strong class="text-[#F2EA1E] font-mono">${voltSummary}</strong>
                     </div>
                 </div>
 
                 <div class="space-y-3 text-xs">
                     ${matchedRules.map(m => `
-                        <div class="p-3.5 bg-slate-900/80 rounded-lg border border-slate-700 space-y-2">
-                            <div class="font-bold text-sky-400 text-sm">${m.code}</div>
-                            <p class="text-slate-300 leading-relaxed">${m.cause}</p>
-                            <div class="text-slate-200 leading-relaxed pl-2 border-l-2 border-emerald-500/50 whitespace-pre-line">${m.action}</div>
+                        <div class="p-3.5 bg-[#07112e]/90 rounded-lg border border-[#62A7EA]/30 space-y-2">
+                            <div class="font-bold text-[#62A7EA] text-sm">${m.code}</div>
+                            <p class="text-slate-200 leading-relaxed">${m.cause}</p>
+                            <div class="text-white leading-relaxed pl-2 border-l-2 border-[#F2EA1E] whitespace-pre-line">${m.action}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -2192,7 +2199,7 @@ Ua = 22.8 kV | Ub = 22.6 kV | Uc = 22.8 kV | 3U0 = 4.2 kV`;
                 sec.classList.remove('grid');
                 const btn = document.getElementById('btn-main-' + t);
                 btn.classList.remove('tab-active');
-                btn.classList.add('text-slate-300');
+                btn.classList.add('text-slate-200');
             });
 
             const activeSec = document.getElementById('main-' + tabName);
@@ -2201,7 +2208,7 @@ Ua = 22.8 kV | Ub = 22.6 kV | Uc = 22.8 kV | 3U0 = 4.2 kV`;
 
             const activeBtn = document.getElementById('btn-main-' + tabName);
             activeBtn.classList.add('tab-active');
-            activeBtn.classList.remove('text-slate-300');
+            activeBtn.classList.remove('text-slate-200');
         }
 
         function switchSubTab(parent, subName) {
@@ -2215,7 +2222,7 @@ Ua = 22.8 kV | Ub = 22.6 kV | Uc = 22.8 kV | 3U0 = 4.2 kV`;
                 el.classList.remove('grid');
                 const btn = document.getElementById(`subbtn-${parent}-${s}`);
                 btn.classList.remove('subtab-active');
-                btn.classList.add('text-slate-300');
+                btn.classList.add('text-slate-200');
             });
 
             const activeSub = document.getElementById(`sub-${parent}-${subName}`);
@@ -2224,7 +2231,7 @@ Ua = 22.8 kV | Ub = 22.6 kV | Uc = 22.8 kV | 3U0 = 4.2 kV`;
 
             const activeBtn = document.getElementById(`subbtn-${parent}-${subName}`);
             activeBtn.classList.add('subtab-active');
-            activeBtn.classList.remove('text-slate-300');
+            activeBtn.classList.remove('text-slate-200');
         }
 
         checkAuth();

@@ -502,83 +502,44 @@
                 </div>
 
                 <!-- SUB-TAB 3.3: KIỂM TRA ĐIỀU KIỆN LOGIC (LOGIC GATE & INTERLOCK SIMULATOR) -->
+                <!-- SUB-TAB 3.3: KIỂM TRA ĐIỀU KIỆN LOGIC NGĂN MBA T1 (ETI_E01: AC-5 -> AC-8) -->
                 <div id="sub-faults-logic" class="hidden space-y-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="card p-5 space-y-4">
-                            <div class="flex justify-between items-center">
-                                <h2 class="text-base font-bold text-[#F2EA1E] flex items-center">
-                                    <i class="fa-solid fa-toggle-on mr-2"></i> <span data-i18n="logic_equip_title">Trạng thái Thiết bị & Tín hiệu (Inputs)</span>
+                    <div class="card p-4 flex flex-wrap justify-between items-center gap-3 border-[#F2EA1E]/50">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-bold text-[#F2EA1E] uppercase"><i class="fa-solid fa-diagram-project mr-1.5"></i>Chọn mạch logic ngăn MBA T1 (ETI_E01):</span>
+                            <select id="t1-circuit-select" onchange="onChangeT1Circuit()" class="bg-[#07112e] border border-[#62A7EA] rounded-lg px-3 py-1.5 text-xs text-white font-bold">
+                                <option value="AC5">AC-5: LOGIC FOR CLOSE CB (Đóng MC 131 / Q0)</option>
+                                <option value="AC6">AC-6: LOGIC FOR OPEN CB (Cắt MC 131 / Q0)</option>
+                                <option value="AC7">AC-7: LOGIC FOR CONTROL Q1 (Thao tác DCL 131-1 & DTĐ Q14, Q15, Q35)</option>
+                                <option value="AC8">AC-8: LOGIC FOR CONTROL Q3 (Thao tác DCL 131-3 & DTĐ Q38)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="setT1Preset('remote_ready')" class="px-2.5 py-1.5 bg-[#07112e] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/50 rounded text-[11px] text-[#62A7EA] font-semibold">Mẫu: Sẵn sàng điều khiển Remote</button>
+                            <button onclick="setT1Preset('local_box')" class="px-2.5 py-1.5 bg-[#07112e] hover:bg-[#F2EA1E] hover:text-[#0C1B48] border border-[#F2EA1E]/50 rounded text-[11px] text-[#F2EA1E] font-semibold">Mẫu: Tại tủ Local Box</button>
+                            <button onclick="setT1Preset('reset_all')" class="px-2.5 py-1.5 bg-rose-950/70 hover:bg-rose-700 border border-rose-500/50 rounded text-[11px] text-rose-200 font-semibold">Reset 0</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- CỘT TRÁI (5/12): CÁC TÍN HIỆU ĐẦU VÀO (0 / 1) THEO BẢN VẼ -->
+                        <div class="card p-5 lg:col-span-5 space-y-3">
+                            <h2 class="text-sm font-bold text-[#F2EA1E] flex items-center justify-between">
+                                <span><i class="fa-solid fa-toggle-on mr-1.5"></i>Tín hiệu đầu vào (Bấm để đảo 0 / 1)</span>
+                                <span id="t1-dwg-badge" class="text-[10px] px-2 py-0.5 rounded bg-[#07112e] text-[#62A7EA] border border-[#62A7EA]/40">DWG: ETI_E01 / AC-5</span>
+                            </h2>
+                            <div id="t1-inputs-container" class="space-y-2 max-h-[540px] overflow-y-auto pr-1 text-xs"></div>
+                        </div>
+
+                        <!-- CỘT PHẢI (7/12): KẾT QUẢ TỪNG TẦNG LOGIC & ĐẦU RA CUỐI CÙNG -->
+                        <div class="card p-5 lg:col-span-7 flex flex-col justify-between space-y-4">
+                            <div class="space-y-4">
+                                <h2 class="text-sm font-bold text-[#62A7EA] flex items-center">
+                                    <i class="fa-solid fa-microchip mr-1.5 text-[#F2EA1E]"></i>Mô phỏng luồng tín hiệu qua các cổng logic (&amp; / ≥1 / NOT)
                                 </h2>
-                                <button onclick="resetLogicInputs()" class="text-[11px] px-2 py-1 bg-[#07112e] border border-[#62A7EA]/40 rounded text-[#62A7EA] hover:text-white">Reset</button>
+                                <div id="t1-gates-breakdown" class="space-y-3 text-xs"></div>
                             </div>
-                            <div id="logic-device-inputs" class="space-y-2 text-xs"></div>
-                        </div>
-
-                        <div class="card p-5 space-y-4">
-                            <h2 class="text-base font-bold text-[#62A7EA] flex items-center">
-                                <i class="fa-solid fa-microchip mr-2 text-[#F2EA1E]"></i> <span data-i18n="logic_gate_title">Mô phỏng Cổng Logic (Logic Gate Tester)</span>
-                            </h2>
-
-                            <div class="space-y-3 bg-[#07112e]/85 p-3.5 rounded-lg border border-[#62A7EA]/30 text-xs">
-                                <div>
-                                    <label class="block text-[11px] text-[#62A7EA] mb-1">Chọn bài toán liên động thực tế NMĐG V1-2 (Mẫu sẵn):</label>
-                                    <select id="logic-preset-select" onchange="loadLogicPreset()" class="w-full bg-[#0C1B48] border border-[#F2EA1E]/50 rounded-lg p-2 text-xs text-[#F2EA1E] font-semibold">
-                                        <option value="custom">-- Tự cấu hình cổng logic & tín hiệu --</option>
-                                        <option value="close_52_171">1. Điều kiện cho phép đóng Máy cắt 110kV (52-171)</option>
-                                        <option value="close_89e">2. Điều kiện liên động đóng Dao tiếp địa (89E)</option>
-                                        <option value="wtg_start">3. Điều kiện cho phép Tua-bin Goldwind hòa lưới (WTG Start)</option>
-                                        <option value="trip_86">4. Logic tác động Rơ-le khóa 86 (Lockout Trip)</option>
-                                    </select>
-                                </div>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                    <div>
-                                        <label class="block text-[11px] text-[#62A7EA] mb-1">Tín hiệu đầu vào A (Input A):</label>
-                                        <select id="gate-in-a" onchange="evaluateLogicCircuit()" class="w-full bg-[#0C1B48] border border-[#62A7EA]/40 rounded-lg p-2 text-white"></select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] text-[#62A7EA] mb-1">Tín hiệu đầu vào B (Input B):</label>
-                                        <select id="gate-in-b" onchange="evaluateLogicCircuit()" class="w-full bg-[#0C1B48] border border-[#62A7EA]/40 rounded-lg p-2 text-white"></select>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="block text-[11px] text-[#62A7EA] mb-1">Cổng Logic Tầng 1 (Gate 1: A & B):</label>
-                                    <select id="gate-type-1" onchange="evaluateLogicCircuit()" class="w-full bg-[#0C1B48] border border-[#62A7EA]/60 rounded-lg p-2 text-[#62A7EA] font-bold">
-                                        <option value="AND">AND (A · B) — Cả hai điều kiện đều ĐÚNG (1)</option>
-                                        <option value="OR">OR (A + B) — Một trong hai điều kiện ĐÚNG (1)</option>
-                                        <option value="NAND">NAND ¬(A · B) — Đảo của cổng AND</option>
-                                        <option value="NOR">NOR ¬(A + B) — Đảo của cổng OR</option>
-                                        <option value="XOR">XOR (A ⊕ B) — Hai đầu vào trái trạng thái</option>
-                                        <option value="NOT_A">NOT A (¬A) — Đảo trạng thái đầu vào A</option>
-                                    </select>
-                                </div>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                                    <div>
-                                        <label class="block text-[11px] text-[#62A7EA] mb-1">Cổng Logic Tầng 2 (Kết hợp C):</label>
-                                        <select id="gate-type-2" onchange="evaluateLogicCircuit()" class="w-full bg-[#0C1B48] border border-[#62A7EA]/40 rounded-lg p-2 text-white font-semibold">
-                                            <option value="BYPASS">Bỏ qua Tầng 2 (Xuất trực tiếp Gate 1)</option>
-                                            <option value="AND">AND với Input C</option>
-                                            <option value="OR">OR với Input C</option>
-                                            <option value="AND_NOT">AND NOT Input C (Khóa chéo C)</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] text-[#62A7EA] mb-1">Tín hiệu đầu vào C (Input C):</label>
-                                        <select id="gate-in-c" onchange="evaluateLogicCircuit()" class="w-full bg-[#0C1B48] border border-[#62A7EA]/40 rounded-lg p-2 text-white"></select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="logic-gate-result" class="p-4 rounded-lg bg-[#07112e] border border-[#F2EA1E]/60 space-y-2"></div>
-                        </div>
-
-                        <div class="card p-5 space-y-4">
-                            <h2 class="text-base font-bold text-white flex items-center">
-                                <i class="fa-solid fa-clipboard-check mr-2 text-[#F2EA1E]"></i> <span data-i18n="logic_interlock_title">Kiểm tra Liên động Thực tế Nhà máy</span>
-                            </h2>
-                            <div id="plant-interlock-checks" class="space-y-3 text-xs"></div>
+                            <div id="t1-final-outputs" class="space-y-2.5 pt-3 border-t border-[#62A7EA]/30"></div>
                         </div>
                     </div>
                 </div>
@@ -1654,179 +1615,205 @@
             `;
         }
 
-        // ==================== 4.3 KIỂM TRA ĐIỀU KIỆN LOGIC THEO SƠ ĐỒ 04/NMĐGV1-2TV.ĐĐMN ====================
-        const PLANT_LOGIC_SIGNALS = [
-            // Phía 110kV - Ngăn 171 & Ngăn 131 (Quyền điều khiển A2)
-            { id: "MC_171_OPEN", label: "[110kV] Máy cắt 171 MỞ (171 = 0)", state: false },
-            { id: "DCL_171_1_OPEN", label: "[110kV] DCL 171-1 MỞ (171-1 = 0)", state: false },
-            { id: "DCL_171_7_OPEN", label: "[110kV] DCL 171-7 MỞ (171-7 = 0)", state: false },
-            { id: "DTD_171_15_OPEN", label: "[110kV] DTĐ 171-15 MỞ (171-15 = 0)", state: true },
-            { id: "DTD_171_75_OPEN", label: "[110kV] DTĐ 171-75 MỞ (171-75 = 0)", state: true },
-            { id: "DTD_171_76_OPEN", label: "[110kV] DTĐ 171-76 MỞ (171-76 = 0)", state: true },
-            { id: "MC_131_OPEN", label: "[110kV] Máy cắt tổng MBA T1 (131) MỞ", state: false },
-            { id: "DCL_131_1_OPEN", label: "[110kV] DCL 131-1 MỞ", state: false },
-            { id: "DCL_131_3_OPEN", label: "[110kV] DCL 131-3 MỞ", state: false },
-            { id: "DTD_131_14_15_OPEN", label: "[110kV] DTĐ 131-14 & 131-15 MỞ", state: true },
-            { id: "DTD_131_35_38_OPEN", label: "[110kV] DTĐ 131-35 & 131-38 MỞ", state: true },
-            // Phía 35kV - Ngăn 331, C31, Tự dùng TD31 & Xuất tuyến 371-377
-            { id: "MC_331_OPEN", label: "[35kV] Máy cắt tổng 331 (Quyền A2) MỞ", state: false },
-            { id: "DTD_331_38_OPEN", label: "[35kV] DTĐ 331-38 (Quyền A2) MỞ", state: true },
-            { id: "DTD_C31_14_OPEN", label: "[35kV] DTĐ Thanh cái C31-14 MỞ", state: true },
-            { id: "XT_371_377_OPEN", label: "[35kV] Các MC xuất tuyến 371, 373, 375, 377 MỞ", state: false },
-            { id: "DTD_37X_76_OPEN", label: "[35kV] Các DTĐ xuất tuyến 371-76..377-76 MỞ", state: true },
-            { id: "TD31_1_OPEN", label: "[35kV] DCL Tự dùng TD31-1 MỞ", state: false },
-            { id: "TD31_18_OPEN", label: "[35kV] DTĐ Tự dùng TD31-18 MỞ", state: true },
-            // Điều kiện bảo vệ, hòa đồng bộ & lưới
-            { id: "NO_VOLT_C11", label: "[Đo lường] Thanh cái C11 (TUC11) KHÔNG điện áp", state: false },
-            { id: "NO_VOLT_C31", label: "[Đo lường] Thanh cái C31 (TUC31) KHÔNG điện áp", state: false },
-            { id: "SYNC_25_OK", label: "[Bảo vệ] Hòa đồng bộ Synchrocheck 25 ĐẠT (25 = 1)", state: true },
-            { id: "LOCKOUT_86_TRIP", label: "[Bảo vệ] Rơ-le khóa 86T / 86 Lockout TÁC ĐỘNG", state: false },
-            { id: "WTG_RMU_READY", label: "[Tua-bin] RMU 3301..3323 & MC 6001..6023 Sẵn sàng", state: true }
-        ];
+       // ==================== 4.3 MÔ PHỎNG LOGIC NGĂN MBA T1 (ETI_E01: AC-5, AC-6, AC-7, AC-8) ====================
+        const T1_SIGNALS = {
+            // 1. Khóa chọn chế độ & Lệnh điều khiển (SCADA / HMI / BCU / MIMIC / LOCAL)
+            ORDER_RLDC: { group: "Lệnh điều khiển (Orders)", label: "ORDER FROM RLDC (Lệnh từ Điều độ A2/A0)", val: false },
+            SW_SCADA: { group: "Khóa chuyển mạch (Switches)", label: "SCADA/HMI SWITCH ON SCADA", val: true },
+            ORDER_HMI: { group: "Lệnh điều khiển (Orders)", label: "ORDER FROM HMI (Lệnh từ HMI trạm)", val: false },
+            SW_HMI: { group: "Khóa chuyển mạch (Switches)", label: "SCADA/HMI SWITCH ON HMI", val: false },
+            ORDER_BCU: { group: "Lệnh điều khiển (Orders)", label: "ORDER FROM BCU (Lệnh từ mặt tủ BCU)", val: false },
+            ORDER_MIMIC: { group: "Lệnh điều khiển (Orders)", label: "CONTROL/CLOSING/OPENING ORDER FROM MIMIC", val: false },
+            ORDER_LOCAL: { group: "Lệnh điều khiển (Orders)", label: "CONTROL/CLOSING/OPENING ORDER FROM LOCAL BOX", val: false },
 
-        function resetLogicInputs() {
-            // Mặc định đưa về trạng thái đang vận hành bình thường phát lưới 48MW
-            const openDefaults = new Set([
-                "DTD_171_15_OPEN", "DTD_171_75_OPEN", "DTD_171_76_OPEN",
-                "DTD_131_14_15_OPEN", "DTD_131_35_38_OPEN",
-                "DTD_331_38_OPEN", "DTD_C31_14_OPEN", "DTD_37X_76_OPEN", "TD31_18_OPEN",
-                "SYNC_25_OK", "WTG_RMU_READY"
-            ]);
-            PLANT_LOGIC_SIGNALS.forEach(s => { s.state = openDefaults.has(s.id); });
+            BAY_REMOTE: { group: "Khóa chuyển mạch (Switches)", label: "BAY LOCAL/REMOTE SWITCH ON REMOTE", val: true },
+            BAY_LOCAL: { group: "Khóa chuyển mạch (Switches)", label: "BAY LOCAL/REMOTE SWITCH ON LOCAL", val: false },
+            BOX_REMOTE: { group: "Khóa chuyển mạch (Switches)", label: "LOCAL/REMOTE SWITCH IN BOX ON REMOTE", val: true },
+            BOX_LOCAL: { group: "Khóa chuyển mạch (Switches)", label: "LOCAL/REMOTE SWITCH IN BOX ON LOCAL", val: false },
+
+            // 2. Hòa đồng bộ Syncheck (AC-5)
+            SW_F25_ON: { group: "Hòa đồng bộ (Syncheck F25)", label: "SWITCH F25 AT MIMIC ON", val: true },
+            SW_F25_OFF: { group: "Hòa đồng bộ (Syncheck F25)", label: "SWITCH F25 AT MIMIC OFF", val: false },
+            SYNC_OK: { group: "Hòa đồng bộ (Syncheck F25)", label: "LINE AND BUS VOLTAGES IS SYNCHRONIZED", val: true },
+            VT_MCB_ON: { group: "Hòa đồng bộ (Syncheck F25)", label: "BUS AND LINE VT'S MCB ON", val: true },
+            LLDB_DLDB_DLLB: { group: "Hòa đồng bộ (Syncheck F25)", label: "LLDB OR DLDB OR DLLB (Không điện áp ĐZ/TC)", val: false },
+
+            // 3. Trạng thái thiết bị nhất thứ Q0 (131), Q1 (131-1), Q3 (131-3), DTĐ Q14, Q15, Q35, Q38
+            Q0_OPEN: { group: "Trạng thái thiết bị nhất thứ", label: "Q0 (MC 131) FULLY OPENED", val: true },
+            Q1_OPEN: { group: "Trạng thái thiết bị nhất thứ", label: "Q1 (DCL 131-1) FULLY OPENED", val: false },
+            Q1_CLOSED: { group: "Trạng thái thiết bị nhất thứ", label: "Q1 (DCL 131-1) FULLY CLOSED", val: true },
+            Q3_OPEN: { group: "Trạng thái thiết bị nhất thứ", label: "Q3 (DCL 131-3) FULLY OPENED", val: false },
+            Q3_CLOSED: { group: "Trạng thái thiết bị nhất thứ", label: "Q3 (DCL 131-3) FULLY CLOSED", val: true },
+            Q14_OPEN: { group: "Trạng thái thiết bị nhất thứ", label: "Q14 (DTĐ 131-14) FULLY OPENED", val: true },
+            Q15_OPEN: { group: "Trạng thái thiết bị nhất thứ", label: "Q15 (DTĐ 131-15) FULLY OPENED", val: true },
+            Q35_OPEN: { group: "Trạng thái thiết bị nhất thứ", label: "Q35 (DTĐ 131-35) FULLY OPENED", val: true },
+            Q38_OPEN: { group: "Trạng thái thiết bị nhất thứ", label: "Q38 (DTĐ 131-38) FULLY OPENED", val: true },
+            Q0_JTI_CLOSED: { group: "Trạng thái thiết bị nhất thứ", label: "Q0-JTI (MC 331) FULLY CLOSED", val: false },
+            Q0_JTI_OOS: { group: "Trạng thái thiết bị nhất thứ", label: "Q0-JTI (MC 331) OUT OF SERVICE", val: false },
+            Q38_JTI_OPEN: { group: "Trạng thái thiết bị nhất thứ", label: "Q38-JTI (DTĐ 331-38) FULLY OPENED", val: true },
+            Q1_OTHER_OPEN: { group: "Trạng thái thiết bị nhất thứ", label: "Q1 OF OTHER BAY FULLY OPENED (DCL 171-1 mở)", val: false },
+
+            // 4. Trạng thái bảo vệ & Khóa liên động
+            BYPASS_COND: { group: "Bảo vệ & Khóa liên động", label: "BYPASS CONDITION (Khóa giải trừ liên động)", val: false },
+            BCU_FAIL: { group: "Bảo vệ & Khóa liên động", label: "BCU FAIL (Lỗi bộ điều khiển mức ngăn)", val: false },
+            PROT_OPERATED: { group: "Bảo vệ & Khóa liên động", label: "PROTECTION OPERATED (86T / Bảo vệ tác động)", val: false },
+            TRIP_COIL_FAIL: { group: "Bảo vệ & Khóa liên động", label: "TRIP COIL FAILURE (Hư hỏng cuộn cắt)", val: false },
+            Q0_SF6_LOCKOUT: { group: "Bảo vệ & Khóa liên động", label: "Q0_SF6 LOCKOUT (Khóa áp lực khí SF6 thấp)", val: false },
+            TRIP_RELAY_1: { group: "Bảo vệ & Khóa liên động", label: "TRIP ORDER FROM RELAY 1 (Bảo vệ chính 1)", val: false },
+            TRIP_RELAY_2: { group: "Bảo vệ & Khóa liên động", label: "TRIP ORDER FROM RELAY 2 (Bảo vệ chính 2)", val: false }
+        };
+
+        const CIRCUIT_INPUT_KEYS = {
+            AC5: ["ORDER_RLDC", "SW_SCADA", "ORDER_HMI", "SW_HMI", "BAY_REMOTE", "ORDER_BCU", "SW_F25_OFF", "SW_F25_ON", "SYNC_OK", "VT_MCB_ON", "LLDB_DLDB_DLLB", "BYPASS_COND", "BCU_FAIL", "Q1_OPEN", "Q3_OPEN", "Q1_CLOSED", "Q3_CLOSED", "Q0_JTI_CLOSED", "PROT_OPERATED", "TRIP_COIL_FAIL", "Q0_SF6_LOCKOUT", "ORDER_MIMIC", "BAY_LOCAL", "ORDER_LOCAL", "BOX_LOCAL", "BOX_REMOTE"],
+            AC6: ["ORDER_RLDC", "SW_SCADA", "ORDER_HMI", "SW_HMI", "BAY_REMOTE", "ORDER_BCU", "Q0_SF6_LOCKOUT", "ORDER_MIMIC", "BAY_LOCAL", "TRIP_RELAY_1", "TRIP_RELAY_2", "ORDER_LOCAL", "BOX_LOCAL", "BOX_REMOTE"],
+            AC7: ["ORDER_RLDC", "SW_SCADA", "ORDER_HMI", "SW_HMI", "BAY_REMOTE", "ORDER_BCU", "BYPASS_COND", "BCU_FAIL", "Q0_OPEN", "Q14_OPEN", "Q15_OPEN", "Q35_OPEN", "ORDER_MIMIC", "BAY_LOCAL", "ORDER_LOCAL", "BOX_LOCAL", "BOX_REMOTE", "Q1_OPEN", "Q3_OPEN", "Q1_OTHER_OPEN"],
+            AC8: ["ORDER_RLDC", "SW_SCADA", "ORDER_HMI", "SW_HMI", "BAY_REMOTE", "ORDER_BCU", "BYPASS_COND", "BCU_FAIL", "Q0_OPEN", "Q38_OPEN", "Q15_OPEN", "Q35_OPEN", "Q38_JTI_OPEN", "ORDER_MIMIC", "BAY_LOCAL", "ORDER_LOCAL", "BOX_LOCAL", "BOX_REMOTE", "Q3_OPEN", "Q0_JTI_OOS"]
+        };
+
+        function onChangeT1Circuit() {
+            const c = document.getElementById('t1-circuit-select').value;
+            document.getElementById('t1-dwg-badge').innerText = `DWG: ETI_E01 / ${c}`;
             renderLogicSimulator();
         }
 
-        function toggleLogicSignal(id) {
-            const sig = PLANT_LOGIC_SIGNALS.find(s => s.id === id);
-            if (sig) {
-                sig.state = !sig.state;
-                document.getElementById('logic-preset-select').value = 'custom';
+        function toggleT1Signal(key) {
+            if (T1_SIGNALS[key]) {
+                T1_SIGNALS[key].val = !T1_SIGNALS[key].val;
+                // Tự động đồng bộ cặp khóa chuyển mạch đối nghịch
+                if (key === 'BAY_REMOTE' && T1_SIGNALS.BAY_REMOTE.val) T1_SIGNALS.BAY_LOCAL.val = false;
+                if (key === 'BAY_LOCAL' && T1_SIGNALS.BAY_LOCAL.val) T1_SIGNALS.BAY_REMOTE.val = false;
+                if (key === 'BOX_REMOTE' && T1_SIGNALS.BOX_REMOTE.val) T1_SIGNALS.BOX_LOCAL.val = false;
+                if (key === 'BOX_LOCAL' && T1_SIGNALS.BOX_LOCAL.val) T1_SIGNALS.BOX_REMOTE.val = false;
+                if (key === 'SW_F25_ON' && T1_SIGNALS.SW_F25_ON.val) T1_SIGNALS.SW_F25_OFF.val = false;
+                if (key === 'SW_F25_OFF' && T1_SIGNALS.SW_F25_OFF.val) T1_SIGNALS.SW_F25_ON.val = false;
                 renderLogicSimulator();
             }
         }
 
-        function loadLogicPreset() {
-            const preset = document.getElementById('logic-preset-select').value;
-            if (preset === 'close_52_171') {
-                // Đóng MC 131/171: Các DTĐ liên quan mở AND Synchrocheck 25 đạt AND NOT 86 Lockout
-                document.getElementById('gate-in-a').value = 'DTD_131_14_15_OPEN';
-                document.getElementById('gate-in-b').value = 'SYNC_25_OK';
-                document.getElementById('gate-type-1').value = 'AND';
-                document.getElementById('gate-type-2').value = 'AND_NOT';
-                document.getElementById('gate-in-c').value = 'LOCKOUT_86_TRIP';
-            } else if (preset === 'close_89e') {
-                // Đóng DTĐ thanh cái C31-14: MC 331 mở AND Các MC 371..377 mở AND Không điện áp TUC31
-                document.getElementById('gate-in-a').value = 'MC_331_OPEN';
-                document.getElementById('gate-in-b').value = 'XT_371_377_OPEN';
-                document.getElementById('gate-type-1').value = 'AND';
-                document.getElementById('gate-type-2').value = 'AND';
-                document.getElementById('gate-in-c').value = 'NO_VOLT_C31';
-            } else if (preset === 'wtg_start') {
-                // Hòa lưới 12 Tua-bin WT01..WT23 (lẻ): RMU 3301..3323 sẵn sàng AND DTĐ 371-76..377-76 mở AND NOT 86 Lockout
-                document.getElementById('gate-in-a').value = 'WTG_RMU_READY';
-                document.getElementById('gate-in-b').value = 'DTD_37X_76_OPEN';
-                document.getElementById('gate-type-1').value = 'AND';
-                document.getElementById('gate-type-2').value = 'AND_NOT';
-                document.getElementById('gate-in-c').value = 'LOCKOUT_86_TRIP';
-            } else if (preset === 'trip_86') {
-                // Kiểm tra khóa 86T hoặc mất điều kiện đóng 331
-                document.getElementById('gate-in-a').value = 'LOCKOUT_86_TRIP';
-                document.getElementById('gate-in-b').value = 'DTD_331_38_OPEN';
-                document.getElementById('gate-type-1').value = 'AND_NOT';
-                document.getElementById('gate-type-2').value = 'BYPASS';
+        function setT1Preset(mode) {
+            Object.keys(T1_SIGNALS).forEach(k => T1_SIGNALS[k].val = false);
+            if (mode === 'remote_ready') {
+                ["ORDER_RLDC", "SW_SCADA", "BAY_REMOTE", "BOX_REMOTE", "SW_F25_ON", "SYNC_OK", "VT_MCB_ON",
+                 "Q1_CLOSED", "Q3_CLOSED", "Q0_OPEN", "Q14_OPEN", "Q15_OPEN", "Q35_OPEN", "Q38_OPEN", "Q38_JTI_OPEN"].forEach(k => T1_SIGNALS[k].val = true);
+            } else if (mode === 'local_box') {
+                ["ORDER_LOCAL", "BAY_LOCAL", "BOX_LOCAL", "Q1_OPEN", "Q3_OPEN", "Q0_OPEN",
+                 "Q14_OPEN", "Q15_OPEN", "Q35_OPEN", "Q38_OPEN", "Q38_JTI_OPEN"].forEach(k => T1_SIGNALS[k].val = true);
             }
-            evaluateLogicCircuit();
+            renderLogicSimulator();
         }
 
         function renderLogicSimulator() {
-            const container = document.getElementById('logic-device-inputs');
+            const circuit = document.getElementById('t1-circuit-select')?.value || 'AC5';
+            const keys = CIRCUIT_INPUT_KEYS[circuit] || CIRCUIT_INPUT_KEYS.AC5;
+            const container = document.getElementById('t1-inputs-container');
             if (!container) return;
-            container.innerHTML = PLANT_LOGIC_SIGNALS.map(s => `
-                <div onclick="toggleLogicSignal('${s.id}')" class="flex items-center justify-between p-2 rounded-lg bg-[#07112e] border ${s.state ? 'border-[#62A7EA]/60' : 'border-slate-700'} cursor-pointer hover:border-[#F2EA1E] transition">
-                    <span class="text-slate-100 pr-2 text-[11px]">${s.label}</span>
-                    <span class="px-2 py-0.5 rounded font-mono font-bold text-[10px] whitespace-nowrap ${s.state ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-slate-800 text-slate-400'}">${s.state ? '1 (MỞ/ĐẠT)' : '0 (ĐÓNG/KHÓA)'}</span>
-                </div>
-            `).join('');
 
-            ['gate-in-a', 'gate-in-b', 'gate-in-c'].forEach((selId, idx) => {
-                const sel = document.getElementById(selId), prev = sel.value;
-                sel.innerHTML = PLANT_LOGIC_SIGNALS.map(s => `<option value="${s.id}">[${s.state ? '1' : '0'}] ${s.label}</option>`).join('');
-                sel.value = (prev && PLANT_LOGIC_SIGNALS.some(s => s.id === prev)) ? prev : (PLANT_LOGIC_SIGNALS[idx]?.id || PLANT_LOGIC_SIGNALS[0].id);
-            });
+            container.innerHTML = keys.map(k => {
+                const s = T1_SIGNALS[k];
+                return `
+                    <div onclick="toggleT1Signal('${k}')" class="flex items-center justify-between p-2 rounded-lg bg-[#07112e] border ${s.val ? 'border-[#62A7EA]/70' : 'border-slate-700/80'} cursor-pointer hover:border-[#F2EA1E] transition">
+                        <div class="pr-2">
+                            <div class="text-[10px] text-[#62A7EA]">${s.group}</div>
+                            <div class="text-[11px] font-medium text-white">${s.label}</div>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded font-mono font-bold text-[11px] ${s.val ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-slate-800 text-slate-400'}">${s.val ? '1' : '0'}</span>
+                    </div>
+                `;
+            }).join('');
 
-            evaluateLogicCircuit();
-            renderPlantInterlockSummary();
+            const v = k => !!T1_SIGNALS[k]?.val;
+            const gatesBox = document.getElementById('t1-gates-breakdown');
+            const outBox = document.getElementById('t1-final-outputs');
+
+            const badge = b => `<span class="px-2 py-0.5 rounded font-mono font-bold text-[11px] ${b ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-rose-900/80 text-rose-200'}">${b ? '1 (TRUE)' : '0 (FALSE)'}</span>`;
+            const outCard = (title, ok) => `
+                <div class="p-3 rounded-lg bg-[#07112e] border-2 ${ok ? 'border-[#F2EA1E]' : 'border-rose-500/70'} flex justify-between items-center">
+                    <span class="font-bold text-xs text-white">${title}</span>
+                    <span class="px-3 py-1 rounded text-xs font-extrabold ${ok ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-rose-600 text-white'}">${ok ? '1 — CHO PHÉP THỰC HIỆN' : '0 — KHÓA LIÊN ĐỘNG'}</span>
+                </div>`;
+
+            // Dùng chung tầng SCADA LEVEL (OR giữa RLDC&SCADA và HMI&HMI)
+            const scadaOrder = (v('ORDER_RLDC') && v('SW_SCADA')) || (v('ORDER_HMI') && v('SW_HMI'));
+
+            if (circuit === 'AC5') {
+                // AC-5: LOGIC FOR CLOSE CB (Q0 / MC 131)
+                const syncheckOk = (v('SW_F25_ON') && v('SYNC_OK') && v('VT_MCB_ON')) || (v('VT_MCB_ON') && v('LLDB_DLDB_DLLB'));
+                const interlockOk = (v('BYPASS_COND') && v('BCU_FAIL')) ||
+                    (((v('Q1_OPEN') && v('Q3_OPEN')) || (v('Q1_CLOSED') && v('Q3_CLOSED') && !v('Q0_JTI_CLOSED'))) &&
+                    !(v('PROT_OPERATED') || v('TRIP_COIL_FAIL') || v('Q0_SF6_LOCKOUT')));
+
+                const bcuClose = (v('BAY_REMOTE') && (v('ORDER_BCU') || scadaOrder)) && (v('SW_F25_OFF') || syncheckOk) && interlockOk;
+                const mimicClose = (syncheckOk || v('SW_F25_OFF')) && v('ORDER_MIMIC') && v('BAY_LOCAL') && interlockOk;
+                const outRemote = (bcuClose || mimicClose) && v('BOX_REMOTE');
+                const outLocal = v('ORDER_LOCAL') && v('BOX_LOCAL') && v('Q1_OPEN') && v('Q3_OPEN') && !v('Q0_SF6_LOCKOUT');
+
+                gatesBox.innerHTML = `
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>1. SCADA LEVEL Order ((RLDC &amp; SW_SCADA) ≥1 (HMI &amp; SW_HMI)):</span>${badge(scadaOrder)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>2. SYNCHECK OK (*) [(F25_ON &amp; SYNC &amp; VT_MCB) ≥1 (VT_MCB &amp; LLDB/DLDB/DLLB)]:</span>${badge(syncheckOk)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>3. INTERLOCK OK (**) [(Q1,Q3 Mở hoặc Đóng + NOT Q0-JTI) &amp; NOT (86T/TC/SF6)]:</span>${badge(interlockOk)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>4. CUBICLE LEVEL — BCU Close Path:</span>${badge(bcuClose)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>5. CUBICLE LEVEL — MIMIC Close Path:</span>${badge(mimicClose)}</div>
+                `;
+                outBox.innerHTML = outCard("OUTPUT 1: Q0 CLOSING OPERATION FROM SCADA, HMI, MIMIC", outRemote) +
+                                    outCard("OUTPUT 2: Q0 CLOSING OPERATION FROM LOCAL BOX", outLocal);
+
+            } else if (circuit === 'AC6') {
+                // AC-6: LOGIC FOR OPEN CB (Q0 / MC 131)
+                const bcuOpen = (v('BAY_REMOTE') && (v('ORDER_BCU') || scadaOrder)) && !v('Q0_SF6_LOCKOUT');
+                const mimicOpen = v('ORDER_MIMIC') && v('BAY_LOCAL');
+                const outRemote = (bcuOpen || mimicOpen) && v('BOX_REMOTE') && !v('Q0_SF6_LOCKOUT');
+                const outLocal = v('ORDER_LOCAL') && v('BOX_LOCAL') && !v('Q0_SF6_LOCKOUT');
+                const outRelayTrip = (v('TRIP_RELAY_1') || v('TRIP_RELAY_2')) && !v('Q0_SF6_LOCKOUT');
+
+                gatesBox.innerHTML = `
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>1. SCADA LEVEL Open Order ((RLDC &amp; SW_SCADA) ≥1 (HMI &amp; SW_HMI)):</span>${badge(scadaOrder)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>2. CUBICLE LEVEL — BCU Open Path (NOT Q0_SF6_LOCKOUT):</span>${badge(bcuOpen)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>3. CUBICLE LEVEL — MIMIC Open Path (ORDER_MIMIC &amp; BAY_LOCAL):</span>${badge(mimicOpen)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>4. RELAY LEVEL — Protection Trip (RELAY 1 ≥1 RELAY 2):</span>${badge(v('TRIP_RELAY_1') || v('TRIP_RELAY_2'))}</div>
+                `;
+                outBox.innerHTML = outCard("OUTPUT 1: Q0 OPENING OPERATION FROM SCADA, HMI, MIMIC", outRemote) +
+                                    outCard("OUTPUT 2: Q0 OPENING OPERATION FROM LOCAL BOX", outLocal) +
+                                    outCard("OUTPUT 3: Q0 PROTECTION TRIP OPERATION (RELAY 1 / RELAY 2)", outRelayTrip);
+
+            } else if (circuit === 'AC7') {
+                // AC-7: LOGIC FOR CONTROL Q1 (DCL 131-1) & DTĐ Q15, Q35, Q14
+                const interlockOk = (v('BYPASS_COND') && v('BCU_FAIL')) || (v('Q0_OPEN') && v('Q14_OPEN') && v('Q15_OPEN') && v('Q35_OPEN'));
+                const bcuQ1 = v('BAY_REMOTE') && (v('ORDER_BCU') || scadaOrder) && interlockOk;
+                const mimicQ1 = v('ORDER_MIMIC') && v('BAY_LOCAL') && interlockOk;
+                const outQ1Remote = (bcuQ1 || mimicQ1) && v('BOX_REMOTE');
+                const outQ1Local = v('ORDER_LOCAL') && v('BOX_LOCAL') && interlockOk;
+                const outQ15Q35Local = (v('Q1_OPEN') && v('Q3_OPEN')) || (v('BYPASS_COND') && v('BCU_FAIL'));
+                const outQ14Local = (v('Q1_OPEN') && v('Q1_OTHER_OPEN')) || (v('BYPASS_COND') && v('BCU_FAIL'));
+
+                gatesBox.innerHTML = `
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>1. INTERLOCK OK (**) [(Q0, Q14, Q15, Q35 FULLY OPENED) ≥1 (BYPASS &amp; BCU_FAIL)]:</span>${badge(interlockOk)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>2. CUBICLE LEVEL — BCU Q1 Path:</span>${badge(bcuQ1)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>3. CUBICLE LEVEL — MIMIC Q1 Path:</span>${badge(mimicQ1)}</div>
+                `;
+                outBox.innerHTML = outCard("OUTPUT 1: Q1 (131-1) CONTROL FROM SCADA, HMI, MIMIC", outQ1Remote) +
+                                    outCard("OUTPUT 2: Q1 (131-1) CONTROL FROM LOCAL BOX", outQ1Local) +
+                                    outCard("OUTPUT 3: Q15 (131-15), Q35 (131-35) CONTROL FROM LOCAL BOX", outQ15Q35Local) +
+                                    outCard("OUTPUT 4: Q14 (131-14) CONTROL FROM LOCAL BOX", outQ14Local);
+
+            } else {
+                // AC-8: LOGIC FOR CONTROL Q3 (DCL 131-3) & DTĐ Q38
+                const interlockOk = (v('BYPASS_COND') && v('BCU_FAIL')) || (v('Q0_OPEN') && v('Q38_OPEN') && v('Q15_OPEN') && v('Q35_OPEN') && v('Q38_JTI_OPEN'));
+                const bcuQ3 = v('BAY_REMOTE') && (v('ORDER_BCU') || scadaOrder) && interlockOk;
+                const mimicQ3 = v('ORDER_MIMIC') && v('BAY_LOCAL') && interlockOk;
+                const outQ3Remote = (bcuQ3 || mimicQ3) && v('BOX_REMOTE');
+                const outQ3Local = v('ORDER_LOCAL') && v('BOX_LOCAL') && interlockOk;
+                const outQ38Local = (v('Q3_OPEN') && v('Q0_JTI_OOS')) || (v('BYPASS_COND') && v('BCU_FAIL'));
+
+                gatesBox.innerHTML = `
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>1. INTERLOCK OK (**) [(Q0, Q38, Q15, Q35, Q38-JTI OPENED) ≥1 (BYPASS &amp; BCU_FAIL)]:</span>${badge(interlockOk)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>2. CUBICLE LEVEL — BCU Q3 Path:</span>${badge(bcuQ3)}</div>
+                    <div class="p-3 bg-[#07112e] rounded-lg border border-[#62A7EA]/30 flex justify-between items-center"><span>3. CUBICLE LEVEL — MIMIC Q3 Path:</span>${badge(mimicQ3)}</div>
+                `;
+                outBox.innerHTML = outCard("OUTPUT 1: Q3 (131-3) CONTROL FROM SCADA, HMI, MIMIC", outQ3Remote) +
+                                    outCard("OUTPUT 2: Q3 (131-3) CONTROL FROM LOCAL BOX", outQ3Local) +
+                                    outCard("OUTPUT 3: Q38 (131-38) CONTROL FROM LOCAL BOX", outQ38Local);
+            }
         }
-
-        function evaluateLogicCircuit() {
-            const getVal = id => !!PLANT_LOGIC_SIGNALS.find(s => s.id === id)?.state;
-            const A = getVal(document.getElementById('gate-in-a').value);
-            const B = getVal(document.getElementById('gate-in-b').value);
-            const C = getVal(document.getElementById('gate-in-c').value);
-            const g1 = document.getElementById('gate-type-1').value, g2 = document.getElementById('gate-type-2').value;
-
-            let out1 = false;
-            if (g1 === 'AND') out1 = A && B;
-            else if (g1 === 'OR') out1 = A || B;
-            else if (g1 === 'NAND') out1 = !(A && B);
-            else if (g1 === 'NOR') out1 = !(A || B);
-            else if (g1 === 'XOR') out1 = (A !== B);
-            else if (g1 === 'NOT_A') out1 = !A;
-            else if (g1 === 'AND_NOT') out1 = A && (!B);
-
-            let finalOut = out1, formulaStr = `${g1}(A=${A ? 1 : 0}, B=${B ? 1 : 0}) = ${out1 ? 1 : 0}`;
-            if (g2 === 'AND') { finalOut = out1 && C; formulaStr += `  ➜  AND (C=${C ? 1 : 0})`; }
-            else if (g2 === 'OR') { finalOut = out1 || C; formulaStr += `  ➜  OR (C=${C ? 1 : 0})`; }
-            else if (g2 === 'AND_NOT') { finalOut = out1 && (!C); formulaStr += `  ➜  AND NOT (C=${C ? 1 : 0})`; }
-
-            const resBox = document.getElementById('logic-gate-result');
-            resBox.className = `p-4 rounded-lg bg-[#07112e] border-2 ${finalOut ? 'border-[#F2EA1E]' : 'border-rose-500/80'} space-y-2`;
-            resBox.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold uppercase text-[#62A7EA]">Đầu ra Logic (Output Q):</span>
-                    <span class="px-3 py-1 rounded text-sm font-extrabold ${finalOut ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-rose-600 text-white'}">${finalOut ? '1 — CHO PHÉP THAO TÁC' : '0 — KHÓA LIÊN ĐỘNG'}</span>
-                </div>
-                <div class="text-xs font-mono text-slate-200 bg-[#0C1B48] p-2.5 rounded border border-[#62A7EA]/30">Biểu thức: ${formulaStr}  ⇒  <strong>Q = ${finalOut ? '1' : '0'}</strong></div>
-            `;
-        }
-
-        function renderPlantInterlockSummary() {
-            const getVal = id => !!PLANT_LOGIC_SIGNALS.find(s => s.id === id)?.state;
-            const checks = [
-                {
-                    name: "1. Liên động đóng MC 171 (ĐZ đi NMĐG Hàn Quốc Trà Vinh) [A2]",
-                    cond: "DTĐ 171-15 (1) AND DTĐ 171-75 (1) AND DTĐ 171-76 (1) AND Sync 25 (1) AND NOT 86",
-                    ok: getVal("DTD_171_15_OPEN") && getVal("DTD_171_75_OPEN") && getVal("DTD_171_76_OPEN") && getVal("SYNC_25_OK") && !getVal("LOCKOUT_86_TRIP")
-                },
-                {
-                    name: "2. Liên động đóng MC 131 & 331 (MBA T1 63MVA) [A2]",
-                    cond: "DTĐ 131-14/15 (1) AND DTĐ 131-35/38 (1) AND DTĐ 331-38 (1) AND DTĐ C31-14 (1) AND NOT 86",
-                    ok: getVal("DTD_131_14_15_OPEN") && getVal("DTD_131_35_38_OPEN") && getVal("DTD_331_38_OPEN") && getVal("DTD_C31_14_OPEN") && !getVal("LOCKOUT_86_TRIP")
-                },
-                {
-                    name: "3. Liên động đóng DTĐ Thanh cái C31-14 & 331-38 (Tiếp địa 35kV)",
-                    cond: "MC 331 MỞ (1) AND MC 371..377 MỞ (1) AND DCL TD31-1 MỞ (1) AND TUC31 = 0V (1)",
-                    ok: getVal("MC_331_OPEN") && getVal("XT_371_377_OPEN") && getVal("TD31_1_OPEN") && getVal("NO_VOLT_C31")
-                },
-                {
-                    name: "4. Liên động đóng DTĐ 131-14 (Tiếp địa Thanh cái C11 - 110kV)",
-                    cond: "MC 171 MỞ (1) AND DCL 171-1 MỞ (1) AND MC 131 MỞ (1) AND DCL 131-1 MỞ (1) AND TUC11 = 0V (1)",
-                    ok: getVal("MC_171_OPEN") && getVal("DCL_171_1_OPEN") && getVal("MC_131_OPEN") && getVal("DCL_131_1_OPEN") && getVal("NO_VOLT_C11")
-                },
-                {
-                    name: "5. Liên động hòa lưới 4 Xuất tuyến 371, 373, 375, 377 (WT01–WT23) [Trưởng ca]",
-                    cond: "DTĐ 371-76..377-76 MỞ (1) AND RMU 3301..3323 & MC 6001..6023 Ready (1) AND NOT 86",
-                    ok: getVal("DTD_37X_76_OPEN") && getVal("WTG_RMU_READY") && !getVal("LOCKOUT_86_TRIP")
-                }
-            ];
-            document.getElementById('plant-interlock-checks').innerHTML = checks.map(c => `
-                <div class="p-3 rounded-lg bg-[#07112e] border ${c.ok ? 'border-[#62A7EA]/50' : 'border-rose-500/70'} space-y-1">
-                    <div class="flex justify-between items-center gap-2"><strong class="text-white text-[11px]">${c.name}</strong><span class="px-2 py-0.5 rounded text-[10px] font-bold whitespace-nowrap ${c.ok ? 'bg-[#62A7EA] text-[#0C1B48]' : 'bg-rose-600 text-white'}">${c.ok ? 'ĐẠT (1)' : 'KHÓA (0)'}</span></div>
-                    <div class="text-[10px] font-mono text-[#F2EA1E]">${c.cond}</div>
-                </div>
-            `).join('');
-        }
-
         // ==================== CHUYỂN TAB ====================
         function switchMainTab(tabName) {
             ['turbines', 'chatbot', 'faults'].forEach(t => {

@@ -90,8 +90,8 @@
                     <button type="button" onclick="setLanguage('en')" class="lang-btn-en px-2.5 py-1 text-xs font-bold rounded">EN</button>
                     <button type="button" onclick="setLanguage('th')" class="lang-btn-th px-2.5 py-1 text-xs font-bold rounded">TH</button>
                 </div>
-                <span class="px-3 py-1 bg-[#122663] border border-[#62A7EA]/50 text-[#F2EA1E] text-xs font-semibold rounded-full flex items-center">
-                    <span class="w-2 h-2 bg-[#F2EA1E] rounded-full mr-2 animate-ping"></span> nmdgv12travinh
+                <span id="user-role-badge" class="px-3 py-1 bg-[#122663] border border-[#62A7EA]/50 text-[#F2EA1E] text-xs font-semibold rounded-full flex items-center">
+                    <span class="w-2 h-2 bg-[#F2EA1E] rounded-full mr-2 animate-ping"></span> <span id="user-role-text">nmdgv12travinh</span>
                 </span>
                 <button onclick="handleLogout()" class="px-3 py-1.5 bg-[#122663] hover:bg-rose-900/70 text-slate-200 border border-[#62A7EA]/40 text-xs rounded-lg flex items-center space-x-1.5">
                     <i class="fa-solid fa-power-off text-[#F2EA1E]"></i><span data-i18n="logout_btn">Đăng xuất</span>
@@ -110,7 +110,7 @@
                 <i class="fa-solid fa-gears text-[#F2EA1E]"></i><span data-i18n="tab_ops_analysis">3. Phân tích vận hành</span>
             </button>
             <button onclick="switchMainTab('ptt')" id="btn-main-ptt" class="text-slate-200 hover:bg-[#122663] px-5 py-3.4 text-sm font-bold flex items-center space-x-2 whitespace-nowrap">
-                <i class="fa-solid fa-file-signature text-[#62A7EA]"></i><span>4. Viết phiếu thao tác</span>
+                <i class="fa-solid fa-file-signature text-[#62A7EA]"></i><span data-i18n="tab_ptt">4. Viết phiếu thao tác</span>
             </button>
         </nav>
 
@@ -272,7 +272,7 @@
                             </h3>
                             <div class="flex items-center space-x-2">
                                 <label data-i18n="lbl_timeslot" class="text-xs text-slate-200">Mốc thời gian:</label>
-                                <select id="wtg-list-timeslot" onchange="render12WtgWindList(); renderAllDynamicCollectorViews(); checkAndRenderShiftConflict();" class="bg-[#07112e] border border-[#62A7EA]/50 rounded-lg px-3 py-1.5 text-xs text-[#F2EA1E] font-semibold"></select>
+                                <select id="wtg-list-timeslot" onchange="render12WtgWindList(); renderAllDynamicCollectorViews(); checkAndRenderShiftConflict(); refreshPttTemplateOptionLabels(); renderFaultSimState();" class="bg-[#07112e] border border-[#62A7EA]/50 rounded-lg px-3 py-1.5 text-xs text-[#F2EA1E] font-semibold"></select>
                             </div>
                         </div>
 
@@ -295,7 +295,7 @@
                     <div id="shift-conflict-banner" class="hidden p-3.5 rounded-xl bg-amber-950/80 border border-[#F2EA1E] text-xs text-amber-100 flex flex-wrap justify-between items-center gap-3">
                         <div id="shift-conflict-text"></div>
                         <button type="button" onclick="syncForecastAvailWithHmiFeeders()" class="btn-yellow px-3 py-1.5 rounded-lg text-xs shrink-0">
-                            Đồng bộ WTG theo HMI
+                            <span data-i18n="sync_wtg_hmi_btn">Đồng bộ WTG theo HMI</span>
                         </button>
                     </div>
 
@@ -406,7 +406,7 @@
                         <i class="fa-solid fa-desktop text-[#F2EA1E]"></i><span data-i18n="subtab_logic">3.3 HMI Toàn Trạm 110kV/35kV & Kiểm tra Logic</span>
                     </button>
                     <button onclick="switchSubTab('faults', 'faultsim')" id="subbtn-faults-faultsim" class="text-slate-200 hover:bg-[#122663] px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2">
-                        <i class="fa-solid fa-bolt-lightning text-[#F2EA1E]"></i><span>3.4 Giả lập sự cố Relay</span>
+                        <i class="fa-solid fa-bolt-lightning text-[#F2EA1E]"></i><span data-i18n="tab_faultsim">3.4 Giả lập sự cố Relay</span>
                     </button>
                 </div>
 
@@ -516,7 +516,7 @@
                                 <i class="fa-solid fa-stethoscope"></i><span data-i18n="btn_analyze_relay">Phân tích sự cố & Đề xuất xử lý</span>
                             </button>
                             <button type="button" onclick="createPttDraftFromRelay()" class="btn-sky px-3 py-2.5 rounded-lg text-xs font-bold flex items-center space-x-1.5" title="Tạo nháp phiếu thao tác từ sự cố">
-                                <i class="fa-solid fa-file-signature"></i><span>Tạo Phiếu</span>
+                                <i class="fa-solid fa-file-signature"></i><span data-i18n="btn_create_ptt">Tạo Phiếu</span>
                             </button>
                         </div>
                     </div>
@@ -554,13 +554,13 @@
                                     <button type="button" onclick="setHmiControlMode('A0')" id="hmi-mode-A0" class="px-2.5 py-1 rounded font-bold text-slate-300 hover:bg-[#122663]">A0</button>
                                 </div>
                                 <button type="button" onclick="toggleHmiBypass()" id="btn-hmi-bypass" class="px-2.5 py-1.5 rounded-lg bg-[#07112e] border border-slate-600 text-slate-300 text-[11px] font-bold hover:border-[#F2EA1E]">
-                                    <i class="fa-solid fa-unlock-keyhole mr-1"></i>Giải trừ liên động: OFF
+                                    <i class="fa-solid fa-unlock-keyhole mr-1"></i><span data-i18n="hmi_bypass_off">Giải trừ liên động: OFF</span>
                                 </button>
                                 <button type="button" onclick="loadHmiSnapshotFromImage()" class="px-2.5 py-1.5 rounded-lg bg-[#122663] border border-[#62A7EA]/60 text-[#62A7EA] hover:bg-[#62A7EA] hover:text-[#0C1B48] text-[11px] font-bold">
-                                    <i class="fa-solid fa-camera mr-1"></i>Nạp trạng thái như ảnh HMI (18.36 MW)
+                                    <i class="fa-solid fa-camera mr-1"></i><span data-i18n="hmi_snapshot_btn">Nạp trạng thái như ảnh HMI (18.36 MW)</span>
                                 </button>
                                 <button type="button" onclick="setHmiFull48MW()" class="px-2.5 py-1.5 rounded-lg bg-[#122663] border border-[#F2EA1E]/60 text-[#F2EA1E] hover:bg-[#F2EA1E] hover:text-[#0C1B48] text-[11px] font-bold">
-                                    <i class="fa-solid fa-bolt mr-1"></i>Đóng đủ 4 XT (48 MW)
+                                    <i class="fa-solid fa-bolt mr-1"></i><span data-i18n="hmi_full48_btn">Đóng đủ 4 XT (48 MW)</span>
                                 </button>
                             </div>
                         </div>
@@ -574,38 +574,38 @@
                                 <div class="flex flex-wrap items-center gap-2">
                                     <label class="flex items-center space-x-1.5 bg-[#07112e] px-2.5 py-1 rounded border border-[#62A7EA]/40 cursor-pointer">
                                         <input type="checkbox" id="hmi-link-forecast" onchange="toggleForecastScadaLink(this.checked)" class="w-3.4 h-3.4 accent-[#F2EA1E]">
-                                        <span class="text-[#62A7EA] font-bold">Link P từ Dự báo</span>
+                                        <span class="text-[#62A7EA] font-bold"><span data-i18n="hmi_link_cb">Link P từ Dự báo</span></span>
                                     </label>
                                     <select id="hmi-forecast-slot" onchange="applyForecastPowerToHmi()" class="bg-[#07112e] border border-[#62A7EA]/50 rounded px-2 py-1 text-[11px] text-[#F2EA1E] font-mono">
                                         <option value="AVG">Trung bình kỳ dự báo</option>
                                     </select>
                                     <button type="button" onclick="resetGridSimParams()" class="px-2.5 py-1 rounded bg-[#07112e] hover:bg-[#122663] border border-[#62A7EA]/40 text-[11px] text-slate-200 font-bold">
-                                        <i class="fa-solid fa-rotate-left mr-1"></i>Mặc định chuẩn
+                                        <i class="fa-solid fa-rotate-left mr-1"></i><span data-i18n="hmi_reset_btn">Mặc định chuẩn</span>
                                     </button>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                 <div class="bg-[#07112e] p-2.5 rounded-lg border border-[#62A7EA]/30 space-y-1">
-                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold">Tần số hệ thống f (Hz):</span><span id="lbl-grid-freq" class="font-mono font-bold text-[#F2EA1E]">50.13 Hz</span></div>
+                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold"><span data-i18n="hmi_freq_lbl">Tần số hệ thống f (Hz):</span></span><span id="lbl-grid-freq" class="font-mono font-bold text-[#F2EA1E]">50.13 Hz</span></div>
                                     <input type="range" id="sim-grid-freq" min="45.5" max="52.5" step="0.01" value="50.13" oninput="updateGridSimParams()" class="w-full accent-[#F2EA1E]">
                                     <div class="flex justify-between text-[10px] text-slate-400 font-mono"><span>45.5Hz</span><span>50.0Hz</span><span>52.5Hz</span></div>
                                 </div>
 
                                 <div class="bg-[#07112e] p-2.5 rounded-lg border border-[#62A7EA]/30 space-y-1">
-                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold">Điện áp đặt phía 35kV (kV):</span><span id="lbl-grid-u35set" class="font-mono font-bold text-[#F2EA1E]">34.78 kV</span></div>
+                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold"><span data-i18n="hmi_u35_lbl">Điện áp đặt phía 35kV (kV):</span></span><span id="lbl-grid-u35set" class="font-mono font-bold text-[#F2EA1E]">34.78 kV</span></div>
                                     <input type="range" id="sim-grid-u35set" min="28.0" max="42.0" step="0.05" value="34.78" oninput="updateGridSimParams()" class="w-full accent-[#F2EA1E]">
                                     <div class="flex justify-between text-[10px] text-slate-400 font-mono"><span>28.0kV</span><span>35.0kV</span><span>42.0kV</span></div>
                                 </div>
 
                                 <div class="bg-[#07112e] p-2.5 rounded-lg border border-[#62A7EA]/30 space-y-1">
-                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold">Hút / Phát Q nhà máy (MVAr):</span><span id="lbl-grid-qset" class="font-mono font-bold text-emerald-300">-3.44 MVAr (Hút)</span></div>
+                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold"><span data-i18n="hmi_q_lbl">Hút / Phát Q nhà máy (MVAr):</span></span><span id="lbl-grid-qset" class="font-mono font-bold text-emerald-300">-3.44 MVAr (Hút)</span></div>
                                     <input type="range" id="sim-grid-qset" min="-18.0" max="18.0" step="0.1" value="-3.44" oninput="updateGridSimParams()" class="w-full accent-emerald-400">
                                     <div class="flex justify-between text-[10px] text-slate-400 font-mono"><span>-18 Hút Q</span><span>0</span><span>+18 Phát Q</span></div>
                                 </div>
 
                                 <div class="bg-[#07112e] p-2.5 rounded-lg border border-[#62A7EA]/30 space-y-1">
-                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold">Công suất phát P (MW):</span><span id="lbl-grid-pset" class="font-mono font-bold text-[#62A7EA]">18.36 MW</span></div>
+                                    <div class="flex justify-between"><span class="text-[#62A7EA] font-semibold"><span data-i18n="hmi_p_lbl">Công suất phát P (MW):</span></span><span id="lbl-grid-pset" class="font-mono font-bold text-[#62A7EA]">18.36 MW</span></div>
                                     <input type="range" id="sim-grid-pset" min="0" max="48.0" step="0.1" value="18.36" oninput="updateGridSimParams()" class="w-full accent-[#62A7EA]">
                                     <div id="hmi-voltage-impact-note" class="text-[10px] text-[#F2EA1E] font-mono truncate">ΔU ước tính: +0.00 kV (Ổn định)</div>
                                 </div>
@@ -616,7 +616,7 @@
                         <div id="hmi-operation-banner" class="p-3 rounded-lg bg-[#07112e] border border-[#62A7EA]/50 text-xs flex flex-wrap justify-between items-center gap-2">
                             <div class="flex items-center space-x-2">
                                 <i class="fa-solid fa-circle-info text-[#F2EA1E] text-sm"></i>
-                                <span id="hmi-status-msg" class="text-slate-100 font-medium">Sẵn sàng mô phỏng thao tác. Quy ước HMI thực tế: <strong class="text-rose-400">ĐỎ = ĐÓNG</strong> | <strong class="text-emerald-400">XANH LÁ = MỞ</strong> | Biểu tượng <strong>Ổ khóa</strong> hiển thị trạng thái liên động thời gian thực.</span>
+                                <span id="hmi-status-msg" class="text-slate-100 font-medium"><span data-i18n="hmi_ready_msg">Sẵn sàng mô phỏng thao tác. Quy ước HMI thực tế:</span> <strong class="text-rose-400" data-i18n="hmi_legend_close">ĐỎ = ĐÓNG</strong> | <strong class="text-emerald-400" data-i18n="hmi_legend_open">XANH LÁ = MỞ</strong> | <span data-i18n="hmi_legend_lock">Biểu tượng Ổ khóa hiển thị trạng thái liên động thời gian thực.</span></span>
                             </div>
                             <span id="hmi-tap-controls" class="flex items-center space-x-1.5 text-[11px]">
                                 <span class="text-[#62A7EA] font-bold">OLTC T1 Tap:</span>
@@ -634,7 +634,7 @@
                         <!-- NHẬT KÝ THAO TÁC PHIẾU (SWITCHING OPERATION LOG) -->
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-1">
                             <div class="bg-[#07112e] border border-[#62A7EA]/30 rounded-lg p-3 text-xs space-y-1.5">
-                                <div class="font-bold text-[#F2EA1E] uppercase text-[11px]"><i class="fa-solid fa-shield-halved mr-1.5"></i>Phân cấp quyền điều khiển (QĐ 3120/QĐ-ĐĐMN)</div>
+                                <div class="font-bold text-[#F2EA1E] uppercase text-[11px]"><i class="fa-solid fa-shield-halved mr-1.5"></i data-i18n="hmi_auth_title">Phân cấp quyền điều khiển (QĐ 3120/QĐ-ĐĐMN)</div>
                                 <ul class="text-[11px] text-slate-300 space-y-1">
                                     <li>• <strong class="text-[#62A7EA]">Chế độ A2:</strong> Điều khiển thiết bị <strong>110kV</strong> (171, 131, DCL/DTĐ 110kV), <strong>MC 331</strong> &amp; <strong>DTĐ 331-38</strong>.</li>
                                     <li>• <strong class="text-[#F2EA1E]">Chế độ HMI (Trưởng ca NMĐG):</strong> Điều khiển <strong>C31-14, TD31-1, TD31-18</strong> và các xuất tuyến <strong>371, 373, 375, 377</strong>.</li>
@@ -643,10 +643,10 @@
                             </div>
                             <div class="lg:col-span-2 bg-[#07112e] border border-[#62A7EA]/30 rounded-lg p-3 text-xs flex flex-col justify-between">
                                 <div class="flex justify-between items-center mb-1.5">
-                                    <span class="font-bold text-[#62A7EA] uppercase text-[11px]"><i class="fa-solid fa-clock-rotate-left mr-1.5 text-[#F2EA1E]"></i>Nhật ký kiểm tra thao tác &amp; Liên động (Switching Log)</span>
+                                    <span class="font-bold text-[#62A7EA] uppercase text-[11px]"><i class="fa-solid fa-clock-rotate-left mr-1.5 text-[#F2EA1E]"></i data-i18n="hmi_log_title">Nhật ký kiểm tra thao tác &amp; Liên động (Switching Log)</span>
                                     <div class="flex items-center gap-2">
-                                        <button type="button" onclick="exportHmiSwitchingLog()" class="text-[10px] text-[#F2EA1E] hover:underline font-bold">Tải Log (.TXT)</button>
-                                        <button type="button" onclick="clearHmiLog()" class="text-[10px] text-slate-400 hover:text-white underline">Xóa nhật ký</button>
+                                        <button type="button" onclick="exportHmiSwitchingLog()" class="text-[10px] text-[#F2EA1E] hover:underline font-bold"><span data-i18n="hmi_dl_log">Tải Log (.TXT)</span></button>
+                                        <button type="button" onclick="clearHmiLog()" class="text-[10px] text-slate-400 hover:text-white underline"><span data-i18n="hmi_clear_log">Xóa nhật ký</span></button>
                                     </div>
                                 </div>
                                 <div id="hmi-switching-log" class="space-y-1 max-h-28 overflow-y-auto font-mono text-[11px] text-slate-200"></div>
@@ -657,7 +657,7 @@
                     <!-- PHẦN B: SƠ ĐỒ KHỐI LOGIC NHỊ THỨ CHI TIẾT (ETI_E01 & ELL_E02) -->
                     <div class="card p-4 flex flex-wrap justify-between items-center gap-3 border-[#62A7EA]/50">
                         <div class="flex flex-wrap items-center gap-2.5">
-                            <span class="text-xs font-extrabold text-[#F2EA1E] uppercase tracking-wide"><i class="fa-solid fa-diagram-project mr-1.5"></i>Sơ đồ Khối Logic Nhị Thứ Chi Tiết:</span>
+                            <span class="text-xs font-extrabold text-[#F2EA1E] uppercase tracking-wide"><i class="fa-solid fa-diagram-project mr-1.5"></i data-i18n="logic_select_lbl">Sơ đồ Khối Logic Nhị Thứ Chi Tiết:</span>
                             <select id="t1-circuit-select" onchange="onChangeT1Circuit()" class="bg-[#07112e] border border-[#62A7EA] rounded-lg px-3 py-1.5 text-xs text-white font-bold">
                                 <optgroup label="--- NGĂN MBA T1 110kV (ETI_E01) ---">
                                     <option value="AC5">ETI_E01 / AC-5: LOGIC FOR CLOSE CB (Đóng MC 131 / Q0)</option>
@@ -675,13 +675,13 @@
                             </select>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-[11px] text-slate-300 mr-1"><i class="fa-solid fa-hand-pointer text-[#F2EA1E] mr-1"></i>Bấm lên ô tín hiệu để đổi 0 ↔ 1</span>
-                            <button onclick="setT1Preset('remote_ready')" class="px-2.5 py-1.5 bg-[#07112e] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/60 rounded text-[11px] text-[#62A7EA] font-bold">Mẫu: Sẵn sàng Remote</button>
-                            <button onclick="setT1Preset('local_box')" class="px-2.5 py-1.5 bg-[#07112e] hover:bg-[#F2EA1E] hover:text-[#0C1B48] border border-[#F2EA1E]/60 rounded text-[11px] text-[#F2EA1E] font-bold">Mẫu: Tại tủ Local Box</button>
-                            <button onclick="syncT1SignalsFromHmi()" class="px-2.5 py-1.5 bg-[#122663] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/60 rounded text-[11px] text-[#62A7EA] font-bold">Lấy trạng thái từ HMI</button>
-                            <button type="button" onclick="createPttDraftFromHmi()" class="px-2.5 py-1.5 bg-[#122663] hover:bg-[#F2EA1E] hover:text-[#0C1B48] border border-[#F2EA1E]/60 rounded text-[11px] text-[#F2EA1E] font-bold">Tạo Phiếu từ HMI</button>
+                            <span class="text-[11px] text-slate-300 mr-1"><i class="fa-solid fa-hand-pointer text-[#F2EA1E] mr-1"></i><span data-i18n="logic_click_hint">Bấm lên ô tín hiệu để đổi 0 ↔ 1</span></span>
+                            <button onclick="setT1Preset('remote_ready')" class="px-2.5 py-1.5 bg-[#07112e] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/60 rounded text-[11px] text-[#62A7EA] font-bold" data-i18n="logic_preset_rem">Mẫu: Sẵn sàng Remote</button>
+                            <button onclick="setT1Preset('local_box')" class="px-2.5 py-1.5 bg-[#07112e] hover:bg-[#F2EA1E] hover:text-[#0C1B48] border border-[#F2EA1E]/60 rounded text-[11px] text-[#F2EA1E] font-bold" data-i18n="logic_preset_loc">Mẫu: Tại tủ Local Box</button>
+                            <button onclick="syncT1SignalsFromHmi()" class="px-2.5 py-1.5 bg-[#122663] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/60 rounded text-[11px] text-[#62A7EA] font-bold" data-i18n="logic_sync_hmi">Lấy trạng thái từ HMI</button>
+                            <button type="button" onclick="createPttDraftFromHmi()" class="px-2.5 py-1.5 bg-[#122663] hover:bg-[#F2EA1E] hover:text-[#0C1B48] border border-[#F2EA1E]/60 rounded text-[11px] text-[#F2EA1E] font-bold" data-i18n="logic_ptt_hmi">Tạo Phiếu từ HMI</button>
                             <button onclick="setT1Preset('reset_all')" class="px-2.5 py-1.5 bg-rose-950/80 hover:bg-rose-700 border border-rose-500/50 rounded text-[11px] text-rose-200 font-bold">Reset 0</button>
-                            <button type="button" onclick="toggleLogicSectionCollapse()" id="btn-toggle-logic-sec" class="px-2.5 py-1.5 bg-[#07112e] hover:bg-[#122663] border border-[#F2EA1E]/50 rounded text-[11px] text-[#F2EA1E] font-bold">Thu gọn Logic</button>
+                            <button type="button" onclick="toggleLogicSectionCollapse()" id="btn-toggle-logic-sec" class="px-2.5 py-1.5 bg-[#07112e] hover:bg-[#122663] border border-[#F2EA1E]/50 rounded text-[11px] text-[#F2EA1E] font-bold" id="btn-toggle-logic-sec-lbl" data-i18n="logic_collapse_btn">Thu gọn Logic</button>
                         </div>
                     </div>
 
@@ -701,15 +701,15 @@
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="px-2.5 py-1 rounded bg-[#F2EA1E] text-[#0C1B48] font-black text-[11px] uppercase tracking-wider">SCADA / RELAY SIM</span>
                             <select id="fsim-target-select" onchange="switchFaultSimTarget()" class="bg-[#0c1b48] border border-[#62A7EA] rounded-lg px-3 py-1.5 text-xs text-white font-bold">
-                                <option value="line171">1. Bảo vệ Đường dây 110kV (ĐZ 171 — 7SL82 / 7SJ82)</option>
-                                <option value="t1_t2">2. Bảo vệ Máy biến áp (MBA T1/T2 — 7UT86 / 7SJ82 / REF615)</option>
-                                <option value="c11">3. Bảo vệ Thanh cái C11 (110kV Busbar C11)</option>
-                                <option value="c31">4. Bảo vệ Thanh cái C31 (35kV — REU615)</option>
-                                <option value="f371">5. Bảo vệ Xuất tuyến 371 (MC 371 — REF615)</option>
-                                <option value="f373">6. Bảo vệ Xuất tuyến 373 (MC 373 — REF615)</option>
+                                <option value="line171" data-i18n="fsim_opt_1">1. Bảo vệ Đường dây 110kV (ĐZ 171 — 7SL82 / 7SJ82)</option>
+                                <option value="t1_t2" data-i18n="fsim_opt_2">2. Bảo vệ Máy biến áp (MBA T1/T2 — 7UT86 / 7SJ82 / REF615)</option>
+                                <option value="c11" data-i18n="fsim_opt_3">3. Bảo vệ Thanh cái C11 (110kV Busbar C11)</option>
+                                <option value="c31" data-i18n="fsim_opt_4">4. Bảo vệ Thanh cái C31 (35kV — REU615)</option>
+                                <option value="f371" data-i18n="fsim_opt_5">5. Bảo vệ Xuất tuyến 371 (MC 371 — REF615)</option>
+                                <option value="f373" data-i18n="fsim_opt_6">6. Bảo vệ Xuất tuyến 373 (MC 373 — REF615)</option>
                             </select>
-                            <button type="button" onclick="setFaultSimMode('sim')" id="btn-fsim-mode-sim" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-[#F2EA1E] text-[#0C1B48]">Mô phỏng sự cố</button>
-                            <button type="button" onclick="setFaultSimMode('settings')" id="btn-fsim-mode-settings" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0c1b48] border border-[#62A7EA]/60 text-[#62A7EA] hover:bg-[#122663]">Chỉnh định rơ-le</button>
+                            <button type="button" onclick="setFaultSimMode('sim')" id="btn-fsim-mode-sim" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-[#F2EA1E] text-[#0C1B48]"><span data-i18n="fsim_btn_sim">Mô phỏng sự cố</span></button>
+                            <button type="button" onclick="setFaultSimMode('settings')" id="btn-fsim-mode-settings" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0c1b48] border border-[#62A7EA]/60 text-[#62A7EA] hover:bg-[#122663]"><span data-i18n="fsim_btn_set">Chỉnh định rơ-le</span></button>
                         </div>
                         <div id="fsim-ratio-badge" class="text-[11px] px-3 py-1.5 rounded-lg bg-[#0c1b48] border border-[#F2EA1E]/40 text-[#F2EA1E] font-mono"></div>
                     </div>
@@ -735,17 +735,17 @@
                         </div>
 
                         <div class="p-5 rounded-xl bg-[#050b1d] border border-[#62A7EA]/40 space-y-3">
-                            <h3 class="text-sm font-bold text-[#F2EA1E]"><i class="fa-solid fa-table-cells mr-1.5"></i>Bảng đối chiếu ngưỡng chỉnh định &amp; trạng thái tác động (CV 3992/ĐĐQG-PT)</h3>
+                            <h3 class="text-sm font-bold text-[#F2EA1E]"><i class="fa-solid fa-table-cells mr-1.5"></i data-i18n="fsim_table_title">Bảng đối chiếu ngưỡng chỉnh định &amp; trạng thái tác động (CV 3992/ĐĐQG-PT)</h3>
                             <div class="overflow-x-auto border border-[#62A7EA]/30 rounded-lg">
                                 <table class="w-full text-left text-xs">
                                     <thead class="bg-[#0c1b48] text-[#62A7EA]">
                                         <tr>
-                                            <th class="p-2.5">Rơ-le</th>
-                                            <th class="p-2.5">Chức năng / Cấp</th>
-                                            <th class="p-2.5 text-[#F2EA1E]">Ngưỡng chỉnh định</th>
-                                            <th class="p-2.5">Thời gian trễ</th>
-                                            <th class="p-2.5">Tác động / Cắt MC</th>
-                                            <th class="p-2.5 text-center">Trạng thái</th>
+                                            <th class="p-2.5" data-i18n="fsim_th_relay">Rơ-le</th>
+                                            <th class="p-2.5" data-i18n="fsim_th_fn">Chức năng / Cấp</th>
+                                            <th class="p-2.5 text-[#F2EA1E]" data-i18n="fsim_th_set">Ngưỡng chỉnh định</th>
+                                            <th class="p-2.5" data-i18n="fsim_th_delay">Thời gian trễ</th>
+                                            <th class="p-2.5" data-i18n="fsim_th_trip">Tác động / Cắt MC</th>
+                                            <th class="p-2.5 text-center" data-i18n="fsim_th_st">Trạng thái</th>
                                         </tr>
                                     </thead>
                                     <tbody id="fsim-fn-table-body" class="divide-y divide-[#62A7EA]/15 text-slate-100"></tbody>
@@ -759,12 +759,12 @@
                         <div class="flex flex-wrap justify-between items-center gap-3 border-b border-[#62A7EA]/30 pb-3">
                             <div>
                                 <h3 id="fsim-settings-title" class="text-base font-extrabold text-[#F2EA1E]"></h3>
-                                <p class="text-xs text-slate-300 mt-0.5">Điều chỉnh ngưỡng và thời gian trễ để kiểm chứng tác động bảo vệ.</p>
+                                <p class="text-xs text-slate-300 mt-0.5" data-i18n="fsim_set_desc">Điều chỉnh ngưỡng và thời gian trễ để kiểm chứng tác động bảo vệ.</p>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span id="fsim-settings-badge" class="text-[11px] px-2.5 py-1 rounded bg-[#0c1b48] border border-[#62A7EA]/40 text-[#62A7EA]">Chuẩn CV 3992</span>
-                                <button type="button" onclick="resetRelaySettingsToDefault()" class="px-3 py-1.5 rounded-lg bg-[#0c1b48] hover:bg-rose-900/70 border border-rose-500/50 text-xs text-rose-200 font-bold">Khôi phục mặc định</button>
-                                <button type="button" onclick="saveAndApplyRelaySettings()" class="btn-yellow text-xs px-4 py-1.5 rounded-lg font-extrabold">Lưu &amp; Áp dụng</button>
+                                <span id="fsim-settings-badge" class="text-[11px] px-2.5 py-1 rounded bg-[#0c1b48] border border-[#62A7EA]/40 text-[#62A7EA]" data-i18n="fsim_badge_cv">Chuẩn CV 3992</span>
+                                <button type="button" onclick="resetRelaySettingsToDefault()" class="px-3 py-1.5 rounded-lg bg-[#0c1b48] hover:bg-rose-900/70 border border-rose-500/50 text-xs text-rose-200 font-bold"><span data-i18n="fsim_reset_set">Khôi phục mặc định</span></button>
+                                <button type="button" onclick="saveAndApplyRelaySettings()" class="btn-yellow text-xs px-4 py-1.5 rounded-lg font-extrabold" data-i18n="fsim_save_set">Lưu &amp; Áp dụng</button>
                             </div>
                         </div>
                         <div id="fsim-settings-form-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs"></div>
@@ -776,7 +776,7 @@
                 <!-- Thanh chọn mẫu phiếu thao tác & xuất file -->
                 <div class="card p-4 flex flex-wrap justify-between items-center gap-3 border-[#F2EA1E]/60">
                     <div class="flex flex-wrap items-center gap-2.5">
-                        <span class="text-xs font-extrabold text-[#F2EA1E] uppercase"><i class="fa-solid fa-file-pen mr-1.5"></i>Chọn mẫu Phiếu thao tác chuẩn:</span>
+                        <span class="text-xs font-extrabold text-[#F2EA1E] uppercase"><i class="fa-solid fa-file-pen mr-1.5"></i data-i18n="ptt_tpl_lbl">Chọn mẫu Phiếu thao tác chuẩn:</span>
                         <select id="ptt-template-select" onchange="loadPttTemplate()" class="bg-[#07112e] border border-[#62A7EA] rounded-lg px-3 py-1.5 text-xs text-white font-bold">
                             <option value="colap_dz171_1dtd">1. Cô lập ĐZ 171 NMĐG V1-2 – Hàn Quốc (Đóng 01 tiếp địa 171-76)</option>
                             <option value="colap_dz171_vesinh">2. Cô lập ĐZ 171 vệ sinh sứ trạm (Đóng tiếp địa 131-38 & 171-76, kéo MC 331 test)</option>
@@ -788,13 +788,13 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <button type="button" onclick="validatePttSequence()" class="btn-sky text-xs px-3 py-1.5 rounded-lg flex items-center">
-                            <i class="fa-solid fa-shield-check mr-1.5"></i>Kiểm tra trình tự & Liên động
+                            <i class="fa-solid fa-shield-check mr-1.5"></i><span data-i18n="ptt_val_btn">Kiểm tra trình tự & Liên động</span>
                         </button>
                         <button type="button" onclick="exportPttWordDoc()" class="btn-yellow text-xs px-3 py-1.5 rounded-lg flex items-center">
-                            <i class="fa-solid fa-file-word mr-1.5"></i>Xuất file Word (.DOC)
+                            <i class="fa-solid fa-file-word mr-1.5"></i><span data-i18n="ptt_word_btn">Xuất file Word (.DOC)</span>
                         </button>
                         <button type="button" onclick="printPttA4()" class="px-3 py-1.5 bg-[#07112e] hover:bg-[#122663] border border-[#62A7EA]/60 rounded-lg text-xs text-[#F2EA1E] font-bold flex items-center">
-                            <i class="fa-solid fa-print mr-1.5"></i>In phiếu A4
+                            <i class="fa-solid fa-print mr-1.5"></i><span data-i18n="ptt_print_btn">In phiếu A4</span>
                         </button>
                     </div>
                 </div>
@@ -806,22 +806,22 @@
                 <div class="card p-5 space-y-4">
                     <div class="flex flex-wrap justify-between items-center border-b border-[#62A7EA]/30 pb-2">
                         <div>
-                            <div class="text-[11px] text-[#62A7EA] font-bold uppercase">CÔNG TY CỔ PHẦN ĐIỆN GIÓ TRƯỜNG THÀNH TRÀ VINH</div>
-                            <h2 class="text-base font-extrabold text-white">NHÀ MÁY ĐIỆN GIÓ V1-2 TRÀ VINH — PHIẾU THAO TÁC</h2>
+                            <div class="text-[11px] text-[#62A7EA] font-bold uppercase" data-i18n="ptt_company">CÔNG TY CỔ PHẦN ĐIỆN GIÓ TRƯỜNG THÀNH TRÀ VINH</div>
+                            <h2 class="text-base font-extrabold text-white" data-i18n="ptt_main_title">NHÀ MÁY ĐIỆN GIÓ V1-2 TRÀ VINH — PHIẾU THAO TÁC</h2>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <label class="text-xs text-[#62A7EA] font-semibold">Số phiếu:</label>
+                            <label class="text-xs text-[#62A7EA] font-semibold" data-i18n="ptt_num_lbl">Số phiếu:</label>
                             <input type="text" id="ptt-number" value="03/2026/ĐX/ĐGV1-2.TV" class="bg-[#07112e] border border-[#62A7EA]/50 rounded px-2.5 py-1 text-xs text-[#F2EA1E] font-mono font-bold w-48">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                         <div class="md:col-span-2">
-                            <label class="block text-[#62A7EA] font-semibold mb-1">Tên phiếu thao tác:</label>
+                            <label class="block text-[#62A7EA] font-semibold mb-1" data-i18n="ptt_name_lbl">Tên phiếu thao tác:</label>
                             <input type="text" id="ptt-title" class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg p-2 text-white font-bold">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-[#62A7EA] font-semibold mb-1">Mục đích thao tác:</label>
+                            <label class="block text-[#62A7EA] font-semibold mb-1" data-i18n="ptt_purp_lbl">Mục đích thao tác:</label>
                             <input type="text" id="ptt-purpose" class="w-full bg-[#07112e] border border-[#62A7EA]/40 rounded-lg p-2 text-slate-100">
                         </div>
 
@@ -886,11 +886,11 @@
                 <!-- PHẦN 2: BẢNG TRÌNH TỰ HẠNG MỤC THAO TÁC (CHUẨN CỘT MẪU) -->
                 <div class="card p-5 space-y-3">
                     <div class="flex flex-wrap justify-between items-center gap-2">
-                        <h3 class="text-sm font-bold text-[#F2EA1E]"><i class="fa-solid fa-table-list mr-1.5"></i>Trình tự hạng mục thao tác:</h3>
+                        <h3 class="text-sm font-bold text-[#F2EA1E]"><i class="fa-solid fa-table-list mr-1.5"></i data-i18n="ptt_steps_title">Trình tự hạng mục thao tác:</h3>
                         <div class="flex items-center gap-2">
                             <input type="text" id="ptt-banner-row" placeholder="Tiêu đề nhóm thao tác (VD: Cô lập đường dây 171...)" class="bg-[#07112e] border border-[#62A7EA]/40 rounded-lg px-3 py-1.5 text-xs text-[#F2EA1E] font-bold w-80">
                             <button type="button" onclick="addPttStep()" class="btn-sky text-xs px-3 py-1.5 rounded-lg">
-                                <i class="fa-solid fa-plus mr-1"></i>Thêm bước
+                                <i class="fa-solid fa-plus mr-1"></i><span data-i18n="ptt_add_step">Thêm bước</span>
                             </button>
                         </div>
                     </div>
@@ -994,7 +994,166 @@
                 relay_title: "Phân tích sự cố Rơ-le", lbl_relay_vendor: "Hãng / Dòng Rơ-le bảo vệ", lbl_relay_bay: "Ngăn lộ / Thiết bị",
                 choose_relay_file: "Nạp file sự cố (.txt, .csv, .cfg, .xml, .log, .htm)",
                 lbl_relay_raw: "Nội dung bản ghi sự cố:", btn_analyze_relay: "Phân tích sự cố & Đề xuất xử lý",
-                relay_guide_title: "Chẩn đoán bản ghi Rơ-le Siemens SIPROTEC, ABB Relion, SEL, MiCOM"
+                relay_guide_title: "Chẩn đoán bản ghi Rơ-le Siemens SIPROTEC, ABB Relion, SEL, MiCOM",
+                tab_ptt: "4. Viết phiếu thao tác",
+                tab_faultsim: "3.4 Giả lập sự cố Relay",
+                sync_wtg_hmi_btn: "Đồng bộ WTG theo HMI",
+                hmi_bypass_off: "Giải trừ liên động: OFF",
+                hmi_snapshot_btn: "Nạp trạng thái như ảnh HMI (18.36 MW)",
+                hmi_full48_btn: "Đóng đủ 4 XT (48 MW)",
+                hmi_link_title: "Liên kết Công suất Dự báo & Cài đặt Tần số / Điện áp 35kV / Hút phát Q",
+                hmi_link_cb: "Link P từ Dự báo",
+                hmi_reset_btn: "Mặc định chuẩn",
+                hmi_freq_lbl: "Tần số hệ thống f (Hz):",
+                hmi_u35_lbl: "Điện áp đặt phía 35kV (kV):",
+                hmi_q_lbl: "Hút / Phát Q nhà máy (MVAr):",
+                hmi_p_lbl: "Công suất phát P (MW):",
+                hmi_dl_log: "Tải Log (.TXT)",
+                hmi_clear_log: "Xóa nhật ký",
+                fsim_btn_sim: "Mô phỏng sự cố",
+                fsim_btn_set: "Chỉnh định rơ-le",
+                fsim_reset_set: "Khôi phục mặc định",
+                fsim_save_set: "Lưu & Áp dụng",
+                ptt_val_btn: "Kiểm tra trình tự & Liên động",
+                ptt_word_btn: "Xuất file Word (.DOC)",
+                ptt_print_btn: "In phiếu A4",
+                ptt_add_step: "Thêm bước",
+                hmi_q_absorb: "Hút Q",
+                hmi_q_inject: "Phát Q",
+                hmi_ready_msg: "Sẵn sàng mô phỏng thao tác. Quy ước HMI thực tế:",
+                hmi_legend_close: "ĐỎ = ĐÓNG",
+                hmi_legend_open: "XANH LÁ = MỞ",
+                hmi_legend_lock: "Biểu tượng Ổ khóa hiển thị trạng thái liên động thời gian thực.",
+                hmi_auth_title: "Phân cấp quyền điều khiển (QĐ 3120/QĐ-ĐĐMN)",
+                hmi_log_title: "Nhật ký kiểm tra thao tác & Liên động (Switching Log)",
+                logic_select_lbl: "Sơ đồ Khối Logic Nhị Thứ Chi Tiết:",
+                logic_click_hint: "Bấm lên ô tín hiệu để đổi 0 ↔ 1",
+                logic_preset_rem: "Mẫu: Sẵn sàng Remote",
+                logic_preset_loc: "Mẫu: Tại tủ Local Box",
+                logic_sync_hmi: "Lấy trạng thái từ HMI",
+                logic_ptt_hmi: "Tạo Phiếu từ HMI",
+                logic_collapse_btn: "Thu gọn Logic",
+                logic_expand_btn: "Mở rộng Logic",
+                fsim_table_title: "Bảng đối chiếu ngưỡng chỉnh định & trạng thái tác động (CV 3992/ĐĐQG-PT)",
+                fsim_set_desc: "Điều chỉnh ngưỡng và thời gian trễ để kiểm chứng tác động bảo vệ.",
+                fsim_save_set: "Lưu & Áp dụng",
+                ptt_tpl_lbl: "Chọn mẫu Phiếu thao tác chuẩn:",
+                ptt_company: "CÔNG TY CỔ PHẦN ĐIỆN GIÓ TRƯỜNG THÀNH TRÀ VINH",
+                ptt_main_title: "NHÀ MÁY ĐIỆN GIÓ V1-2 TRÀ VINH — PHIẾU THAO TÁC",
+                ptt_num_lbl: "Số phiếu:",
+                ptt_name_lbl: "Tên phiếu thao tác:",
+                ptt_purp_lbl: "Mục đích thao tác:",
+                ptt_steps_title: "Trình tự hạng mục thao tác:",
+                hmi_valid_op: "THAO TÁC HỢP LỆ:",
+                hmi_blocked_op: "KHÓA LIÊN ĐỘNG / SAI QUYỀN:",
+                hmi_role_denied: "bị giới hạn quyền: chỉ Quản trị viên mới được thao tác đóng/cắt thiết bị trên HMI.",
+                hmi_bypass_admin_only: "Chỉ Quản trị viên mới được bật/tắt Giải trừ liên động.",
+                hmi_bypass_on_msg: "BẬT chế độ Giải trừ liên động (Bypass Interlock)!",
+                hmi_bypass_off_msg: "TẮT chế độ Giải trừ liên động — Khôi phục bảo vệ liên động chuẩn.",
+                hmi_tap_msg: "Điều chỉnh nấc phân áp OLTC MBA T1 sang nấc",
+                hmi_snap_msg: "Khôi phục trạng thái trạm đúng theo ảnh chụp HMI thực tế (XT 371 & 373 Đóng — Phát 18.36 MW).",
+                hmi_full48_msg: "Đóng đủ 4 xuất tuyến 371, 373, 375, 377 — Phát tối đa công suất nhà máy 48 MW.",
+                hmi_reset_msg: "Khôi phục thông số tần số, điện áp 35kV, hút/phát Q và công suất P về trạng thái chuẩn.",
+                ptt_tpl_1: "1. Cô lập ĐZ 171 NMĐG V1-2 – Hàn Quốc (Đóng 01 tiếp địa 171-76)",
+                ptt_tpl_2: "2. Cô lập ĐZ 171 vệ sinh sứ trạm (Đóng tiếp địa 131-38 & 171-76, kéo MC 331 test)",
+                ptt_tpl_3: "3. Tái lập Đường dây 171 NMĐG V1-2 Trà Vinh – Hàn Quốc",
+                ptt_tpl_4: "4. Tái lập MBA T1 (63 MVA) Nhà máy điện gió V1-2 Trà Vinh",
+                ptt_tpl_5: "5. Cô lập toàn Trạm 110kV V1-2 Trà Vinh (Phủ sơn cách điện / Bảo dưỡng)",
+                ptt_tpl_blank: "-- Tạo phiếu thao tác trắng mới --",
+                wtg_sim_header: "Mô phỏng trực tiếp Gió & CS dự báo từng WT",
+                wtg_sim_running_lbl: "Chạy dự báo:",
+                wtg_sim_all_on: "What-If: Bật chạy toàn bộ WTG",
+                wtg_sim_reset: "Khôi phục mặc định",
+                wtg_now_prefix: "Hiện tại",
+                wtg_avg_period: "TB toàn kỳ",
+                wtg_note_normal: "Vận hành bình thường",
+                wtg_note_warn: "Theo dõi độ lệch công suất & nhiệt độ",
+                wtg_note_fault: "Thực tế dừng do lỗi — Cần kiểm tra cảnh báo tua-bin.",
+                wtg_note_maint: "Thực tế dừng bảo trì định kỳ — Loại khỏi công suất khả dụng.",
+                btn_create_ptt: "Tạo Phiếu",
+                th_hist_title: "Lịch sử quét nhiệt gần đây",
+                th_hist_clear: "Xóa lịch sử",
+                th_lvl_normal: "Mức 1 (Bình thường)",
+                th_lvl_mod: "Mức 1+ (Theo dõi thêm)",
+                th_lvl_high: "Mức 2 (Nguy cơ cao - Quá nhiệt)",
+                th_lvl_crit: "Mức 3 (Khẩn cấp - Cô lập ngay)",
+                th_act_normal: "Tiếp tục vận hành bình thường, kiểm tra định kỳ hàng tháng.",
+                th_act_mod: "Theo dõi sát khi nhà máy phát cao điểm.",
+                th_act_high: "Kiểm tra nhiệt độ hằng ngày khi mang tải cao. Đăng ký lịch cắt điện với A2/NSMO để vệ sinh và siết chặt đầu cốt.",
+                th_act_crit: "Báo ngay Trưởng ca & A2/NSMO để cô lập sự cố khẩn cấp và sửa chữa.",
+                th_ocr_manual: "Nhập thủ công T1 / T2",
+                th_ocr_t1_only: "Đã nhận T1 =",
+                rl_hist_title: "Lịch sử phân tích sự cố rơ-le",
+                rl_phase_lbl: "Pha sự cố:",
+                rl_time_lbl: "Thời gian tác động:",
+                rl_curve_set: "Theo cài đặt đặc tuyến",
+                rl_no_meas: "Không có thông số đo lường chi tiết",
+                rl_unknown_code: "Sự kiện tác động bảo vệ",
+                rl_unknown_cause: "Đại lượng điện đo được vượt ngưỡng chỉnh định của rơ-le bảo vệ.",
+                rl_unknown_action: "Kiểm tra bản ghi dao động sự cố (COMTRADE) trên DIGSI 5 / PCM600 và đối chiếu phiếu chỉnh định NMĐG V1-2.",
+                lg_sec_title: "Tầng nhận lệnh SCADA / HMI (SCADA LEVEL)",
+                lg_sec_ok_rl: "Đã có lệnh điều khiển hợp lệ từ Điều độ A2/A0 (RLDC) (khóa SCADA/HMI đặt đúng vị trí).",
+                lg_sec_ok_hmi: "Đã có lệnh điều khiển hợp lệ từ màn hình HMI trạm (khóa SCADA/HMI đặt đúng vị trí).",
+                lg_sec_no: "Chưa có lệnh từ SCADA/HMI (hoặc khóa chọn SCADA/HMI chưa đặt trùng khớp với nguồn phát lệnh).",
+                lg_legend_title: "Chú thích ký hiệu & màu sắc trên sơ đồ:",
+                lg_leg_1: "Dây / Cổng màu Vàng:",
+                lg_leg_1_b: "Mức 1 (TRUE / Đạt)",
+                lg_leg_0: "Dây màu Xanh tối:",
+                lg_leg_0_b: "Mức 0 (FALSE / Khóa)",
+                lg_leg_not: "Vòng tròn (o) đầu vào cổng:",
+                lg_leg_not_b: "Cổng đảo NOT",
+                lg_blockers_title: "Nguyên nhân đang khóa thao tác:",
+                lg_steps_title: "Giải thích chi tiết từng bước thao tác",
+                lg_badge_ok: "1 — ĐẠT",
+                lg_badge_lock: "0 — KHÓA",
+                lg_out_allow: "▶ TRẠNG THÁI: 1 (CHO PHÉP THAO TÁC)",
+                lg_out_lock: "■ TRẠNG THÁI: 0 (KHÓA LIÊN ĐỘNG)",
+                fsim_opt_1: "1. Bảo vệ Đường dây 110kV (ĐZ 171 — 7SL82 / 7SJ82)",
+                fsim_opt_2: "2. Bảo vệ Máy biến áp (MBA T1/T2 — 7UT86 / 7SJ82 / REF615)",
+                fsim_opt_3: "3. Bảo vệ Thanh cái C11 (110kV Busbar C11)",
+                fsim_opt_4: "4. Bảo vệ Thanh cái C31 (35kV — REU615)",
+                fsim_opt_5: "5. Bảo vệ Xuất tuyến 371 (MC 371 — REF615)",
+                fsim_opt_6: "6. Bảo vệ Xuất tuyến 373 (MC 373 — REF615)",
+                fsim_th_relay: "Rơ-le",
+                fsim_th_fn: "Chức năng / Cấp",
+                fsim_th_set: "Ngưỡng chỉnh định",
+                fsim_th_delay: "Thời gian trễ",
+                fsim_th_trip: "Tác động / Cắt MC",
+                fsim_th_st: "Trạng thái",
+                fsim_badge_cv: "Chuẩn CV 3992",
+                fsim_status_trip: "TÁC ĐỘNG",
+                fsim_status_ok: "BÌNH THƯỜNG",
+                fsim_kpi_trips: "Lệnh cắt kích hoạt",
+                fsim_kpi_alarms: "Cảnh báo / Báo hiệu",
+                fsim_kpi_cb: "Máy cắt bị cắt",
+                fsim_kpi_time: "Thời gian cắt nhanh nhất",
+                fsim_unit_fn: "chức năng",
+                fsim_unit_sig: "tín hiệu",
+                fsim_no_cb: "Không cắt MC",
+                fsim_preset_lbl: "Sự cố mẫu:",
+                fsim_pre_norm: "Bình thường",
+                fsim_pre_87l: "So lệch 87L",
+                fsim_pre_21: "Khoảng cách 21 Z1",
+                fsim_pre_67n: "Chạm đất 67N + 79",
+                fsim_ctrl_title: "Bảng điều khiển thông số mô phỏng",
+                fsim_lbl_ip: "Dòng pha ĐZ 171 (A sơ cấp):",
+                fsim_lbl_3i0: "Dòng 3I0 chạm đất (A sơ cấp):",
+                fsim_lbl_u110: "Điện áp 110kV (kV pha-pha):",
+                fsim_lbl_x: "Trở kháng X (Ω sơ cấp):",
+                fsim_lbl_idiff: "Idiff 87L (A thứ cấp):",
+                fsim_cb_closed: "ĐÓNG",
+                fsim_cb_open: "MỞ",
+                fsim_fast_trip: "CẮT NHANH NHẤT",
+                fsim_no_trip: "Không cắt",
+                fsim_fn_87l: "87L So lệch ĐZ",
+                fsim_fn_21: "21 Vùng 1/2/4",
+                fsim_fn_67: "67 Quá dòng pha",
+                fsim_fn_67n: "67N Chạm đất",
+                fsim_fn_27: "27 Thấp áp",
+                fsim_fn_59: "59 Quá áp",
+                fsim_act_171_79: "Cắt MC 171 + 79",
+                fsim_act_171: "Cắt MC 171",
+                fsim_act_alarm: "Báo hiệu"
             },
             en: {
                 login_user_label: "Operator Username", login_user_ph: "Enter username...",
@@ -1043,7 +1202,166 @@
                 relay_title: "Relay Fault Record Analysis", lbl_relay_vendor: "Relay Brand / Series", lbl_relay_bay: "Bay / Equipment",
                 choose_relay_file: "Load Fault File (.txt, .csv, .cfg, .xml, .log, .htm)",
                 lbl_relay_raw: "Fault Record Content:", btn_analyze_relay: "Analyze Fault & Action Plan",
-                relay_guide_title: "Siemens SIPROTEC, ABB Relion, SEL, MiCOM Fault Diagnostics"
+                relay_guide_title: "Siemens SIPROTEC, ABB Relion, SEL, MiCOM Fault Diagnostics",
+                tab_ptt: "4. Switching Order",
+                tab_faultsim: "3.4 Relay Fault Simulation",
+                sync_wtg_hmi_btn: "Sync WTG with HMI",
+                hmi_bypass_off: "Interlock Bypass: OFF",
+                hmi_snapshot_btn: "Load HMI Snapshot (18.36 MW)",
+                hmi_full48_btn: "Close All 4 Feeders (48 MW)",
+                hmi_link_title: "Forecast Power Link & Frequency / 35kV Voltage / Q Control",
+                hmi_link_cb: "Link P from Forecast",
+                hmi_reset_btn: "Reset Standard",
+                hmi_freq_lbl: "System Frequency f (Hz):",
+                hmi_u35_lbl: "35kV Voltage Setpoint (kV):",
+                hmi_q_lbl: "Plant Q Absorb/Inject (MVAr):",
+                hmi_p_lbl: "Active Power P (MW):",
+                hmi_dl_log: "Download Log (.TXT)",
+                hmi_clear_log: "Clear Log",
+                fsim_btn_sim: "Fault Simulation",
+                fsim_btn_set: "Relay Settings",
+                fsim_reset_set: "Restore Defaults",
+                fsim_save_set: "Save & Apply",
+                ptt_val_btn: "Check Sequence & Interlock",
+                ptt_word_btn: "Export Word (.DOC)",
+                ptt_print_btn: "Print A4",
+                ptt_add_step: "Add Step",
+                hmi_q_absorb: "Absorb Q",
+                hmi_q_inject: "Inject Q",
+                hmi_ready_msg: "Ready for switching simulation. HMI convention:",
+                hmi_legend_close: "RED = CLOSED",
+                hmi_legend_open: "GREEN = OPEN",
+                hmi_legend_lock: "Padlock icon shows real-time interlock status.",
+                hmi_auth_title: "Control Authority (Decision 3120/QĐ-ĐĐMN)",
+                hmi_log_title: "Switching & Interlock Operation Log",
+                logic_select_lbl: "Secondary Logic Block Diagram:",
+                logic_click_hint: "Click signal block to toggle 0 ↔ 1",
+                logic_preset_rem: "Preset: Remote Ready",
+                logic_preset_loc: "Preset: Local Box",
+                logic_sync_hmi: "Sync State from HMI",
+                logic_ptt_hmi: "Create Order from HMI",
+                logic_collapse_btn: "Collapse Logic",
+                logic_expand_btn: "Expand Logic",
+                fsim_table_title: "Relay Settings & Trip Status Comparison (CV 3992/ĐĐQG-PT)",
+                fsim_set_desc: "Adjust thresholds and time delays to verify protection operation.",
+                fsim_save_set: "Save & Apply",
+                ptt_tpl_lbl: "Select Switching Order Template:",
+                ptt_company: "TRUONG THANH TRA VINH WIND POWER JSC",
+                ptt_main_title: "TRA VINH V1-2 WIND FARM — SWITCHING ORDER",
+                ptt_num_lbl: "Order No:",
+                ptt_name_lbl: "Switching Order Name:",
+                ptt_purp_lbl: "Purpose:",
+                ptt_steps_title: "Switching Sequence Steps:",
+                hmi_valid_op: "VALID OPERATION:",
+                hmi_blocked_op: "INTERLOCK / PERMISSION BLOCKED:",
+                hmi_role_denied: "has limited permissions: only Administrator can operate CB/DS/ES on HMI.",
+                hmi_bypass_admin_only: "Only Administrator can toggle Interlock Bypass.",
+                hmi_bypass_on_msg: "ENABLED Interlock Bypass mode!",
+                hmi_bypass_off_msg: "DISABLED Interlock Bypass mode — Standard interlock restored.",
+                hmi_tap_msg: "Adjusted Transformer T1 OLTC tap to position",
+                hmi_snap_msg: "Restored HMI snapshot state (Feeders 371 & 373 Closed — 18.36 MW).",
+                hmi_full48_msg: "Closed all 4 feeders 371, 373, 375, 377 — Full 48 MW plant capacity.",
+                hmi_reset_msg: "Reset frequency, 35kV voltage, Q absorb/inject, and active power P to standard defaults.",
+                ptt_tpl_1: "1. Isolate Line 171 V1-2 – Korea (Close 1 Earth Switch 171-76)",
+                ptt_tpl_2: "2. Isolate Line 171 for Insulator Cleaning (Close ES 131-38 & 171-76, CB 331 test)",
+                ptt_tpl_3: "3. Re-energize 110kV Line 171 V1-2 Tra Vinh – Korea",
+                ptt_tpl_4: "4. Re-energize Main Transformer T1 (63 MVA) V1-2 Wind Farm",
+                ptt_tpl_5: "5. Full Isolation of 110kV V1-2 Substation (RTV Coating / Maintenance)",
+                ptt_tpl_blank: "-- Create Blank Switching Order --",
+                wtg_sim_header: "Live Wind & Forecast Power Simulation per WTG",
+                wtg_sim_running_lbl: "Running forecast:",
+                wtg_sim_all_on: "What-If: Enable All WTGs",
+                wtg_sim_reset: "Restore Defaults",
+                wtg_now_prefix: "Current",
+                wtg_avg_period: "Period Avg",
+                wtg_note_normal: "Normal operation",
+                wtg_note_warn: "Monitor power deviation & temperature",
+                wtg_note_fault: "Actual fault stop — Check turbine alarm.",
+                wtg_note_maint: "Actual scheduled maintenance — Excluded from available capacity.",
+                btn_create_ptt: "Create Order",
+                th_hist_title: "Recent Thermal Scan History",
+                th_hist_clear: "Clear History",
+                th_lvl_normal: "Level 1 (Normal)",
+                th_lvl_mod: "Level 1+ (Moderate)",
+                th_lvl_high: "Level 2 (High Risk - Overheating)",
+                th_lvl_crit: "Level 3 (Critical - Immediate Isolation)",
+                th_act_normal: "Continue normal operation, routine monthly inspection.",
+                th_act_mod: "Monitor closely during peak wind generation.",
+                th_act_high: "Daily thermal check at high load. Schedule outage with A2/NSMO to clean & torque connections.",
+                th_act_crit: "Report to Shift Leader & A2/NSMO immediately for emergency isolation and repair.",
+                th_ocr_manual: "Enter T1 / T2 manually",
+                th_ocr_t1_only: "Detected T1 =",
+                rl_hist_title: "Relay Fault Analysis History",
+                rl_phase_lbl: "Faulted Phase:",
+                rl_time_lbl: "Operating Time:",
+                rl_curve_set: "Curve setting",
+                rl_no_meas: "No detailed measurement values",
+                rl_unknown_code: "Protection Trip Event",
+                rl_unknown_cause: "Measured electrical quantity exceeded relay protection setting.",
+                rl_unknown_action: "Review fault oscillography (COMTRADE) in DIGSI 5 / PCM600 and verify against NMĐG V1-2 relay setting sheet.",
+                lg_sec_title: "SCADA / HMI Command Level",
+                lg_sec_ok_rl: "Valid control command from RLDC A2/A0 (SCADA/HMI selector switch matched).",
+                lg_sec_ok_hmi: "Valid control command from station HMI (SCADA/HMI selector switch matched).",
+                lg_sec_no: "No SCADA/HMI command (or SCADA/HMI selector switch does not match command source).",
+                lg_legend_title: "Diagram Symbols & Color Legend:",
+                lg_leg_1: "Yellow Wire / Gate:",
+                lg_leg_1_b: "Level 1 (TRUE / OK)",
+                lg_leg_0: "Dark Blue Wire:",
+                lg_leg_0_b: "Level 0 (FALSE / Locked)",
+                lg_leg_not: "Input circle (o):",
+                lg_leg_not_b: "NOT Inverter",
+                lg_blockers_title: "Operation Lock Causes:",
+                lg_steps_title: "Step-by-Step Operation Explanation",
+                lg_badge_ok: "1 — OK",
+                lg_badge_lock: "0 — LOCKED",
+                lg_out_allow: "▶ STATE: 1 (OPERATION PERMITTED)",
+                lg_out_lock: "■ STATE: 0 (INTERLOCK LOCKED)",
+                fsim_opt_1: "1. 110kV Line Protection (Line 171 — 7SL82 / 7SJ82)",
+                fsim_opt_2: "2. Transformer Protection (T1/T2 — 7UT86 / 7SJ82 / REF615)",
+                fsim_opt_3: "3. 110kV Busbar C11 Protection",
+                fsim_opt_4: "4. 35kV Busbar C31 Protection (REU615)",
+                fsim_opt_5: "5. Feeder 371 Protection (CB 371 — REF615)",
+                fsim_opt_6: "6. Feeder 373 Protection (CB 373 — REF615)",
+                fsim_th_relay: "Relay",
+                fsim_th_fn: "Function / Stage",
+                fsim_th_set: "Setting Threshold",
+                fsim_th_delay: "Time Delay",
+                fsim_th_trip: "Trip / CB Action",
+                fsim_th_st: "Status",
+                fsim_badge_cv: "CV 3992 Standard",
+                fsim_status_trip: "TRIPPED",
+                fsim_status_ok: "NORMAL",
+                fsim_kpi_trips: "Active Trip Commands",
+                fsim_kpi_alarms: "Warnings / Alarms",
+                fsim_kpi_cb: "Tripped Circuit Breakers",
+                fsim_kpi_time: "Fastest Trip Time",
+                fsim_unit_fn: "functions",
+                fsim_unit_sig: "signals",
+                fsim_no_cb: "No CB Tripped",
+                fsim_preset_lbl: "Fault Presets:",
+                fsim_pre_norm: "Normal",
+                fsim_pre_87l: "Differential 87L",
+                fsim_pre_21: "Distance 21 Z1",
+                fsim_pre_67n: "Earth Fault 67N + 79",
+                fsim_ctrl_title: "Simulation Parameter Control Panel",
+                fsim_lbl_ip: "Line 171 Phase Current (Primary A):",
+                fsim_lbl_3i0: "Earth Fault Current 3I0 (Primary A):",
+                fsim_lbl_u110: "110kV Voltage (kV phase-phase):",
+                fsim_lbl_x: "Reactance X (Primary Ω):",
+                fsim_lbl_idiff: "Idiff 87L (Secondary A):",
+                fsim_cb_closed: "CLOSED",
+                fsim_cb_open: "OPEN",
+                fsim_fast_trip: "FASTEST TRIP",
+                fsim_no_trip: "No Trip",
+                fsim_fn_87l: "87L Line Differential",
+                fsim_fn_21: "21 Zone 1/2/4 Distance",
+                fsim_fn_67: "67 Phase Overcurrent",
+                fsim_fn_67n: "67N Earth Fault",
+                fsim_fn_27: "27 Undervoltage",
+                fsim_fn_59: "59 Overvoltage",
+                fsim_act_171_79: "Trip CB 171 + 79",
+                fsim_act_171: "Trip CB 171",
+                fsim_act_alarm: "Alarm"
             },
             th: {
                 login_user_label: "บัญชีผู้ปฏิบัติงาน", login_user_ph: "กรอกชื่อผู้ใช้...",
@@ -1092,11 +1410,385 @@
                 relay_title: "วิเคราะห์เหตุขัดข้องรีเลย์", lbl_relay_vendor: "ยี่ห้อ / รุ่นรีเลย์", lbl_relay_bay: "ช่องสายส่ง / อุปกรณ์",
                 choose_relay_file: "นำเข้าไฟล์ (.txt, .csv, .cfg, .xml, .log, .htm)",
                 lbl_relay_raw: "บันทึกเหตุขัดข้อง:", btn_analyze_relay: "วิเคราะห์เหตุขัดข้องและแนวทางแก้ไข",
-                relay_guide_title: "การวินิจฉัยรีเลย์ Siemens SIPROTEC, ABB Relion, SEL, MiCOM"
+                relay_guide_title: "การวินิจฉัยรีเลย์ Siemens SIPROTEC, ABB Relion, SEL, MiCOM",
+                tab_ptt: "4. ใบสั่งสับเปลี่ยน",
+                tab_faultsim: "3.4 จำลองเหตุขัดข้องรีเลย์",
+                sync_wtg_hmi_btn: "ซิงค์ WTG กับ HMI",
+                hmi_bypass_off: "ปลดล็อกอินเตอร์ล็อก: OFF",
+                hmi_snapshot_btn: "โหลดสถานะตามภาพ HMI (18.36 MW)",
+                hmi_full48_btn: "ปิดครบ 4 ฟีดเดอร์ (48 MW)",
+                hmi_link_title: "เชื่อมโยงกำลังผลิตพยากรณ์ & ตั้งค่าความถี่ / แรงดัน 35kV / Q",
+                hmi_link_cb: "เชื่อม P จากพยากรณ์",
+                hmi_reset_btn: "ค่ามาตรฐาน",
+                hmi_freq_lbl: "ความถี่ระบบ f (Hz):",
+                hmi_u35_lbl: "แรงดันอ้างอิง 35kV (kV):",
+                hmi_q_lbl: "ดูด/จ่าย Q โรงไฟฟ้า (MVAr):",
+                hmi_p_lbl: "กำลังผลิตจริง P (MW):",
+                hmi_dl_log: "ดาวน์โหลด Log (.TXT)",
+                hmi_clear_log: "ล้างบันทึก",
+                fsim_btn_sim: "จำลองเหตุขัดข้อง",
+                fsim_btn_set: "ตั้งค่ารีเลย์",
+                fsim_reset_set: "คืนค่าเริ่มต้น",
+                fsim_save_set: "บันทึกและใช้งาน",
+                ptt_val_btn: "ตรวจสอบลำดับและอินเตอร์ล็อก",
+                ptt_word_btn: "ส่งออก Word (.DOC)",
+                ptt_print_btn: "พิมพ์ A4",
+                ptt_add_step: "เพิ่มขั้นตอน",
+                hmi_q_absorb: "ดูด Q",
+                hmi_q_inject: "จ่าย Q",
+                hmi_ready_msg: "พร้อมจำลองการสับเปลี่ยน กติกา HMI:",
+                hmi_legend_close: "สีแดง = ปิด",
+                hmi_legend_open: "สีเขียว = เปิด",
+                hmi_legend_lock: "ไอคอนแม่กุญแจแสดงสถานะอินเตอร์ล็อกแบบเรียลไทม์",
+                hmi_auth_title: "ลำดับสิทธิ์การควบคุม (ตามข้อกำหนด)",
+                hmi_log_title: "บันทึกการสับเปลี่ยนและอินเตอร์ล็อก (Switching Log)",
+                logic_select_lbl: "แผนผังบล็อกลอจิกทุติยภูมิ:",
+                logic_click_hint: "คลิกบล็อกสัญญาณเพื่อสลับ 0 ↔ 1",
+                logic_preset_rem: "ค่าตั้ง: พร้อม Remote",
+                logic_preset_loc: "ค่าตั้ง: ที่ตู้ Local Box",
+                logic_sync_hmi: "ดึงสถานะจาก HMI",
+                logic_ptt_hmi: "สร้างใบสั่งจาก HMI",
+                logic_collapse_btn: "ย่อลอจิก",
+                logic_expand_btn: "ขยายลอจิก",
+                fsim_table_title: "ตารางเทียบค่าตั้งรีเลย์และสถานะการทำงาน",
+                fsim_set_desc: "ปรับค่าเกณฑ์และหน่วงเวลาเพื่อตรวจสอบการทำงานของระบบป้องกัน",
+                fsim_save_set: "บันทึกและใช้งาน",
+                ptt_tpl_lbl: "เลือกเทมเพลตใบสั่งสับเปลี่ยน:",
+                ptt_company: "บริษัท โรงไฟฟ้าพลังงานลม เติ่งแถ่ง ตร่าวิญ จำกัด",
+                ptt_main_title: "โรงไฟฟ้าพลังงานลม V1-2 ตร่าวิญ — ใบสั่งสับเปลี่ยน",
+                ptt_num_lbl: "เลขที่ใบสั่ง:",
+                ptt_name_lbl: "ชื่อใบสั่งสับเปลี่ยน:",
+                ptt_purp_lbl: "วัตถุประสงค์:",
+                ptt_steps_title: "ลำดับขั้นตอนการสับเปลี่ยน:",
+                hmi_valid_op: "การสับเปลี่ยนถูกต้อง:",
+                hmi_blocked_op: "ถูกบล็อกโดยอินเตอร์ล็อก / สิทธิ์:",
+                hmi_role_denied: "ถูกจำกัดสิทธิ์: เฉพาะผู้ดูแลระบบเท่านั้นที่สับเปลี่ยนอุปกรณ์บน HMI ได้",
+                hmi_bypass_admin_only: "เฉพาะผู้ดูแลระบบเท่านั้นที่เปิด/ปิดการปลดล็อกอินเตอร์ล็อกได้",
+                hmi_bypass_on_msg: "เปิดใช้งานโหมดปลดล็อกอินเตอร์ล็อก (Bypass Interlock)!",
+                hmi_bypass_off_msg: "ปิดโหมดปลดล็อกอินเตอร์ล็อก — กลับสู่ระบบอินเตอร์ล็อกปกติ",
+                hmi_tap_msg: "ปรับแทป OLTC หม้อแปลง T1 ไปที่ตำแหน่ง",
+                hmi_snap_msg: "โหลดสถานะตามภาพ HMI (ฟีดเดอร์ 371 & 373 ปิด — 18.36 MW)",
+                hmi_full48_msg: "ปิดครบ 4 ฟีดเดอร์ 371, 373, 375, 377 — กำลังผลิตเต็ม 48 MW",
+                hmi_reset_msg: "คืนค่าความถี่ แรงดัน 35kV การดูด/จ่าย Q และกำลังผลิต P เป็นค่ามาตรฐาน",
+                ptt_tpl_1: "1. ปลดวงจรสายส่ง 171 V1-2 – เกาหลี (ปิดกราวด์ 171-76)",
+                ptt_tpl_2: "2. ปลดวงจรสายส่ง 171 ล้างลูกถ้วย (ปิดกราวด์ 131-38 & 171-76, ทดสอบ CB 331)",
+                ptt_tpl_3: "3. จ่ายไฟกลับสายส่ง 110kV 171 V1-2 ตร่าวิญ – เกาหลี",
+                ptt_tpl_4: "4. จ่ายไฟกลับหม้อแปลงหลัก T1 (63 MVA) โรงไฟฟ้าพลังงานลม V1-2",
+                ptt_tpl_5: "5. ปลดทั้งสถานี 110kV V1-2 (เคลือบซิลิโคน RTV / บำรุงรักษา)",
+                ptt_tpl_blank: "-- สร้างใบสั่งสับเปลี่ยนเปล่า --",
+                wtg_sim_header: "จำลองลมและกำลังผลิตพยากรณ์ราย WTG แบบสด",
+                wtg_sim_running_lbl: "เดินเครื่องพยากรณ์:",
+                wtg_sim_all_on: "What-If: เปิดเดินเครื่องทุก WTG",
+                wtg_sim_reset: "คืนค่าเริ่มต้น",
+                wtg_now_prefix: "ปัจจุบัน",
+                wtg_avg_period: "เฉลี่ยทั้งช่วง",
+                wtg_note_normal: "เดินเครื่องปกติ",
+                wtg_note_warn: "เฝ้าระวังค่าเบี่ยงเบนกำลังผลิตและอุณหภูมิ",
+                wtg_note_fault: "หยุดจริงจากข้อผิดพลาด — ตรวจสอบสัญญาณเตือนกังหัน",
+                wtg_note_maint: "หยุดบำรุงรักษาตามแผน — ไม่รวมในกำลังผลิตพร้อมจ่าย",
+                btn_create_ptt: "สร้างใบสั่ง",
+                th_hist_title: "ประวัติการสแกนความร้อนล่าสุด",
+                th_hist_clear: "ล้างประวัติ",
+                th_lvl_normal: "ระดับ 1 (ปกติ)",
+                th_lvl_mod: "ระดับ 1+ (เฝ้าระวังเพิ่ม)",
+                th_lvl_high: "ระดับ 2 (ความเสี่ยงสูง - ร้อนเกิน)",
+                th_lvl_crit: "ระดับ 3 (วิกฤต - ปลดทันที)",
+                th_act_normal: "เดินเครื่องตามปกติ ตรวจสอบประจำเดือนตามรอบ",
+                th_act_mod: "เฝ้าระวังอย่างใกล้ชิดช่วงผลิตกำลังสูง",
+                th_act_high: "ตรวจวัดอุณหภูมิทุกวันเมื่อโหลดสูง นัดหมายปลดไฟกับ A2/NSMO เพื่อทำความสะอาดและขันจุดต่อ",
+                th_act_crit: "แจ้งหัวหน้ากะและ A2/NSMO ทันทีเพื่อปลดฉุกเฉินและแก้ไข",
+                th_ocr_manual: "กรอกค่า T1 / T2 ด้วยตนเอง",
+                th_ocr_t1_only: "ตรวจพบ T1 =",
+                rl_hist_title: "ประวัติการวิเคราะห์เหตุขัดข้องรีเลย์",
+                rl_phase_lbl: "เฟสที่เกิดเหตุ:",
+                rl_time_lbl: "เวลาทำงาน:",
+                rl_curve_set: "ตามค่าตั้งกราฟ",
+                rl_no_meas: "ไม่มีข้อมูลค่าการวัดโดยละเอียด",
+                rl_unknown_code: "เหตุการณ์ระบบป้องกันทำงาน",
+                rl_unknown_cause: "ค่าทางไฟฟ้าที่วัดได้เกินเกณฑ์การตั้งค่าของรีเลย์ป้องกัน",
+                rl_unknown_action: "ตรวจสอบบันทึกคลื่นความผิดปกติ (COMTRADE) ใน DIGSI 5 / PCM600 และเทียบกับใบตั้งค่ารีเลย์ NMĐG V1-2",
+                lg_sec_title: "ระดับคำสั่ง SCADA / HMI (SCADA LEVEL)",
+                lg_sec_ok_rl: "มีคำสั่งควบคุมที่ถูกต้องจาก RLDC A2/A0 (สวิตช์เลือก SCADA/HMI ตรงกัน)",
+                lg_sec_ok_hmi: "มีคำสั่งควบคุมที่ถูกต้องจาก HMI สถานี (สวิตช์เลือก SCADA/HMI ตรงกัน)",
+                lg_sec_no: "ยังไม่มีคำสั่งจาก SCADA/HMI (หรือสวิตช์เลือก SCADA/HMI ไม่ตรงกับแหล่งสั่งการ)",
+                lg_legend_title: "คำอธิบายสัญลักษณ์และสีบนแผนผัง:",
+                lg_leg_1: "สาย / เกตสีเหลือง:",
+                lg_leg_1_b: "ระดับ 1 (TRUE / พร้อม)",
+                lg_leg_0: "สายสีน้ำเงินเข้ม:",
+                lg_leg_0_b: "ระดับ 0 (FALSE / ล็อก)",
+                lg_leg_not: "วงกลม (o) ขาเข้าเกต:",
+                lg_leg_not_b: "เกตผกผัน NOT",
+                lg_blockers_title: "สาเหตุที่กำลังล็อกการสับเปลี่ยน:",
+                lg_steps_title: "คำอธิบายแต่ละขั้นตอนการสับเปลี่ยน",
+                lg_badge_ok: "1 — พร้อม",
+                lg_badge_lock: "0 — ถูกล็อก",
+                lg_out_allow: "▶ สถานะ: 1 (อนุญาตให้สับเปลี่ยน)",
+                lg_out_lock: "■ สถานะ: 0 (ถูกล็อกโดยอินเตอร์ล็อก)",
+                fsim_opt_1: "1. ระบบป้องกันสายส่ง 110kV (สาย 171 — 7SL82 / 7SJ82)",
+                fsim_opt_2: "2. ระบบป้องกันหม้อแปลงไฟฟ้า (T1/T2 — 7UT86 / 7SJ82 / REF615)",
+                fsim_opt_3: "3. ระบบป้องกันบัสบาร์ 110kV C11",
+                fsim_opt_4: "4. ระบบป้องกันบัสบาร์ 35kV C31 (REU615)",
+                fsim_opt_5: "5. ระบบป้องกันฟีดเดอร์ 371 (CB 371 — REF615)",
+                fsim_opt_6: "6. ระบบป้องกันฟีดเดอร์ 373 (CB 373 — REF615)",
+                fsim_th_relay: "รีเลย์",
+                fsim_th_fn: "ฟังก์ชัน / ขั้น",
+                fsim_th_set: "เกณฑ์การตั้งค่า",
+                fsim_th_delay: "เวลาหน่วง",
+                fsim_th_trip: "การทำงาน / ปลด CB",
+                fsim_th_st: "สถานะ",
+                fsim_badge_cv: "มาตรฐาน CV 3992",
+                fsim_status_trip: "ทริป (TRIP)",
+                fsim_status_ok: "ปกติ",
+                fsim_kpi_trips: "คำสั่งทริปที่ทำงาน",
+                fsim_kpi_alarms: "คำเตือน / สัญญาณแจ้ง",
+                fsim_kpi_cb: "เซอร์กิตเบรกเกอร์ที่ทริป",
+                fsim_kpi_time: "เวลาทริปเร็วที่สุด",
+                fsim_unit_fn: "ฟังก์ชัน",
+                fsim_unit_sig: "สัญญาณ",
+                fsim_no_cb: "ไม่ทริป CB",
+                fsim_preset_lbl: "เหตุขัดข้องตัวอย่าง:",
+                fsim_pre_norm: "ปกติ",
+                fsim_pre_87l: "ดิฟเฟอเรนเชียล 87L",
+                fsim_pre_21: "ระยะทาง 21 Z1",
+                fsim_pre_67n: "กราวด์ฟอลต์ 67N + 79",
+                fsim_ctrl_title: "แผงควบคุมพารามิเตอร์จำลอง",
+                fsim_lbl_ip: "กระแสเฟสสาย 171 (Primary A):",
+                fsim_lbl_3i0: "กระแสกราวด์ 3I0 (Primary A):",
+                fsim_lbl_u110: "แรงดัน 110kV (kV เฟส-เฟส):",
+                fsim_lbl_x: "รีแอกแทนซ์ X (Primary Ω):",
+                fsim_lbl_idiff: "Idiff 87L (Secondary A):",
+                fsim_cb_closed: "ปิด (CLOSED)",
+                fsim_cb_open: "เปิด (OPEN)",
+                fsim_fast_trip: "ทริปเร็วที่สุด",
+                fsim_no_trip: "ไม่ทริป",
+                fsim_fn_87l: "87L ดิฟเฟอเรนเชียลสาย",
+                fsim_fn_21: "21 ระยะทางโซน 1/2/4",
+                fsim_fn_67: "67 กระแสเกินเฟส",
+                fsim_fn_67n: "67N กราวด์ฟอลต์",
+                fsim_fn_27: "27 แรงดันตก",
+                fsim_fn_59: "59 แรงดันเกิน",
+                fsim_act_171_79: "ทริป CB 171 + 79",
+                fsim_act_171: "ทริป CB 171",
+                fsim_act_alarm: "แจ้งเตือน"
             }
         };
 
         function t(key) { return (I18N[currentLang] && I18N[currentLang][key]) || I18N.vi[key] || key; }
+
+
+        function refreshPttTemplateOptionLabels() {
+            const sel = document.getElementById('ptt-template-select');
+            if (!sel) return;
+            const map = {
+                colap_dz171_1dtd: 'ptt_tpl_1',
+                colap_dz171_vesinh: 'ptt_tpl_2',
+                tailap_dz171: 'ptt_tpl_3',
+                tailap_mbat1: 'ptt_tpl_4',
+                colap_tram: 'ptt_tpl_5',
+                blank: 'ptt_tpl_blank'
+            };
+            Array.from(sel.options).forEach(opt => {
+                if (map[opt.value]) opt.text = t(map[opt.value]);
+            });
+        }
+
+
+        function getFaultSimDataByTarget(targetKey) {
+            const presets = {
+                line171: {
+                    title: t('fsim_opt_1'),
+                    bayNote: currentLang === 'en' ? '110kV Bay to Korea Tra Vinh Wind Farm' : (currentLang === 'th' ? 'ช่องสายส่ง 110kV ไปโรงไฟฟ้าลมเกาหลี ตร่าวิญ' : 'Ngăn lộ 110kV đi NMĐG Hàn Quốc Trà Vinh'),
+                    diagramHeader: currentLang === 'en' ? '110kV LINE 171' : (currentLang === 'th' ? 'สายส่ง 110kV 171' : 'ĐƯỜNG DÂY 110KV 171'),
+                    relaySub: '7SL82 & 7SJ82 — MC 171',
+                    boxMain: currentLang === 'en' ? '110kV Line 171' : (currentLang === 'th' ? 'สายส่ง 110kV 171' : 'Đường dây 110kV 171'),
+                    boxSub: 'NMĐG V1-2 Trà Vinh',
+                    ratio: 'CT 1200/1A | VT 110kV/110V',
+                    sliders: [
+                        { id: 'fsim-ip', label: t('fsim_lbl_ip'), min: 0, max: 6000, step: 10, val: 120, unit: ' A' },
+                        { id: 'fsim-3i0', label: t('fsim_lbl_3i0'), min: 0, max: 3000, step: 10, val: 0, unit: ' A' },
+                        { id: 'fsim-u110', label: t('fsim_lbl_u110'), min: 40, max: 145, step: 0.5, val: 117.0, unit: ' kV (111.9V)' },
+                        { id: 'fsim-x', label: t('fsim_lbl_x'), min: 0.05, max: 25, step: 0.05, val: 12.00, unit: ' Ω' },
+                        { id: 'fsim-idiff', label: t('fsim_lbl_idiff'), min: 0, max: 5, step: 0.01, val: 0.05, unit: ' A' }
+                    ],
+                    rows: [
+                        { relay: '7SL82', fn: t('fsim_fn_87l'), setting: '≥ 0.4 A', delay: '0 s', action: t('fsim_act_171_79'), trippable: true },
+                        { relay: '7SL82', fn: t('fsim_fn_21'), setting: 'X1≤0.21, X2≤0.29, X4≤4.11Ω', delay: '0s/0.3s/1s', action: t('fsim_act_171'), trippable: true },
+                        { relay: '7SL82/7SJ82', fn: t('fsim_fn_67'), setting: 'Ip=1.4A, I>=2.8A', delay: 'IEC VI', action: t('fsim_act_171'), trippable: true },
+                        { relay: '7SL82/7SJ82', fn: t('fsim_fn_67n'), setting: '3I0p=0.3A, 3I0>=4.2A', delay: 'IEC VI', action: t('fsim_act_171_79'), trippable: true },
+                        { relay: '7SJ82', fn: t('fsim_fn_27'), setting: '≤ 73.4 V', delay: '2 s', action: t('fsim_act_alarm'), trippable: false },
+                        { relay: '7SJ82', fn: t('fsim_fn_59'), setting: 'U>>≥137V / U>>≥168.5V', delay: '1s / 0.1s', action: t('fsim_act_171'), trippable: true }
+                    ]
+                }
+            };
+            if (!presets[targetKey]) {
+                const base = JSON.parse(JSON.stringify(presets.line171));
+                const optMap = {
+                    t1_t2: 'fsim_opt_2', c11: 'fsim_opt_3',
+                    c31: 'fsim_opt_4', f371: 'fsim_opt_5', f373: 'fsim_opt_6'
+                };
+                base.title = t(optMap[targetKey] || 'fsim_opt_1');
+                base.diagramHeader = base.title;
+                base.boxMain = base.title;
+                return base;
+            }
+            return presets[targetKey];
+        }
+
+        function applyFaultPreset(mode) {
+            const ipEl = document.getElementById('fsim-ip');
+            const i0El = document.getElementById('fsim-3i0');
+            const uEl = document.getElementById('fsim-u110');
+            const xEl = document.getElementById('fsim-x');
+            const idiffEl = document.getElementById('fsim-idiff');
+            if (!ipEl) return;
+            if (mode === 'normal') { ipEl.value = 120; i0El.value = 0; uEl.value = 117.0; xEl.value = 12.0; idiffEl.value = 0.05; }
+            else if (mode === '87l') { ipEl.value = 2400; i0El.value = 120; uEl.value = 98.0; xEl.value = 6.0; idiffEl.value = 1.65; }
+            else if (mode === '21') { ipEl.value = 3200; i0El.value = 200; uEl.value = 82.0; xEl.value = 0.18; idiffEl.value = 0.12; }
+            else if (mode === '67n') { ipEl.value = 850; i0El.value = 950; uEl.value = 104.0; xEl.value = 9.5; idiffEl.value = 0.08; }
+            renderFaultSimState(mode);
+        }
+
+        function renderFaultSimState(activePreset = 'normal') {
+            const targetKey = document.getElementById('fsim-target-select')?.value || 'line171';
+            const cfg = getFaultSimDataByTarget(targetKey);
+            const badge = document.getElementById('fsim-ratio-badge');
+            if (badge) badge.textContent = cfg.ratio;
+
+            const ip = parseFloat(document.getElementById('fsim-ip')?.value ?? 120);
+            const i0 = parseFloat(document.getElementById('fsim-3i0')?.value ?? 0);
+            const u110 = parseFloat(document.getElementById('fsim-u110')?.value ?? 117.0);
+            const xVal = parseFloat(document.getElementById('fsim-x')?.value ?? 12.0);
+            const idiff = parseFloat(document.getElementById('fsim-idiff')?.value ?? 0.05);
+
+            const tripFlags = [
+                idiff >= 0.4,
+                xVal <= 0.21,
+                ip >= 3360,
+                i0 >= 1140,
+                u110 <= 73.4,
+                u110 >= 137.0
+            ];
+            const tripCount = tripFlags.filter(Boolean).length;
+            const alarmCount = (ip > 1200 || i0 > 300 || u110 < 105 || u110 > 123) ? 1 : 0;
+            const anyCbTrip = tripFlags.some((f, idx) => f && cfg.rows[idx]?.trippable);
+            const fastestTime = tripFlags[0] ? '0.02 s' : (tripFlags[1] ? '0.04 s' : (tripFlags[5] ? '0.10 s' : '—'));
+
+            const kpiRow = document.getElementById('fsim-kpi-row');
+            if (kpiRow) {
+                kpiRow.innerHTML = `
+                    <div class="p-3.5 rounded-xl bg-[#08122e] border border-[#62A7EA]/35"><div class="text-xs text-slate-300">${t('fsim_kpi_trips')}</div><div class="text-lg font-extrabold mt-1 ${tripCount ? 'text-rose-400' : 'text-emerald-400'}">${tripCount} ${t('fsim_unit_fn')}</div></div>
+                    <div class="p-3.5 rounded-xl bg-[#08122e] border border-[#62A7EA]/35"><div class="text-xs text-slate-300">${t('fsim_kpi_alarms')}</div><div class="text-lg font-extrabold mt-1 text-[#F2EA1E]">${alarmCount} ${t('fsim_unit_sig')}</div></div>
+                    <div class="p-3.5 rounded-xl bg-[#08122e] border border-[#62A7EA]/35"><div class="text-xs text-slate-300">${t('fsim_kpi_cb')}</div><div class="text-lg font-extrabold mt-1 ${anyCbTrip ? 'text-rose-400' : 'text-emerald-400'}">${anyCbTrip ? t('fsim_status_trip') : t('fsim_no_cb')}</div></div>
+                    <div class="p-3.5 rounded-xl bg-[#08122e] border border-[#62A7EA]/35"><div class="text-xs text-slate-300">${t('fsim_kpi_time')}</div><div class="text-lg font-extrabold mt-1 text-[#F2EA1E]">${fastestTime}</div></div>
+                `;
+            }
+
+            const presetsBar = document.getElementById('fsim-presets-bar');
+            if (presetsBar) {
+                presetsBar.innerHTML = `
+                    <span class="text-slate-300 font-semibold mr-1">${t('fsim_preset_lbl')}</span>
+                    <button type="button" onclick="applyFaultPreset('normal')" class="px-3 py-1 rounded-lg font-bold ${activePreset==='normal'?'bg-emerald-500 text-[#050b1d]':'bg-[#0c1b48] text-emerald-300 border border-emerald-500/40'}">${t('fsim_pre_norm')}</button>
+                    <button type="button" onclick="applyFaultPreset('87l')" class="px-3 py-1 rounded-lg font-bold ${activePreset==='87l'?'bg-rose-600 text-white':'bg-[#0c1b48] text-rose-300 border border-rose-500/40'}">${t('fsim_pre_87l')}</button>
+                    <button type="button" onclick="applyFaultPreset('21')" class="px-3 py-1 rounded-lg font-bold ${activePreset==='21'?'bg-fuchsia-600 text-white':'bg-[#0c1b48] text-fuchsia-300 border border-fuchsia-500/40'}">${t('fsim_pre_21')}</button>
+                    <button type="button" onclick="applyFaultPreset('67n')" class="px-3 py-1 rounded-lg font-bold ${activePreset==='67n'?'bg-[#F2EA1E] text-[#050b1d]':'bg-[#0c1b48] text-[#F2EA1E] border border-[#F2EA1E]/40'}">${t('fsim_pre_67n')}</button>
+                `;
+            }
+
+            const ctrlTitle = document.getElementById('fsim-controls-title');
+            if (ctrlTitle) {
+                ctrlTitle.innerHTML = `<span><i class="fa-solid fa-sliders text-[#F2EA1E] mr-1.5"></i>${t('fsim_ctrl_title')}</span><span class="text-[11px] text-[#62A7EA] font-normal">${cfg.bayNote}</span>`;
+            }
+
+            const slidersBox = document.getElementById('fsim-sliders-container');
+            if (slidersBox && !slidersBox.dataset.builtForTarget || slidersBox.dataset.builtForTarget !== targetKey) {
+                slidersBox.dataset.builtForTarget = targetKey;
+                slidersBox.innerHTML = cfg.sliders.map(sl => `
+                    <div class="p-3 rounded-lg bg-[#08122e] border border-[#62A7EA]/30 space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#62A7EA] font-semibold">${sl.label}</span>
+                            <span id="${sl.id}-val" class="font-mono font-extrabold text-[#F2EA1E]">${sl.val}${sl.unit}</span>
+                        </div>
+                        <input id="${sl.id}" type="range" min="${sl.min}" max="${sl.max}" step="${sl.step}" value="${sl.val}" oninput="updateFaultSliderVal('${sl.id}','${sl.unit}')" class="w-full accent-[#F2EA1E]">
+                    </div>
+                `).join('');
+            } else if (slidersBox) {
+                cfg.sliders.forEach(sl => {
+                    const el = document.getElementById(sl.id);
+                    const vEl = document.getElementById(sl.id + '-val');
+                    if (el && vEl) {
+                        const curV = parseFloat(el.value);
+                        vEl.textContent = `${curV}${sl.unit}`;
+                    }
+                });
+            }
+
+            const visStatus = document.getElementById('fsim-visual-status');
+            if (visStatus) {
+                const stBadgeCls = anyCbTrip ? 'bg-rose-950 text-rose-300 border-rose-500' : 'bg-emerald-950 text-emerald-300 border-emerald-500/60';
+                const stBadgeTxt = anyCbTrip ? t('fsim_status_trip') : t('fsim_status_ok');
+                const cbStateTxt = anyCbTrip ? t('fsim_cb_open') : t('fsim_cb_closed');
+                visStatus.innerHTML = `
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <div class="text-sm font-extrabold text-[#62A7EA]">${cfg.diagramHeader}</div>
+                            <div class="text-xs text-slate-300">${cfg.relaySub}</div>
+                        </div>
+                        <span class="px-3 py-1 rounded-lg border text-xs font-extrabold ${stBadgeCls}">${stBadgeTxt}</span>
+                    </div>
+                    <div class="p-4 rounded-xl bg-[#08122e] border border-[#62A7EA]/30 flex flex-wrap items-center justify-between gap-3 text-xs">
+                        <div class="p-3 rounded-lg bg-[#0b1b45] border border-[#62A7EA] text-center min-w-[160px]">
+                            <div class="font-bold text-[#62A7EA]">${cfg.boxMain}</div>
+                            <div class="font-mono text-[10px] text-[#F2EA1E] mt-1">U=${u110.toFixed(1)}kV | I=${ip.toFixed(0)}A | 3I0=${i0.toFixed(0)}A</div>
+                            <div class="text-[10px] text-slate-300 mt-0.5">${cfg.boxSub}</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="h-0.5 w-6 ${anyCbTrip ? 'bg-emerald-400' : 'bg-rose-500'}"></span>
+                            <span class="px-3 py-1.5 rounded-lg font-extrabold ${anyCbTrip ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}">MC 171<br>${cbStateTxt}</span>
+                            <span class="h-0.5 w-6 ${anyCbTrip ? 'bg-emerald-400' : 'bg-rose-500'}"></span>
+                        </div>
+                        <div class="p-3 rounded-lg bg-[#0b1b45] border border-[#62A7EA] text-center min-w-[140px]">
+                            <div class="font-bold text-[#62A7EA]">${t('fsim_fast_trip')}</div>
+                            <div class="font-mono text-sm font-extrabold text-[#F2EA1E] my-0.5">${fastestTime}</div>
+                            <div class="text-[11px] font-bold ${anyCbTrip ? 'text-rose-400' : 'text-slate-300'}">${anyCbTrip ? t('fsim_status_trip') : t('fsim_no_trip')}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const tbody = document.getElementById('fsim-fn-table-body');
+            if (tbody) {
+                tbody.innerHTML = cfg.rows.map((r, idx) => {
+                    const isTripped = !!tripFlags[idx];
+                    return `
+                        <tr class="${isTripped ? 'bg-rose-950/50' : 'hover:bg-[#122663]/60'}">
+                            <td class="p-2.5 font-mono font-bold text-[#62A7EA]">${r.relay}</td>
+                            <td class="p-2.5 font-bold text-white">${r.fn}</td>
+                            <td class="p-2.5 font-mono text-[#F2EA1E]">${r.setting}</td>
+                            <td class="p-2.5 font-mono text-slate-200">${r.delay}</td>
+                            <td class="p-2.5 text-slate-200">${r.action}</td>
+                            <td class="p-2.5 text-center">
+                                <span class="px-2.5 py-0.5 rounded text-[11px] font-bold ${isTripped ? 'bg-rose-600 text-white' : 'bg-[#122663] text-slate-200 border border-[#62A7EA]/30'}">
+                                    ${isTripped ? t('fsim_status_trip') : t('fsim_status_ok')}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function updateFaultSliderVal(id, unit) {
+            const el = document.getElementById(id);
+            const vEl = document.getElementById(id + '-val');
+            if (el && vEl) vEl.textContent = `${parseFloat(el.value)}${unit}`;
+            renderFaultSimState('custom');
+        }
+
+        function switchFaultSimTarget() {
+            const sBox = document.getElementById('fsim-sliders-container');
+            if (sBox) delete sBox.dataset.builtForTarget;
+            renderFaultSimState('normal');
+        }
 
         function setLanguage(lang) {
             currentLang = lang;
@@ -1120,13 +1812,15 @@
                 renderForecastView();
                 renderTurbines();
                 selectTurbine(selectedTurbineIndex);
-                renderHmiMimicDiagram(); renderVisualLogicDiagram();
+                renderHmiMimicDiagram();
+                renderVisualLogicDiagram();
+                checkAndRenderShiftConflict();
             }
         }
 
         // ==================== 1. ĐĂNG NHẬP ====================
         function checkAuth() {
-            setLanguage(currentLang);
+            setLanguage(currentLang); refreshPttTemplateOptionLabels();
             if (hasValidAuthSession()) { startIdleAutoLogout();
                 document.getElementById("login-screen").classList.add("hidden");
                 document.getElementById("app-container").classList.remove("hidden");
@@ -1138,13 +1832,27 @@
         }
 
         const AUTH_CONFIG = {
-            expectedUser: "nmdgv12travinh",
             salt: "TTTV_NMDGV12_TRAVINH_2026_SALT",
-            passHash: "a95f31297941f8c3f5cce57a50b572bee064c801604f49f78b90923433b81db4",
+            accounts: {
+                "nmdgv12travinh": { role: "admin", label: "Quản trị viên (Toàn quyền)", passHash: "a95f31297941f8c3f5cce57a50b572bee064c801604f49f78b90923433b81db4" },
+                "vanhanh_v12": { role: "operator", label: "Vận hành viên (Quyền giới hạn)", passHash: "ea76b917eab1de072d85c4bb908a46ef800d75b8190234f6d9e82b8965c2cf40" }
+            },
             maxAttempts: 5,
             lockoutMs: 60000,
             sessionTtlMs: 3600000
         };
+
+        function getCurrentUserRole() {
+            return sessionStorage.getItem("tttv_v12_role") || "operator";
+        }
+
+        function getCurrentUsernameSession() {
+            return sessionStorage.getItem("tttv_v12_user") || "";
+        }
+
+        function isAdminRole() {
+            return hasValidAuthSession() && getCurrentUserRole() === "admin";
+        }
 
         let failedLoginCount = 0;
         let loginLockedUntil = 0;
@@ -1241,11 +1949,14 @@
             }
             const u = document.getElementById("login-username").value.trim();
             const p = document.getElementById("login-password").value;
+            const acc = AUTH_CONFIG.accounts[u];
             const inputHash = await sha256Hex(`${AUTH_CONFIG.salt}:${p}`);
-            if (u === AUTH_CONFIG.expectedUser && inputHash === AUTH_CONFIG.passHash) {
+            if (acc && inputHash === acc.passHash) {
                 failedLoginCount = 0;
                 loginLockedUntil = 0;
                 sessionStorage.setItem("tttv_v12_auth", "true");
+                sessionStorage.setItem("tttv_v12_user", u);
+                sessionStorage.setItem("tttv_v12_role", acc.role);
                 sessionStorage.setItem("tttv_v12_exp", String(Date.now() + AUTH_CONFIG.sessionTtlMs));
                 document.getElementById("login-password").value = "";
                 errBox.classList.add("hidden");
@@ -1266,6 +1977,8 @@
 
         function handleLogout() {
             sessionStorage.removeItem("tttv_v12_auth");
+            sessionStorage.removeItem("tttv_v12_role");
+            sessionStorage.removeItem("tttv_v12_user");
             sessionStorage.removeItem("tttv_v12_exp");
             const p = document.getElementById("login-password");
             if (p) p.value = "";
@@ -1582,7 +2295,7 @@
             const mm = String(tObj.getMonth() + 1).padStart(2, '0');
             const hh = String(tObj.getHours()).padStart(2, '0');
             const min = String(tObj.getMinutes()).padStart(2, '0');
-            const label = `Hiện tại ${dd}/${mm} ${hh}:${min}`;
+            const label = `${t('wtg_now_prefix')} ${dd}/${mm} ${hh}:${min}`;
             return { winds12, powers12KW, label };
         }
 
@@ -1599,7 +2312,7 @@
             if (list.length > 0) {
                 const slotSel = document.getElementById('wtg-list-timeslot');
                 if (slotSel && slotSel.value === 'AVG') {
-                    slotLabel = "TB toàn kỳ";
+                    slotLabel = t('wtg_avg_period');
                     coordWinds12 = Array(12).fill(0);
                     coordPowers12KW = Array(12).fill(0);
                     for (let cIdx = 0; cIdx < 12; cIdx++) {
@@ -1756,9 +2469,9 @@
             const headerBar = `
                 <div class="flex flex-wrap items-center justify-between gap-2 bg-[#07112e] border border-[#62A7EA]/40 rounded-xl px-4 py-2.5 text-xs">
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="font-extrabold text-[#F2EA1E]"><i class="fa-solid fa-wind mr-1.5"></i>Mô phỏng trực tiếp Gió &amp; CS dự báo từng WT (${slotLabel})</span>
+                        <span class="font-extrabold text-[#F2EA1E]"><i class="fa-solid fa-wind mr-1.5"></i>${t('wtg_sim_header')} (${slotLabel})</span>
                         <span class="px-2.5 py-0.5 rounded-full bg-[#122663] border border-[#62A7EA]/50 text-[#62A7EA] font-mono font-bold">
-                            Chạy dự báo: ${availTotal}/12 WTG (${totalSimPowerMW.toFixed(2)} MW | ~${estI35A.toFixed(0)} A @35kV | Q~${estQRefMVAr.toFixed(2)} MVAr)
+                            ${t('wtg_sim_running_lbl')} ${availTotal}/12 WTG (${totalSimPowerMW.toFixed(2)} MW | ~${estI35A.toFixed(0)} A @35kV | Q~${estQRefMVAr.toFixed(2)} MVAr)
                         </span>
                         <span class="px-2.5 py-0.5 rounded-full bg-[#0C1B48] border border-[#F2EA1E]/40 text-[#F2EA1E] font-mono font-bold">
                             ${(() => {
@@ -1775,10 +2488,10 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <button type="button" onclick="whatIfRestoreAllTurbines()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-400 hover:text-[#0C1B48] border border-emerald-400/60 text-[11px] text-emerald-300 font-bold transition">
-                            <i class="fa-solid fa-bolt mr-1"></i>What-If: Bật chạy toàn bộ WTG
+                            <i class="fa-solid fa-bolt mr-1"></i>${t('wtg_sim_all_on')}
                         </button>
                         <button type="button" onclick="resetDynamicTurbinesSim()" class="px-2.5 py-1 rounded-lg bg-[#122663] hover:bg-[#62A7EA] hover:text-[#0C1B48] border border-[#62A7EA]/50 text-[11px] text-[#F2EA1E] font-bold transition">
-                            <i class="fa-solid fa-rotate-left mr-1"></i>Khôi phục mặc định
+                            <i class="fa-solid fa-rotate-left mr-1"></i>${t('wtg_sim_reset')}
                         </button>
                     </div>
                 </div>
@@ -2148,7 +2861,16 @@
             renderTurbines();
             selectTurbine(0);
             analyzeThermal(); renderThermalHistoryBox(); renderRelayHistoryBox();
-            renderHmiMimicDiagram(); renderVisualLogicDiagram(); loadPttTemplate(); loadLineRelaySettings();
+            renderHmiMimicDiagram(); renderVisualLogicDiagram(); loadPttTemplate(); renderFaultSimState('normal');
+            const roleTxt = document.getElementById("user-role-text");
+            const roleBadge = document.getElementById("user-role-badge");
+            if (roleTxt) {
+                const uSess = getCurrentUsernameSession() || "nmdgv12travinh";
+                roleTxt.textContent = isAdminRole() ? `${uSess} • ADMIN` : `${uSess} • GIỚI HẠN QUYỀN`;
+            }
+            if (roleBadge && !isAdminRole()) {
+                roleBadge.className = "px-3 py-1 bg-amber-950/80 border border-amber-400/60 text-amber-300 text-xs font-semibold rounded-full flex items-center";
+            }
             isInitialized = true;
         }
 
@@ -2486,10 +3208,10 @@
             const volt = document.getElementById('th-voltage').value, equip = document.getElementById('th-equip').value;
             const t1 = parseFloat(document.getElementById('th-t1').value), t2 = parseFloat(document.getElementById('th-t2').value);
             const deltaT = (t1 - t2).toFixed(1);
-            let level = 'Level 1 (Normal)', badgeStyle = 'border-[#62A7EA]/60 text-[#62A7EA]', action = 'Continue normal operation, routine monthly inspection.';
-            if (deltaT > 35) { level = 'Level 3 (CRITICAL - Immediate Isolation)'; badgeStyle = 'border-rose-500 text-rose-400'; action = 'Report to Shift Leader & A2/NSMO immediately for emergency isolation and repair.'; }
-            else if (deltaT > 15) { level = 'Level 2 (HIGH RISK - Overheating)'; badgeStyle = 'border-[#F2EA1E] text-[#F2EA1E]'; action = 'Daily thermal check at high load. Schedule outage with A2/NSMO to clean & torque connections.'; }
-            else if (deltaT >= 5) { level = 'Level 1+ (MODERATE)'; badgeStyle = 'border-[#62A7EA] text-[#62A7EA]'; action = 'Monitor closely during peak wind generation.'; }
+            let level = t('th_lvl_normal'), badgeStyle = 'border-[#62A7EA]/60 text-[#62A7EA]', action = t('th_act_normal');
+            if (deltaT > 35) { level = t('th_lvl_crit'); badgeStyle = 'border-rose-500 text-rose-400'; action = t('th_act_crit'); }
+            else if (deltaT > 15) { level = t('th_lvl_high'); badgeStyle = 'border-[#F2EA1E] text-[#F2EA1E]'; action = t('th_act_high'); }
+            else if (deltaT >= 5) { level = t('th_lvl_mod'); badgeStyle = 'border-[#62A7EA] text-[#62A7EA]'; action = t('th_act_mod'); }
 
             document.getElementById('thermal-result-box').innerHTML = `
                 <div class="p-4 rounded-lg bg-[#07112e] border ${badgeStyle}">
@@ -2528,8 +3250,8 @@
                 if (!list.length) return;
                 box.innerHTML = `
                     <div class="flex justify-between items-center text-[11px] text-[#62A7EA] font-bold">
-                        <span><i class="fa-solid fa-clock-rotate-left mr-1 text-[#F2EA1E]"></i>Lịch sử quét nhiệt gần đây (${list.length})</span>
-                        <button type="button" onclick="localStorage.removeItem('${THERMAL_HIST_KEY}'); renderThermalHistoryBox();" class="text-[10px] text-slate-400 hover:text-white underline">Xóa lịch sử</button>
+                        <span><i class="fa-solid fa-clock-rotate-left mr-1 text-[#F2EA1E]"></i>${t('th_hist_title')} (${list.length})</span>
+                        <button type="button" onclick="localStorage.removeItem('${THERMAL_HIST_KEY}'); renderThermalHistoryBox();" class="text-[10px] text-slate-400 hover:text-white underline">${t('th_hist_clear')}</button>
                     </div>
                     <div class="max-h-32 overflow-y-auto border border-[#62A7EA]/25 rounded-lg divide-y divide-[#62A7EA]/15 text-[11px] bg-[#07112e]/60">
                         ${list.map(item => `
@@ -2631,8 +3353,8 @@
                 if (!list.length) return;
                 box.innerHTML = `
                     <div class="flex justify-between items-center text-[11px] text-[#62A7EA] font-bold">
-                        <span><i class="fa-solid fa-clock-rotate-left mr-1 text-[#F2EA1E]"></i>Lịch sử phân tích sự cố rơ-le (${list.length})</span>
-                        <button type="button" onclick="localStorage.removeItem('${RELAY_HIST_KEY}'); renderRelayHistoryBox();" class="text-[10px] text-slate-400 hover:text-white underline">Xóa lịch sử</button>
+                        <span><i class="fa-solid fa-clock-rotate-left mr-1 text-[#F2EA1E]"></i>${t('rl_hist_title')} (${list.length})</span>
+                        <button type="button" onclick="localStorage.removeItem('${RELAY_HIST_KEY}'); renderRelayHistoryBox();" class="text-[10px] text-slate-400 hover:text-white underline">${t('th_hist_clear')}</button>
                     </div>
                     <div class="max-h-32 overflow-y-auto border border-[#62A7EA]/25 rounded-lg divide-y divide-[#62A7EA]/15 text-[11px] bg-[#07112e]/60">
                         ${list.map(item => `
@@ -2747,7 +3469,7 @@
                 <g>
                     <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
                     <text x="${x + 8}" y="${y + 15}" fill="${textCol}" font-size="9.3" font-weight="800">${title}</text>
-                    <text x="${x + 8}" y="${y + 28}" fill="${textCol}" font-size="8.8" font-weight="700">${state ? '▶ TRẠNG THÁI: 1 (CHO PHÉP THAO TÁC)' : '■ TRẠNG THÁI: 0 (KHÓA LIÊN ĐỘNG)'}</text>
+                    <text x="${x + 8}" y="${y + 28}" fill="${textCol}" font-size="8.8" font-weight="700">${state ? t('lg_out_allow') : t('lg_out_lock')}</text>
                 </g>
             `;
         }
@@ -3763,7 +4485,7 @@
                         <p class="text-xs text-slate-300 mt-1 leading-relaxed">${desc}</p>
                     </div>
                     <div class="p-3 rounded-lg bg-[#07112e] border border-[#62A7EA]/30 text-xs space-y-1.5">
-                        <div class="font-bold text-[#62A7EA] uppercase text-[11px]">Chú thích ký hiệu & màu sắc trên sơ đồ:</div>
+                        <div class="font-bold text-[#62A7EA] uppercase text-[11px]">${t('lg_legend_title')}</div>
                         <div class="flex flex-wrap gap-3 text-[11px]">
                             <span class="flex items-center"><span class="w-3 h-3 rounded-sm bg-[#F2EA1E] inline-block mr-1.5"></span>Dây / Cổng màu Vàng: <strong>Mức 1 (TRUE / Đạt)</strong></span>
                             <span class="flex items-center"><span class="w-3 h-3 rounded-sm bg-[#334e8d] inline-block mr-1.5"></span>Dây màu Xanh tối: <strong>Mức 0 (FALSE / Khóa)</strong></span>
@@ -3772,7 +4494,7 @@
                     </div>
                     ${blockers.length > 0 ? `
                         <div class="p-3 rounded-lg bg-rose-950/70 border border-rose-500/60 text-xs text-rose-200 space-y-1">
-                            <div class="font-bold text-rose-300"><i class="fa-solid fa-lock mr-1.5"></i>Nguyên nhân đang khóa thao tác:</div>
+                            <div class="font-bold text-rose-300"><i class="fa-solid fa-lock mr-1.5"></i>${t('lg_blockers_title')}</div>
                             <ul class="list-disc list-inside space-y-0.5">${blockers.map(b => `<li>${b}</li>`).join('')}</ul>
                         </div>
                     ` : ''}
@@ -3780,7 +4502,7 @@
 
                 <div class="card p-4 border-[#62A7EA]/40 space-y-2.5">
                     <h3 class="text-sm font-extrabold text-white flex items-center">
-                        <i class="fa-solid fa-list-check mr-2 text-[#62A7EA]"></i>Giải thích chi tiết từng bước thao tác
+                        <i class="fa-solid fa-list-check mr-2 text-[#62A7EA]"></i>${t('lg_steps_title')}
                     </h3>
                     <div class="space-y-2 max-h-72 overflow-y-auto pr-1">
                         ${steps.map(st => `
@@ -3788,7 +4510,7 @@
                                 <div class="flex justify-between items-center gap-2">
                                     <span class="text-xs font-bold text-white"><span class="text-[#62A7EA] mr-1">[${st.stepNum}]</span>${st.name}</span>
                                     <span class="px-2 py-0.5 rounded text-[10px] font-extrabold whitespace-nowrap ${st.status ? 'bg-[#F2EA1E] text-[#0C1B48]' : 'bg-rose-900/80 text-rose-200'}">
-                                        ${st.status ? '1 — ĐẠT' : '0 — KHÓA'}
+                                        ${st.status ? t('lg_badge_ok') : t('lg_badge_lock')}
                                     </span>
                                 </div>
                                 <div class="text-[10px] font-mono text-[#62A7EA]">${st.formula}</div>
@@ -3843,7 +4565,7 @@
             const statusMsg = document.getElementById('hmi-status-msg');
             if (banner && statusMsg) {
                 banner.className = `p-3 rounded-lg border text-xs flex flex-wrap justify-between items-center gap-2 ${ok ? 'bg-[#07112e] border-emerald-500/60' : 'bg-rose-950/90 border-rose-500'}`;
-                statusMsg.innerHTML = `<strong class="${ok ? 'text-emerald-300' : 'text-rose-300'}">${ok ? 'THAO TÁC HỢP LỆ:' : 'KHÓA LIÊN ĐỘNG / SAI QUYỀN:'}</strong> <span class="text-white">${msg}</span>`;
+                statusMsg.innerHTML = `<strong class="${ok ? 'text-emerald-300' : 'text-rose-300'}">${ok ? t('hmi_valid_op') : t('hmi_blocked_op')}</strong> <span class="text-white">${msg}</span>`;
             }
         }
 
@@ -3900,7 +4622,7 @@
             if (document.getElementById('lbl-grid-freq')) document.getElementById('lbl-grid-freq').innerText = `${fVal.toFixed(2)} Hz`;
             if (document.getElementById('lbl-grid-u35set')) document.getElementById('lbl-grid-u35set').innerText = `${u35Val.toFixed(2)} kV`;
             if (document.getElementById('lbl-grid-qset')) {
-                const modeTxt = qVal < -0.05 ? 'Hút Q' : (qVal > 0.05 ? 'Phát Q' : '0 MVAr');
+                const modeTxt = qVal < -0.05 ? t('hmi_q_absorb') : (qVal > 0.05 ? t('hmi_q_inject') : '0 MVAr');
                 document.getElementById('lbl-grid-qset').innerText = `${qVal >= 0 ? '+' : ''}${qVal.toFixed(2)} MVAr (${modeTxt})`;
             }
             if (document.getElementById('lbl-grid-pset')) document.getElementById('lbl-grid-pset').innerText = `${pVal.toFixed(2)} MW`;
@@ -3919,7 +4641,7 @@
             if (document.getElementById('sim-grid-qset')) document.getElementById('sim-grid-qset').value = -3.44;
             if (document.getElementById('sim-grid-pset')) document.getElementById('sim-grid-pset').value = 18.36;
             updateGridSimParams();
-            addHmiLog('Khôi phục thông số tần số, điện áp 35kV, hút/phát Q và công suất P về trạng thái chuẩn.', true);
+            addHmiLog(t('hmi_reset_msg'), true);
         }
 
         function setHmiControlMode(mode) {
@@ -3936,7 +4658,7 @@
             renderHmiMimicDiagram();
         }
 
-        function toggleHmiBypass() {
+        function toggleHmiBypass() { if (!isAdminRole()) { addHmiLog(t('hmi_bypass_admin_only'), false); return; }
             HMI_STATE.bypassInterlock = !HMI_STATE.bypassInterlock;
             const btn = document.getElementById('btn-hmi-bypass');
             if (btn) {
@@ -3945,7 +4667,7 @@
                     : 'px-2.5 py-1.5 rounded-lg bg-[#07112e] border border-slate-600 text-slate-300 text-[11px] font-bold hover:border-[#F2EA1E]';
                 btn.innerHTML = `<i class="fa-solid fa-unlock-keyhole mr-1"></i>Giải trừ liên động: ${HMI_STATE.bypassInterlock ? 'ON (CẢNH BÁO)' : 'OFF'}`;
             }
-            addHmiLog(HMI_STATE.bypassInterlock ? 'BẬT chế độ Giải trừ liên động (Bypass Interlock)!' : 'TẮT chế độ Giải trừ liên động — Khôi phục bảo vệ liên động chuẩn.', true);
+            addHmiLog(HMI_STATE.bypassInterlock ? t('hmi_bypass_on_msg') : t('hmi_bypass_off_msg'), true);
             renderHmiMimicDiagram();
         }
 
@@ -3954,7 +4676,7 @@
             if (next !== HMI_STATE.tapPos) {
                 HMI_STATE.tapPos = next;
                 document.getElementById('hmi-tap-val').innerText = next;
-                addHmiLog(`Điều chỉnh nấc phân áp OLTC MBA T1 sang nấc [${next}].`, true);
+                addHmiLog(`${t('hmi_tap_msg')} [${next}].`, true);
                 renderHmiMimicDiagram();
             }
         }
@@ -3969,7 +4691,7 @@
                 cb375: false, d375_76: false, cb377: false, d377_76: false
             });
             document.getElementById('hmi-tap-val').innerText = '9';
-            addHmiLog('Khôi phục trạng thái trạm đúng theo ảnh chụp HMI thực tế (XT 371 & 373 Đóng — Phát 18.36 MW).', true);
+            addHmiLog(t('hmi_snap_msg'), true);
             renderHmiMimicDiagram();
         }
 
@@ -3981,7 +4703,7 @@
                 cb371: true, d371_76: false, cb373: true, d373_76: false,
                 cb375: true, d375_76: false, cb377: true, d377_76: false
             });
-            addHmiLog('Đóng đủ 4 xuất tuyến 371, 373, 375, 377 — Phát tối đa công suất nhà máy 48 MW.', true);
+            addHmiLog(t('hmi_full48_msg'), true);
             renderHmiMimicDiagram();
         }
 
@@ -4100,6 +4822,10 @@
         }
 
         function handleHmiClick(devKey) {
+            if (!isAdminRole()) {
+                addHmiLog(`[${getCurrentUsernameSession()}] ${t('hmi_role_denied')}`, false);
+                return;
+            }
             const info = checkHmiInterlock(devKey);
             const curState = !!HMI_STATE[devKey];
             const nextAction = curState ? 'MỞ (Cắt)' : 'ĐÓNG';
@@ -5298,7 +6024,7 @@
             `).join('');
         }
 
-        function saveAndApplyRelaySettings() {
+        function saveAndApplyRelaySettings() { if (!isAdminRole()) { alert('Tài khoản hiện tại bị giới hạn quyền: chỉ Quản trị viên mới được lưu chỉnh định rơ-le.'); return; }
             Object.keys(DEFAULT_RELAY_SETTINGS).forEach(key => {
                 const el = document.getElementById('cfg-' + key);
                 if (!el) return;
